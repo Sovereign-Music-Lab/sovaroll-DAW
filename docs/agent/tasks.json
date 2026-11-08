@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T23:31:15.576Z",
+  "updatedAt": "2026-11-08T23:34:33.694Z",
   "tasks": [
     {
       "id": "T-001",
@@ -710,7 +710,7 @@
       "doneAt": "2026-11-08T23:31:15.576Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-024",
@@ -733,7 +733,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T23:32:14.100Z",
+      "evidence": "Reproduced timeout after 12 checks at midi-export-format. Current control is inside a dialog that closes after download; open midi-export-dialog before each SMF 0/1 export. npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs: E2E PASS, 16 steps. No product code changed. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:34:33.693Z"
     },
     {
       "status": "todo",
