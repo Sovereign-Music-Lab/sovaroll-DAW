@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-030 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-031 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -49,6 +49,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-028 reproduced the same fixed-tempo rejection in `gui-note-paint-smoke.mjs` and applied the same fixture-only tempo-mode enablement. All 23 targeted steps and final `npm run agent:verify` passed with assertions unchanged.
 - T-029 reproduced the same rejection in `gui-note-shapes-smoke.mjs`. Enabling tempo-track mode before `tempo.set` preserved every shape, source and history assertion. All 20 targeted steps and final `npm run agent:verify` passed.
 - T-030 reproduced `gui-projects-smoke.mjs` waiting for a render after only opening the export dialog. Adding `#mix-export-submit` starts the actual job and preserves the media assertions. All 20 targeted steps and final `npm run agent:verify` passed without product changes.
+- T-031 reproduced the closed-menu clip-tools timeout in `gui-split-controller-policy-smoke.mjs`. Both clip-tool clicks now open `arrangement-edit-menu` through its direct summary. All 4 targeted steps and final `npm run agent:verify` passed without changing assertions or product code.
 
 ## Problems encountered and resolved
 
@@ -123,3 +124,5 @@ T-028에서는 노트 페인트 스모크의 같은 고정 템포 거부를 재�
 T-029에서는 노트 셰이프 스모크의 같은 거부를 재현하고 `tempo.set` 전에 tempo-track 모드를 활성화했습니다. 셰이프·원본·이력 assertions는 유지하며 대상 E2E 20단계와 최종 verify가 통과했습니다.
 
 T-030에서는 프로젝트 스모크가보내기 대화상자만 연 채 렌더를 기다린 timeout을 재현했습니다. `#mix-export-submit`으로 실제 작업을 시작하고 미디어 검증을 유지했습니다. 대상 E2E 20단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.
+
+T-031에서는 split controller 정책 스모크의 닫힌 clip-tools 메뉴 timeout을 재현했습니다. 두 클릭 모두 `arrangement-edit-menu`의 직접 summary를 먼저 열고 assertions와 제품 코드는 유지했습니다. 대상 E2E 4단계와 최종 verify가 통과했습니다.
