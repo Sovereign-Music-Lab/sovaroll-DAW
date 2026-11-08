@@ -52,7 +52,9 @@ const importSource = async frequency => {
   // Chrome can evict an upload response body from its inspector cache; inspect
   // the HTTP status and authoritative server/UI state instead of the CDP body.
   const pending = page.waitForResponse(response => new URL(response.url()).pathname === '/api/import/wav' && response.request().method() === 'POST');
-  await page.locator('#import-file').setInputFiles(source); const response = await pending; assert.equal(response.status(), 200);
+  await page.locator('#import-button').click();
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('#import-choose-file').click()]);
+  await chooser.setFiles(source); const response = await pending; assert.equal(response.status(), 200);
   const snapshot = await state(); await waitRevision(snapshot.project.revision); await page.waitForFunction(() => !document.querySelector('#document-button').disabled);
   const asset = snapshot.project.assets.find(item => item.sha256 === hash(bytes)); assert.ok(asset);
   return { bytes, source, asset, filename: path.join(path.dirname(snapshot.session.document.projectPath), asset.path) };

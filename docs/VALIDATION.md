@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-020 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-021 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -39,6 +39,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-018 reproduced `gui-controller-paint-smoke.mjs` failing before browser launch. New server projects default to fixed tempo (`tempoTrackEnabled: false`), so the old fixture's multi-point `tempo.set` was rejected. Enabling `tempo.mode` before setting the map preserves the intended tempo-map test without weakening assertions. The targeted E2E passed all 16 steps and final `npm run agent:verify` passed.
 - T-019 reproduced the same fixed-tempo fixture rejection in `gui-controller-shapes-smoke.mjs`. Adding `tempo.mode enabled:true` before `tempo.set` resolved that drift without changing gestures or assertions. All 23 targeted E2E steps and final `npm run agent:verify` passed.
 - T-020 reproduced the same fixed-tempo rejection in `gui-controller-snap-smoke.mjs` and applied the same fixture-only `tempo.mode` enablement. All 13 targeted E2E steps and final `npm run agent:verify` passed with assertions unchanged.
+- T-021 reproduced `gui-document-smoke.mjs` timing out at its first import. The script bypassed the Import options and submitted a null draft, which the current GUI correctly rejects with a retry notice. `importSource` now opens Import, chooses the file through the real chooser and checks the same HTTP/project state. All 17 targeted steps and final `npm run agent:verify` passed.
 
 ## Problems encountered and resolved
 
@@ -93,3 +94,5 @@ T-018에서는 컨트롤러 페인트 스모크가 브라우저 이전에 실패
 T-019에서는 컨트롤러 셰이프 스모크에서 같은 고정 템포 fixture 거부를 재현했습니다. `tempo.set` 전에 `tempo.mode`를 활성화하는 동일한 최소 수정으로 제스처와 assertions를 유지했습니다. 대상 E2E 23단계와 최종 verify가 통과했습니다.
 
 T-020에서는 컨트롤러 스냅 스모크의 같은 고정 템포 거부를 재현하고 fixture에만 `tempo.mode` 활성화를 적용했습니다. assertions는 바꾸지 않았으며 대상 E2E 13단계와 최종 verify가 통과했습니다.
+
+T-021에서는 문서 스모크의 첫 가져오기 대기 timeout을 재현했습니다. 스크립트가 Import 옵션 없이 숨은 파일 입력을 직접 사용해 현재 GUI가 null draft를 올바르게 거부한 drift였습니다. `importSource`를 Import 버튼과 실제 파일 chooser 경로로 수정하고 동일한 HTTP·프로젝트 상태를 검증했습니다. 대상 E2E 17단계와 최종 verify가 통과했습니다.
