@@ -109,7 +109,7 @@ try {
   check('gui.projects.open-restores-history-and-subsequent-edit-writes-target');
 
   const assetResponse = await fetch(session.url + `/api/assets/${encodeURIComponent(originalAssetId)}/file`); assert.equal(assetResponse.status, 200); assert.deepEqual(Buffer.from(await assetResponse.arrayBuffer()), bBytes);
-  await page.locator('#render-button').click(); await page.waitForSelector('.render-result a', { timeout: 30000 }); const renderHref = await page.locator('.render-result a').getAttribute('href');
+  await page.locator('#render-button').click(); await page.locator('#mix-export-submit').click(); await page.waitForSelector('.render-result a', { timeout: 30000 }); const renderHref = await page.locator('.render-result a').getAttribute('href');
   const rendered = await fetch(new URL(renderHref, session.url)); assert.equal(rendered.status, 200); assert.ok((await rendered.arrayBuffer()).byteLength > 44);
   check('gui.projects.media-download-and-render-use-new-project-directory');
 
