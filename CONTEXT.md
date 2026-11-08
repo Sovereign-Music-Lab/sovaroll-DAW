@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-028.
+Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-029.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,7 +28,8 @@ Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-028.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 36 steps passed on 2026-11-09, including T-001 fade-in, T-002 clip mute/polarity, T-003 normalize, T-004 cycle transport, T-006 MIDI tools, T-007 keyboard Undo/Redo and T-011 collapsible recording panel coverage. Fake microphone; no physical listening claim.
-- T-001–T-009, T-011–T-012, T-015 and T-017–T-028 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- T-001–T-009, T-011–T-012, T-015 and T-017–T-029 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- T-029 note-shapes smoke passes 20 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
 - T-028 note-paint smoke passes 23 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
 - T-027 note-object smoke passes 24 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
 - T-026 MIDI-playback smoke passes 11 PCM/Web Audio steps after submitting the actual export dialog; no product code changed.
@@ -54,7 +55,7 @@ Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-028.
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-009, T-011–T-012, T-015 and T-017–T-028 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
+- T-001–T-009, T-011–T-012, T-015 and T-017–T-029 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
 - T-023 passed all 14 editing steps after opening the actual arrangement-edit details, confirming track duplication and using the current reorder selector. No product code changed.
 - Run `npm run agent:task -- next` for queue order.
 - Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
