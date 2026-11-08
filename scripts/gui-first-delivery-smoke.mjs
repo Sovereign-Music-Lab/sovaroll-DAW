@@ -29,7 +29,7 @@ const state=async()=>(await fetch(session.url+'/api/state')).json(),proj=async()
 const cli=async(...args)=>JSON.parse(await cliRaw(...args,'--url',session.url)),cmd=(c,a={})=>cli('command',c,JSON.stringify(a));
 const revision=()=>page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,'')));
 const synced=()=>page.waitForFunction(()=>document.getElementById('connection-status')?.textContent.includes('동기화'));
-async function after(rev){await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,rev);await page.waitForFunction(()=>!document.querySelector('#undo')?.closest('[aria-busy="true"]'));}
+async function after(rev){await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,rev);await page.waitForFunction(()=>document.querySelector('#project-name')?.disabled===false);}
 async function act(fn){const rev=(await proj()).revision;await fn();await after(rev);return proj();}
 async function openPage(){page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>pageErrors.push(e.message));page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});page.on('response',r=>{if(r.status()>=400)httpErrors.push(`${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}`);});await page.goto(session.url);await synced();}
 async function download(trigger,name){const [d]=await Promise.all([page.waitForEvent('download',{timeout:60000}),trigger()]);const file=path.join(downloads,name);await d.saveAs(file);return file;}
@@ -211,8 +211,23 @@ try{
  p=await act(()=>head(midiTrack.id).locator('button[data-action="solo"]').click());assert.equal(p.tracks.find(t=>t.id===midiTrack.id).solo,true);
  p=await act(()=>head(midiTrack.id).locator('button[data-action="solo"]').click());assert.equal(p.tracks.find(t=>t.id===midiTrack.id).solo,false);
  const setRange=async(locator,value)=>act(()=>locator.evaluate((e,v)=>{e.value=String(v);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));},value));
- p=await setRange(head(midiTrack.id).locator('input[data-action="gain"]'),-3);assert.equal(p.tracks.find(t=>t.id===midiTrack.id).gainDb,-3);
- p=await setRange(head(audioTrack.id).locator('input[data-action="pan"]'),0.3);assert.equal(p.tracks.find(t=>t.id===audioTrack.id).pan,0.3);
+ const mixerPanRequests=[],mixerSync={delayedGainMs:200,sseAdvancedBeforeResponse:false,busyWhileResponseDelayed:false,panRequests:mixerPanRequests};summary.mixerSync=mixerSync;
+ const mixerRequestListener=request=>{if(!request.url().endsWith('/api/command'))return;const body=request.postDataJSON();if(body?.command==='track.update'&&body.arguments?.pan!==undefined)mixerPanRequests.push({expectedRevision:body.expectedRevision,pan:body.arguments.pan});};
+ page.on('request',mixerRequestListener);const revisionBeforeGain=(await proj()).revision;
+ await page.route('**/api/command',async route=>{
+  const body=route.request().postDataJSON();
+  if(body?.command==='track.update'&&body.arguments?.trackId===midiTrack.id&&body.arguments?.gainDb===-3){
+   const response=await route.fetch();mixerSync.gainStatus=response.status();
+   await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,revisionBeforeGain);
+   mixerSync.sseAdvancedBeforeResponse=true;mixerSync.busyWhileResponseDelayed=await page.locator('#project-name').isDisabled();
+   await page.waitForTimeout(mixerSync.delayedGainMs);await route.fulfill({response});
+  }else await route.continue();
+ });
+ try{
+  p=await setRange(head(midiTrack.id).locator('input[data-action="gain"]'),-3);assert.equal(p.tracks.find(t=>t.id===midiTrack.id).gainDb,-3);
+  p=await setRange(head(audioTrack.id).locator('input[data-action="pan"]'),0.3);assert.equal(p.tracks.find(t=>t.id===audioTrack.id).pan,0.3);
+ }finally{await page.unroute('**/api/command');page.off('request',mixerRequestListener);}
+ mixerSync.panRequests=mixerPanRequests;assert.equal(mixerSync.sseAdvancedBeforeResponse,true);assert.equal(mixerSync.busyWhileResponseDelayed,true);assert.equal(mixerPanRequests.length,1);
  p=await setRange(page.locator('#master-gain'),-4);assert.equal(p.masterGainDb,-4);check('mixer.GUI-mute-solo-gain-pan-master');
  p=await act(()=>cmd('project.locators',{range:{startTick:0,endTick:3840}}));
  assert.deepEqual(p.locators,{startTick:0,endTick:3840});await clickRuler('#timeline-ruler',0);

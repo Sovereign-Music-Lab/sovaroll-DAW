@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-008 (2026-11-09)
+## Continuation — T-001–T-008, T-015 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -31,12 +31,13 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-006 `npm run agent:e2e`: E2E PASS, 34 steps. `midi.GUI-tools-transpose` checks every selected first-part note moves +2 semitones and Undo restores its pitch; `midi.GUI-tools-velocity` checks Set 54 on every selected note and Undo restores prior velocities. Note counts remain unchanged for export. Quantize retains its previous first-delivery coverage status. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
 - T-007 `npm run agent:e2e`: E2E PASS, 35 steps. With focus on `#timeline-scroll`, `project.GUI-keyboard-undo-redo` verifies ControlOrMeta+Z reverts the last track-name edit with a revision increase and ControlOrMeta+Shift+Z reapplies it with another revision increase. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
 - T-008: `npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs` passed all 6 steps and `npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs` passed all 4 steps, unchanged. Coverage includes non-zero fake-microphone PCM, one-commit clip import, audio edit/render/reopen, cancel preserving the project and a concurrent project change preserving WAV without import. No test drift or product code change; physical devices remain unverified.
+- T-015 reproduced the intermittent pan timeout by delaying the gain POST response for 200 ms while allowing SSE to advance the browser revision first. The old helper timed out after 23 steps with `sseAdvancedBeforeResponse: true`, `busyWhileResponseDelayed: true`, gain HTTP 200 and no HTTP errors. The helper had waited for a nonexistent `aria-busy` ancestor; it now waits for `#project-name.disabled === false`, which is driven by the real command busy state. The rerun passed all 35 steps, recorded one pan request with `expectedRevision: 36` and `pan: 0.3`, and preserved all assertions and timeouts. This was a test synchronization race; no product code changed. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
 
 ## Problems encountered and resolved
 
 - Initial native-test invocation reported `NATIVE_BUILD_REQUIRED`. Built the bridge and verified 97 tests. `pretest:native` now builds the bridge before `npm run test:native` so a fresh checkout has an explicit prerequisite step.
 - The first browser run completed all 27 steps but failed when writing its report because `.test-output/` did not exist. The E2E wrapper now creates the directory. A subsequent run finished with `E2E PASS`.
-- A fresh-tree browser run timed out while awaiting the audio-pan revision after the seek stage. Its screenshot and report were inspected; a rerun of the unchanged source and test passed all 27 steps. The cause is not established, and follow-up T-015 tracks this intermittent failure. No timeout or assertion was relaxed.
+- A fresh-tree browser run timed out while awaiting the audio-pan revision after the seek stage. Its screenshot and report were inspected; a rerun of the unchanged source and test passed all 27 steps. T-015 later reproduced and resolved the test synchronization race as recorded below. No timeout or behavioral assertion was relaxed.
 - Public distribution checks inspect source and documentation while preserving the original private archive. Illustrative UI placeholders such as `/Users/…/` are generic examples, not user paths. Personal sessions, source collections, credentials and generated runtime artifacts are excluded.
 
 No existing product assertions were deleted or weakened to resolve these issues. Product behavior was preserved; release edits primarily concern branding, descriptive metadata, documentation and portable developer tooling.
@@ -69,3 +70,5 @@ T-006에서는 MIDI 도구 검사를 추가한 34단계와 최종 `agent:verify`
 T-007에서는 키보드 Undo/Redo 검사를 추가한 35단계와 최종 `agent:verify`가 통과했습니다. `#timeline-scroll` 포커스에서 ControlOrMeta+Z로 마지막 트랙 이름 편집을 되돌리고 ControlOrMeta+Shift+Z로 다시 적용했으며, 두 revision 증가를 확인했습니다.
 
 T-008에서는 기존 녹음 보호 스모크 6단계와 녹음 워크플로 스모크 4단계가 수정 없이 harness에서 통과했습니다. 가짜 마이크의 비무음 PCM, 클립 한 번 커밋, 오디오 편집·렌더·재열기, 취소 시 프로젝트 불변, 녹음 중 다른 편집 시 WAV 보관을 확인했습니다. 테스트나 제품 코드 변경은 없으며 실제 장치 검증은 하지 않았습니다.
+
+T-015에서는 gain POST 응답을 200ms 늦추고 SSE가 먼저 revision을 갱신하게 해 pan timeout을 재현했습니다. 기존 헬퍼는 23단계 후 멈췄고 SSE 선행 갱신·busy 비활성화·HTTP 200을 기록했습니다. 존재하지 않는 `aria-busy` 대신 실제 busy와 연동된 `#project-name.disabled === false`를 기다리게 수정한 뒤 전체 35단계가 통과했습니다. pan 요청은 `expectedRevision: 36`, `pan: 0.3`으로 한 번 전송됐습니다. timeout과 행동 검증은 유지했고 제품 코드는 변경하지 않았습니다.

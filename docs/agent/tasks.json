@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:03:32.115Z",
+  "updatedAt": "2026-11-08T19:10:46.682Z",
   "tasks": [
     {
       "id": "T-001",
@@ -441,7 +441,7 @@
       "doneAt": "2026-11-08T14:33:24.494Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 3,
       "area": "test-reliability",
       "id": "T-015",
@@ -464,7 +464,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:04:43.257Z",
+      "evidence": "Deterministic reproduction: delaying gain POST 200ms while SSE advanced revision caused old act() to time out at pan after 23 steps; instrumentation recorded sseAdvancedBeforeResponse=true, busyWhileResponseDelayed=true, gain HTTP 200 and no HTTP errors. Replaced nonexistent aria-busy wait with actual busy-driven #project-name.disabled===false. npm run agent:e2e: E2E PASS, 35 steps; one pan request expectedRevision=36 pan=0.3, assertions/timeouts unchanged. npm run agent:verify: VERIFY PASS. Test synchronization race only; no product code changed.",
+      "doneAt": "2026-11-08T19:10:46.681Z"
     },
     {
       "status": "done",

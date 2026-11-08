@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09 after T-001–T-008.
+Updated: 2026-11-09 after T-001–T-008 and T-015.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,12 +28,12 @@ Updated: 2026-11-09 after T-001–T-008.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 35 steps passed on 2026-11-09, including T-001 fade-in, T-002 clip mute/polarity, T-003 normalize, T-004 cycle transport, T-006 MIDI tools and T-007 keyboard Undo/Redo coverage. Fake microphone; no physical listening claim.
-- T-001–T-008 `agent:verify`: VERIFY PASS (guard and all JavaScript syntax; unit tests skipped because the GUI-smoke-only changes had no related unit test file). No product code changed.
+- T-001–T-008 and T-015 `agent:verify`: VERIFY PASS (guard and all JavaScript syntax; unit tests skipped because the GUI-smoke-only changes had no related unit test file). No product code changed.
 - T-008 existing recording protection/workflow smokes passed unchanged: 6 and 4 steps. Physical microphone/device listening remains unverified.
 - T-005 added a separate 4-step new-project/first-save/restart E2E; it passed along with the default 32-step E2E. Its project writes are confined to a temporary folder and the original project bytes remain unchanged.
 - T-002 initially exposed a silent default fake-microphone fixture; a deterministic tone WAV now supplies fake capture. Recorded-region RMS fell from 0.0975930279 to 0 after mute, and the polarity sample changed from -0.1178283691 to +0.1178283691.
 - The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions; no remote push was authorized.
-- Fresh-tree startup passed; E2E passed on retry after an intermittent mixer-pan timeout. T-015 tracks the unresolved cause; assertions are unchanged.
+- Fresh-tree startup passed. T-015 deterministically reproduced the intermittent mixer-pan timeout as an SSE/POST test synchronization race; the helper now waits for real busy release and all 35 steps pass with unchanged assertions/timeouts.
 - E2E wrapper now creates its output directory for a fresh checkout; native test command builds its bridge first.
 - Gemma coding and hardware audio latency/quality have not been verified.
 - Detailed release record: docs/VALIDATION.md; tasks: docs/agent/tasks.json.
@@ -43,7 +43,7 @@ Updated: 2026-11-09 after T-001–T-008.
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-008 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
+- T-001–T-008 and T-015 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
 - Run `npm run agent:task -- next` for queue order.
 - Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
 - T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
