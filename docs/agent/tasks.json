@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:36:21.908Z",
+  "updatedAt": "2026-11-08T19:45:11.754Z",
   "tasks": [
     {
       "id": "T-001",
@@ -368,7 +368,7 @@
         "FD-22",
         "FD-26"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Find out and test what happens when a project is ~150 s long: CLI render must succeed (limit is 600 s); GUI Play must either work or show a clear Korean message — never fail silently.",
       "context": [
         "src/media/render-limits.mjs MAX_RENDER_SECONDS=600. Older docs mention a 120 s preview window for the built-in instrument path; verify current behaviour in public/app.mjs play() and src/server.mjs /api/render."
@@ -385,7 +385,10 @@
       "verify": [
         "node --test tests/long-project-render-integration.test.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:37:42.906Z",
+      "evidence": "node --test tests/long-project-render-integration.test.mjs: 2/2 PASS. 150s project CLI render 48kHz, >=150s frames, nonzero PCM at 140s; 601s render CLI_ERROR/RENDER_FAILED with 600s message, unchanged project and no output. Standalone GUI probe probeExecArgv=[]: playing=true, position 00:00.010 to 00:00.714, Stop passed, pageErrors=[], silentFailure=false. Earlier inline --input-type worker error identified as probe artifact; no product follow-up needed. npm run agent:verify: VERIFY PASS including related integration file.",
+      "doneAt": "2026-11-08T19:45:11.754Z"
     },
     {
       "id": "T-013",
