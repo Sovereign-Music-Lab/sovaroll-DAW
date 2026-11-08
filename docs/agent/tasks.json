@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:57:05.855Z",
+  "updatedAt": "2026-11-08T19:00:34.615Z",
   "tasks": [
     {
       "id": "T-001",
@@ -217,7 +217,7 @@
       "requirements": [
         "FD-13"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove the keyboard shortcuts undo and redo the last edit when focus is not in an input.",
       "context": [
         "Handler in public/app.mjs keydown: (metaKey||ctrlKey)&&key 'z' → history.undo / history.redo (shift)."
@@ -232,7 +232,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:58:18.965Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 35 steps including project.GUI-keyboard-undo-redo. With #timeline-scroll focused, ControlOrMeta+Z reverted the CLI track-name edit and increased revision; ControlOrMeta+Shift+Z reapplied it and increased revision. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T19:00:34.615Z"
     },
     {
       "id": "T-008",

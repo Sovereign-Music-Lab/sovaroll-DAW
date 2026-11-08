@@ -253,6 +253,9 @@ try{
  await cmd('track.update',{trackId:midiTrack.id,name:'Lead (CLI)'});await page.waitForFunction(id=>document.querySelector(`.track-head[data-track-id="${id}"] .track-name`)?.textContent==='Lead (CLI)',midiTrack.id);
  await act(()=>page.locator('#undo').click());assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,midiTrack.name);
  await act(()=>page.locator('#redo').click());assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,'Lead (CLI)');check('cli.edit-appears-in-GUI-and-GUI-undo-redo-covers-it');
+ await page.locator('#timeline-scroll').focus();
+ await act(()=>page.keyboard.press('ControlOrMeta+z'));assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,midiTrack.name);
+ await act(()=>page.keyboard.press('ControlOrMeta+Shift+z'));assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,'Lead (CLI)');check('project.GUI-keyboard-undo-redo');
 
  // Explicit Save (Cmd/Ctrl+S) → stop server → restart → reopen
  await page.locator('#timeline-surface').click({position:{x:4,y:4}}).catch(()=>{});await page.locator('body').press('ControlOrMeta+s');

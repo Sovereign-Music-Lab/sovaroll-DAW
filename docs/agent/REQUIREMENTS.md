@@ -29,7 +29,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-10 | 복사·붙여넣기 | Cmd/Ctrl+A/C, 눈금자로 커서 이동, Cmd/Ctrl+V → 커서 위치에 붙음 | verified | E2E: `midi.GUI-note-copy-paste-at-cursor` |
 | FD-11 | 파트 반복 | 반복 창으로 파트 복제 | verified | E2E: `midi.GUI-part-repeat` |
 | FD-12 | 파트 분할 | 커서 위치 분할, 노트 보존 | verified | E2E: `midi.GUI-part-split-at-cursor` |
-| FD-13 | Undo/Redo | 버튼으로 되돌리기·다시하기, CLI 편집도 포함 | verified | E2E: `midi.GUI-undo-redo`, `cli.edit-appears-in-GUI-and-GUI-undo-redo-covers-it` |
+| FD-13 | Undo/Redo | 버튼으로 되돌리기·다시하기, CLI 편집도 포함 | verified | E2E: `midi.GUI-undo-redo`, `cli.edit-appears-in-GUI-and-GUI-undo-redo-covers-it`, `project.GUI-keyboard-undo-redo` |
 | FD-14 | 퀀타이즈·전조·벨로시티 일괄 | MIDI 도구 창 | 전조·벨로시티 verified (첫 납품 E2E) / 퀀타이즈 implemented (gui-editing-smoke 있음, 첫 납품 E2E 미포함) | E2E: `midi.GUI-tools-transpose`, `midi.GUI-tools-velocity`, scripts/gui-editing-smoke.mjs |
 
 ### C. 오디오
