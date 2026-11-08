@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-027 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-028 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -46,6 +46,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-025 reproduced the MIDI-modifiers freeze timeout after 8 checks. The implementation now reports `저장된 출력을 확정`, while the smoke waited for the older `실제 이벤트로 확정` phrase. Only the completion-text wait changed; revision, source, MIDI output, reset, no-op and Undo/Redo assertions remain. All 12 targeted steps and final `npm run agent:verify` passed.
 - T-026 reproduced the first render timeout in `gui-midi-playback-smoke.mjs`: the test opened the export dialog but never submitted it. The render helper now clicks `#mix-export-submit`, preserving every PCM/Web Audio assertion. All 11 targeted steps and final `npm run agent:verify` passed without product changes.
 - T-027 reproduced the fixed-tempo multi-point map rejection in `gui-note-object-smoke.mjs`. Enabling `tempo.mode` before `tempo.set` preserved the fixture's intent and all assertions. All 24 targeted steps and final `npm run agent:verify` passed without product changes.
+- T-028 reproduced the same fixed-tempo rejection in `gui-note-paint-smoke.mjs` and applied the same fixture-only tempo-mode enablement. All 23 targeted steps and final `npm run agent:verify` passed with assertions unchanged.
 
 ## Problems encountered and resolved
 
@@ -114,3 +115,5 @@ T-025에서는 MIDI modifier Freeze 후 timeout을 재현했습니다. 현재 �
 T-026에서는 첫 렌더 timeout을 재현했습니다. 테스트가보내기 대화상자만 열고 제출하지 않았기 때문에 `/api/render`가 없었습니다. 렌더 헬퍼가 `#mix-export-submit`을 누르도록 수정하고 PCM·Web Audio 검증은 유지했습니다. 대상 E2E 11단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.
 
 T-027에서는 노트 오브젝트 스모크의 고정 템포 복수 포인트 거부를 재현했습니다. `tempo.set` 전에 `tempo.mode`를 활성화해 fixture 의도와 assertions를 유지했습니다. 대상 E2E 24단계와 최종 verify가 통과했고 제품 코드는 변경하지 않았습니다.
+
+T-028에서는 노트 페인트 스모크의 같은 고정 템포 거부를 재현하고 fixture에만 `tempo.mode` 활성화를 적용했습니다. assertions는 유지하며 대상 E2E 23단계와 최종 verify가 통과했습니다.

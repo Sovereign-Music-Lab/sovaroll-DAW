@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T23:43:39.764Z",
+  "updatedAt": "2026-11-08T23:46:12.532Z",
   "tasks": [
     {
       "id": "T-001",
@@ -826,7 +826,7 @@
       "doneAt": "2026-11-08T23:43:39.763Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-028",
@@ -849,7 +849,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T23:44:32.830Z",
+      "evidence": "Reproduced fixed-tempo tempo.set rejection before browser launch. Enabled tempo.mode before tempo.set; assertions/product code unchanged. npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs: E2E PASS, 23 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:46:12.531Z"
     },
     {
       "status": "todo",
