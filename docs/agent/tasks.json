@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:49:55.512Z",
+  "updatedAt": "2026-11-08T19:54:30.244Z",
   "tasks": [
     {
       "id": "T-001",
@@ -535,7 +535,7 @@
       "doneAt": "2026-11-08T19:49:55.512Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-018",
@@ -558,7 +558,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:51:08.794Z",
+      "evidence": "Reproduced pre-browser CLI failure. New server project has tempoTrackEnabled=false; multi-point tempo.set was rejected, while the same engine commands apply after enabling tempo mode. Added tempo.mode enabled:true before tempo.set as fixture drift fix; assertions unchanged. npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs: E2E PASS, 16 steps. npm run agent:verify: VERIFY PASS. Evidence recorded in docs/VALIDATION.md.",
+      "doneAt": "2026-11-08T19:54:30.244Z"
     },
     {
       "status": "todo",

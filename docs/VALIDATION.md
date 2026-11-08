@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-018 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -36,6 +36,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-011 moved audio/Web MIDI recording hosts into one closed-by-default `details#recording-panel` without changing control IDs. The panel opens during prepare/record/save states. The default E2E passed 36 steps, including collapsed placement/host checks and automatic opening during recording; recording workflow passed 4 steps and protection passed 6 steps after opening the panel through its direct summary. Before/after screenshots are `.test-output/recording-panel-before.png` and `.test-output/recording-panel-after.png`. Final `npm run agent:verify`: VERIFY PASS. Physical devices and listening remain unverified.
 - T-012 added `tests/long-project-render-integration.test.mjs`: both tests passed. A 150-second project with a MIDI note at 140 seconds rendered through the real CLI at 48 kHz with at least 150 seconds of frames and non-zero PCM at 140 seconds. A 601-second render returned `CLI_ERROR`/`RENDER_FAILED` with the 600-second limit message, preserved project bytes and created no output. A standalone GUI probe with `probeExecArgv: []` played successfully and advanced `00:00.010` to `00:00.714` before Stop; no silent failure or follow-up was needed. An earlier inline probe's inherited `--input-type=module` worker error was discarded as a probe artifact. `node --test tests/long-project-render-integration.test.mjs` and final `npm run agent:verify` passed.
 - T-017 reproduced `gui-controller-bend-smoke.mjs` failing after 2 checks. The failure screenshot showed `화면 크기가 바뀌어 드래그를 취소했습니다.` A full-page screenshot during an active drag caused viewport resize and triggered the intended ResizeObserver cancellation. Only that evidence capture now uses `fullPage: false`; all gestures, assertions and product code remain unchanged. The targeted E2E passed all 13 steps and final `npm run agent:verify` passed.
+- T-018 reproduced `gui-controller-paint-smoke.mjs` failing before browser launch. New server projects default to fixed tempo (`tempoTrackEnabled: false`), so the old fixture's multi-point `tempo.set` was rejected. Enabling `tempo.mode` before setting the map preserves the intended tempo-map test without weakening assertions. The targeted E2E passed all 16 steps and final `npm run agent:verify` passed.
 
 ## Problems encountered and resolved
 
@@ -84,3 +85,5 @@ T-011에서는 오디오·Web MIDI 녹음 컨트롤을 기본으로 접힌 `deta
 T-012에서는 새 통합 테스트 2개가 통과했습니다. 140초 노트가 있는 150초 프로젝트를 실제 CLI로 48kHz·150초 이상 렌더하고 140초대 비무음 PCM을 확인했습니다. 601초 렌더는 `CLI_ERROR`/`RENDER_FAILED`와 600초 제한 메시지를 반환하며 프로젝트 불변과 출력 파일 부재를 확인했습니다. `probeExecArgv: []`인 독립 GUI probe도 재생과 `00:00.010 → 00:00.714` 진행·정지를 확인해 silent failure는 없었습니다. 앞선 inline probe의 worker 인자 오류는 probe 환경 문제로 구분했습니다. 개별 테스트와 최종 verify가 통과했습니다.
 
 T-017에서는 컨트롤러 벤드 스모크가 2개 검사 후 실패한 것을 재현했습니다. 실패 화면에서 `화면 크기가 바뀌어 드래그를 취소했습니다`를 확인했고, 활성 드래그 중 full-page 스크린샷의 viewport resize가 기존 ResizeObserver 취소를 유발한 환경 간섭으로 분류했습니다. 해당 증거 캡처만 `fullPage: false`로 바꿨고 제스처·검증·제품 코드는 유지했습니다. 대상 E2E 13단계와 최종 verify가 통과했습니다.
+
+T-018에서는 컨트롤러 페인트 스모크가 브라우저 이전에 실패함을 재현했습니다. 새 서버 프로젝트가 고정 템포로 시작하면서 기존 fixture의 복수 포인트 `tempo.set`이 거부된 drift였습니다. `tempo.mode`를 먼저 활성화해 원래 템포 맵 검사 의도를 유지하고 assertions는 바꾸지 않았습니다. 대상 E2E 16단계와 최종 verify가 통과했습니다.
