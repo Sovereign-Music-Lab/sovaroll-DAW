@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T20:11:11.789Z",
+  "updatedAt": "2026-11-08T23:31:15.576Z",
   "tasks": [
     {
       "id": "T-001",
@@ -680,7 +680,7 @@
       "doneAt": "2026-11-08T20:11:11.788Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-023",
@@ -703,7 +703,11 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-editing-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T23:25:38.071Z",
+      "blockedReason": "Original stale-dialog wait timed out; source shows pre-submit conflicts intentionally keep the dialog open. Updated conflict expectation passed. The following clip-tools-button then timed out on three attempts. Diagnostic copy showed no duplicate request, a nonzero enabled button rect, but isVisible=false and elementFromPoint hit timeline-clip. Real busy synchronization and a flex-shrink layout attempt did not resolve it. Known T-023 file edits and diagnostic copy were reverted; no product change retained. Needs focused UI/layout investigation or maintainer decision.",
+      "evidence": "Focused DOM ancestry probe proved clip-tools-button is inside closed details#arrangement-edit-menu; hit-target was timeline because the menu was closed. Open direct summary before every clip-tools click; verify intentional MIDI conflict notice with Escape close, submit actual duplicate-track confirmation, and use stable track-edit up selector. npm run agent:e2e -- scripts/gui-editing-smoke.mjs: E2E PASS, all 14 steps. No product code changed. npm run agent:verify: VERIFY PASS; diagnostic copy removed.",
+      "doneAt": "2026-11-08T23:31:15.576Z"
     },
     {
       "status": "todo",

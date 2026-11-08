@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-022 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-023 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -41,6 +41,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-020 reproduced the same fixed-tempo rejection in `gui-controller-snap-smoke.mjs` and applied the same fixture-only `tempo.mode` enablement. All 13 targeted E2E steps and final `npm run agent:verify` passed with assertions unchanged.
 - T-021 reproduced `gui-document-smoke.mjs` timing out at its first import. The script bypassed the Import options and submitted a null draft, which the current GUI correctly rejects with a retry notice. `importSource` now opens Import, chooses the file through the real chooser and checks the same HTTP/project state. All 17 targeted steps and final `npm run agent:verify` passed.
 - T-022 reproduced the same null-draft import timeout in `gui-drafts-smoke.mjs` and routed its upload through the real Import options and chooser. All 17 targeted steps and final `npm run agent:verify` passed without changing assertions.
+- T-023 is resolved after focused investigation. The stale MIDI conflict now checks the intentional warning and closes with Escape. DOM ancestry proved `clip-tools-button` is inside closed `details#arrangement-edit-menu`; the smoke now opens its direct summary before every clip-tools click, rather than forcing clicks or changing layout. Track duplication now submits the actual confirmation dialog, and reorder uses stable `[data-track-edit="up"]`. The full targeted E2E passed all 14 steps. No product code changed; final `npm run agent:verify` passed.
 
 ## Problems encountered and resolved
 
@@ -99,3 +100,5 @@ T-020에서는 컨트롤러 스냅 스모크의 같은 고정 템포 거부를 �
 T-021에서는 문서 스모크의 첫 가져오기 대기 timeout을 재현했습니다. 스크립트가 Import 옵션 없이 숨은 파일 입력을 직접 사용해 현재 GUI가 null draft를 올바르게 거부한 drift였습니다. `importSource`를 Import 버튼과 실제 파일 chooser 경로로 수정하고 동일한 HTTP·프로젝트 상태를 검증했습니다. 대상 E2E 17단계와 최종 verify가 통과했습니다.
 
 T-022에서는 drafts 스모크의 같은 null draft 가져오기 timeout을 재현하고 실제 Import 옵션과 chooser를 사용하도록 수정했습니다. assertions는 유지하며 대상 E2E 17단계와 최종 verify가 통과했습니다.
+
+T-023은 집중 조사 후 해결했습니다. MIDI 충돌 경고와 Escape 종료를 검증하고, DOM 조상 조사로 `clip-tools-button`이 닫힌 `details#arrangement-edit-menu` 안에 있음을 확정했습니다. force click이나 레이아웃 변경 대신 각 클립 편집 클릭 전에 직접 summary를 엽니다. 트랙 복제는 실제 확인 대화상자를 제출하고 순서 이동은 안정적인 `[data-track-edit="up"]`을 사용합니다. 대상 E2E 14단계가 모두 통과했고 제품 코드는 변경하지 않았습니다. 최종 verify도 통과했습니다.
