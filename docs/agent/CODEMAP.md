@@ -207,7 +207,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-editing-smoke.mjs | 74 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 260 | 388 |  |
+| gui-first-delivery-smoke.mjs | 297 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |
@@ -272,6 +272,7 @@ Agent harness (verify, checkpoint, find, show, guard, e2e, task, map).
 | lib.mjs | 99 | 237 | ROOT, AGENT_DIR, CHECKPOINT_DIR, TRACKED, PROTECTED, sha256, rel, walk, hashTree, diffMaps, readJson, writeJson … (+7) |
 | map.mjs | 44 | 346 |  |
 | show.mjs | 31 | 146 |  |
+| smoke-sweep.mjs | 38 | 184 |  |
 | task.mjs | 60 | 263 |  |
 | verify.mjs | 78 | 298 |  |
 

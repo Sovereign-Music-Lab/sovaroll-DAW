@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:10:46.682Z",
+  "updatedAt": "2026-11-08T19:27:40.276Z",
   "tasks": [
     {
       "id": "T-001",
@@ -276,7 +276,7 @@
       "priority": 4,
       "size": "S",
       "requirements": [],
-      "status": "todo",
+      "status": "done",
       "goal": "Produce .test-output/smoke-sweep.json listing every scripts/gui-*-smoke.mjs with pass/fail and first error line, without changing product code.",
       "context": [
         "64 smoke scripts exist. Some may be stale. Use scripts/agent/e2e.mjs per script or write scripts/agent/smoke-sweep.mjs that loops and records results (timeout 5 min each)."
@@ -293,7 +293,10 @@
       "verify": [
         "node --check scripts/agent/smoke-sweep.mjs",
         "npm run agent:guard"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:12:03.474Z",
+      "evidence": "npm run agent:smoke-sweep completed 64 unique GUI smokes sequentially: 45 passed, 19 failed; exit 1 reported failures after writing .test-output/smoke-sweep.json. Result assertion PASS for exact script coverage, fields, no duplicate first-delivery, and one follow-up per failure. Added T-017 through T-035; no existing smoke/product code changed. node --check PASS; npm run agent:guard PASS; npm run agent:verify VERIFY PASS. Screenshots retained under .test-output/smoke-sweep-screenshots/.",
+      "doneAt": "2026-11-08T19:27:40.276Z"
     },
     {
       "id": "T-010",
@@ -495,6 +498,500 @@
       "startedAt": "2026-11-08T14:41:50.256Z",
       "evidence": "Documentation-only: agent:verify PASS (guard and all .mjs syntax); git diff --check PASS; prompt structure, privacy and local links PASS. First prompt preserved with portable path, bilingual introduction, author credits and README links. Explicit user instruction authorizes this commit and push.",
       "doneAt": "2026-11-08T14:43:01.992Z"
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-017",
+      "title": "Investigate failing smoke: gui-controller-bend-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-bend-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-bend-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 27510 ms.",
+        "First recorded error line: FAIL: FAILED after 2 checks AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs; recorded first error: FAIL: FAILED after 2 checks AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-018",
+      "title": "Investigate failing smoke: gui-controller-paint-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-paint-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-paint-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1489 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-019",
+      "title": "Investigate failing smoke: gui-controller-shapes-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-shapes-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-shapes-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1429 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-020",
+      "title": "Investigate failing smoke: gui-controller-snap-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-snap-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-snap-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1423 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-021",
+      "title": "Investigate failing smoke: gui-document-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-document-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-document-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 34234 ms.",
+        "First recorded error line: FAIL:     at importSource (/Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-document-smoke.mjs:54:24)"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-document-smoke.mjs; recorded first error: FAIL:     at importSource (/Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-document-smoke.mjs:54:24)",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-document-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-document-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-022",
+      "title": "Investigate failing smoke: gui-drafts-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-drafts-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-drafts-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 26992 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-drafts-smoke.mjs:65:23 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-drafts-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-drafts-smoke.mjs:65:23 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-drafts-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-drafts-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-023",
+      "title": "Investigate failing smoke: gui-editing-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-editing-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-editing-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 32374 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-editing-smoke.mjs:49:74 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-editing-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-editing-smoke.mjs:49:74 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-editing-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-editing-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-024",
+      "title": "Investigate failing smoke: gui-midi-events-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-events-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-events-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 28803 ms.",
+        "First recorded error line: FAIL: PASS gui.midi-events.actual-list-includes-notes-controllers-and-render-limit"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs; recorded first error: FAIL: PASS gui.midi-events.actual-list-includes-notes-controllers-and-render-limit",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-025",
+      "title": "Investigate failing smoke: gui-midi-modifiers-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-modifiers-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-modifiers-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 28169 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-midi-modifiers-smoke.mjs:40:242 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-midi-modifiers-smoke.mjs:40:242 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-026",
+      "title": "Investigate failing smoke: gui-midi-playback-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-playback-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-playback-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 26492 ms.",
+        "First recorded error line: FAIL: FAILED after 1 checks; pageErrors=[]: page.waitForResponse: Timeout 25000ms exceeded while waiting for event \"response\""
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs; recorded first error: FAIL: FAILED after 1 checks; pageErrors=[]: page.waitForResponse: Timeout 25000ms exceeded while waiting for event \"response\"",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-027",
+      "title": "Investigate failing smoke: gui-note-object-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-object-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-object-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1435 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-object-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-object-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-object-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-028",
+      "title": "Investigate failing smoke: gui-note-paint-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-paint-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-paint-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1427 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-029",
+      "title": "Investigate failing smoke: gui-note-shapes-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-shapes-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-shapes-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1425 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-030",
+      "title": "Investigate failing smoke: gui-projects-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-projects-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-projects-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 33761 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-projects-smoke.mjs:112:60 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-projects-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-projects-smoke.mjs:112:60 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-projects-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-projects-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-031",
+      "title": "Investigate failing smoke: gui-split-controller-policy-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-controller-policy-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-controller-policy-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16382 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-controller-policy-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-controller-policy-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-032",
+      "title": "Investigate failing smoke: gui-split-note-policy-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-note-policy-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-note-policy-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16392 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-note-policy-smoke.mjs:35:334 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-note-policy-smoke.mjs:35:334 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-033",
+      "title": "Investigate failing smoke: gui-split-settings-race-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-settings-race-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-settings-race-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16381 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-race-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-race-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-034",
+      "title": "Investigate failing smoke: gui-split-settings-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-settings-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-settings-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16375 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-035",
+      "title": "Investigate failing smoke: gui-workspace-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-workspace-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-workspace-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 33086 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-workspace-smoke.mjs:83:60 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-workspace-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-workspace-smoke.mjs:83:60 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-workspace-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-workspace-smoke.mjs",
+        "npm run agent:verify"
+      ]
     }
   ]
 }

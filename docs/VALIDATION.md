@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-008, T-015 (2026-11-09)
+## Continuation — T-001–T-009, T-015 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -32,6 +32,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-007 `npm run agent:e2e`: E2E PASS, 35 steps. With focus on `#timeline-scroll`, `project.GUI-keyboard-undo-redo` verifies ControlOrMeta+Z reverts the last track-name edit with a revision increase and ControlOrMeta+Shift+Z reapplies it with another revision increase. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
 - T-008: `npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs` passed all 6 steps and `npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs` passed all 4 steps, unchanged. Coverage includes non-zero fake-microphone PCM, one-commit clip import, audio edit/render/reopen, cancel preserving the project and a concurrent project change preserving WAV without import. No test drift or product code change; physical devices remain unverified.
 - T-015 reproduced the intermittent pan timeout by delaying the gain POST response for 200 ms while allowing SSE to advance the browser revision first. The old helper timed out after 23 steps with `sseAdvancedBeforeResponse: true`, `busyWhileResponseDelayed: true`, gain HTTP 200 and no HTTP errors. The helper had waited for a nonexistent `aria-busy` ancestor; it now waits for `#project-name.disabled === false`, which is driven by the real command busy state. The rerun passed all 35 steps, recorded one pan request with `expectedRevision: 36` and `pan: 0.3`, and preserved all assertions and timeouts. This was a test synchronization race; no product code changed. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
+- T-009 added `npm run agent:smoke-sweep`. The sweep completed all 64 unique GUI smokes sequentially: 45 passed and 19 failed, including one first-delivery run and one new-project-delivery run. The command exited 1 to report the failures after writing every result to `.test-output/smoke-sweep.json`; this is not a passing-suite claim. Result validation confirmed all required fields and exactly one follow-up for each failure, registered as T-017–T-035. No existing smoke or product code was changed. Generated screenshots were retained under `.test-output/smoke-sweep-screenshots/`. `node --check scripts/agent/smoke-sweep.mjs`, `npm run agent:guard` and final `npm run agent:verify` passed.
 
 ## Problems encountered and resolved
 
@@ -72,3 +73,5 @@ T-007에서는 키보드 Undo/Redo 검사를 추가한 35단계와 최종 `agent
 T-008에서는 기존 녹음 보호 스모크 6단계와 녹음 워크플로 스모크 4단계가 수정 없이 harness에서 통과했습니다. 가짜 마이크의 비무음 PCM, 클립 한 번 커밋, 오디오 편집·렌더·재열기, 취소 시 프로젝트 불변, 녹음 중 다른 편집 시 WAV 보관을 확인했습니다. 테스트나 제품 코드 변경은 없으며 실제 장치 검증은 하지 않았습니다.
 
 T-015에서는 gain POST 응답을 200ms 늦추고 SSE가 먼저 revision을 갱신하게 해 pan timeout을 재현했습니다. 기존 헬퍼는 23단계 후 멈췄고 SSE 선행 갱신·busy 비활성화·HTTP 200을 기록했습니다. 존재하지 않는 `aria-busy` 대신 실제 busy와 연동된 `#project-name.disabled === false`를 기다리게 수정한 뒤 전체 35단계가 통과했습니다. pan 요청은 `expectedRevision: 36`, `pan: 0.3`으로 한 번 전송됐습니다. timeout과 행동 검증은 유지했고 제품 코드는 변경하지 않았습니다.
+
+T-009에서는 `agent:smoke-sweep`을 추가해 고유한 GUI 스모크 64개를 순차 실행했고 45개 통과·19개 실패를 기록했습니다. 명령은 모든 결과를 `.test-output/smoke-sweep.json`에 저장한 뒤 실패를 알리기 위해 종료 코드 1을 반환했으며, 전체 통과로 표현하지 않습니다. 결과 필드와 first-delivery 중복 없음을 검증하고 실패별 후속 작업 T-017~T-035를 하나씩 등록했습니다. 기존 스모크와 제품 코드는 수정하지 않았습니다. 생성 스크린샷은 `.test-output/smoke-sweep-screenshots/`에 보관했고 syntax·guard·최종 verify가 통과했습니다.
