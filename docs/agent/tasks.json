@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:39:58.326Z",
+  "updatedAt": "2026-11-08T18:43:40.439Z",
   "tasks": [
     {
       "id": "T-001",
@@ -82,7 +82,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove the Inspector 'clip normalize' action (data-action=normalize-audio, target #audio-normalize-target) changes only clip gainDb, is undoable, and leaves the asset file unchanged.",
       "context": [
         "Handler: public/app.mjs (search: normalize-audio) → POST /api/audio/normalize → clip.update gainDb.",
@@ -101,7 +101,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:41:16.149Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 31 steps including audio.GUI-normalize-sets-clip-gain. -1 dBFS target set clip gain within 6.96±0.05 dB, all non-gain clip fields deep-equal, source WAV SHA-256 unchanged, Undo restored previous gain. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T18:43:40.439Z"
     },
     {
       "id": "T-004",

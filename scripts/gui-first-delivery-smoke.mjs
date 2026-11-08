@@ -166,6 +166,17 @@ try{
  summary.polarity={frame:polarityFrame,before:beforePolaritySample,after:invertedSample};
  p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===polarityClip.id).invertPolarity,'Undo restores polarity');
  check('audio.GUI-clip-polarity-inverts-render');
+ const beforeNormalize=p.clips.find(c=>c.id===polarityClip.id),previousGain=beforeNormalize.gainDb??0;
+ const {gainDb:ignoredBeforeGain,...beforeNormalizeWithoutGain}=beforeNormalize;
+ await page.locator('#audio-normalize-target').fill('-1');
+ p=await act(()=>page.locator('[data-action="normalize-audio"]').click());
+ const normalizedClip=p.clips.find(c=>c.id===polarityClip.id),{gainDb:normalizedGain,...afterNormalizeWithoutGain}=normalizedClip;
+ near(normalizedGain,6.96,0.05,'normalize gain');
+ assert.deepEqual(afterNormalizeWithoutGain,beforeNormalizeWithoutGain,'normalize changes only clip gain');
+ p=await act(()=>page.locator('#undo').click());assert.equal(p.clips.find(c=>c.id===polarityClip.id).gainDb??0,previousGain,'Undo restores pre-normalize gain');
+ const normalizedAssetBytes=await fs.readFile(path.join(dir,p.assets.find(a=>a.id===polarityClip.assetId).path));
+ assert.equal(sha(normalizedAssetBytes),sha(assetBytes),'normalize preserves source WAV bytes');
+ summary.normalize={previousGain,normalizedGain,assetSha256:sha(normalizedAssetBytes)};check('audio.GUI-normalize-sets-clip-gain');
  p=await act(()=>cmd('track.update',{trackId:midiTrack.id,mute:false}));
  assert.equal(p.tracks.find(t=>t.id===midiTrack.id).mute,false);
 

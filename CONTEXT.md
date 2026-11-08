@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09 after T-001–T-002.
+Updated: 2026-11-09 after T-001–T-003.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -27,8 +27,8 @@ Updated: 2026-11-09 after T-001–T-002.
 - Added three public-guard regression tests in one file.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
-- First-delivery Chrome E2E: 30 steps passed on 2026-11-09, including T-001 fade-in and T-002 clip mute/polarity Inspector, CLI-render and Undo coverage. Fake microphone; no physical listening claim.
-- T-001/T-002 `agent:verify`: VERIFY PASS (guard and all JavaScript syntax; unit tests skipped because the GUI-smoke-only changes had no related unit test file). No product code changed.
+- First-delivery Chrome E2E: 31 steps passed on 2026-11-09, including T-001 fade-in, T-002 clip mute/polarity and T-003 normalize coverage. Fake microphone; no physical listening claim.
+- T-001/T-002/T-003 `agent:verify`: VERIFY PASS (guard and all JavaScript syntax; unit tests skipped because the GUI-smoke-only changes had no related unit test file). No product code changed.
 - T-002 initially exposed a silent default fake-microphone fixture; a deterministic tone WAV now supplies fake capture. Recorded-region RMS fell from 0.0975930279 to 0 after mute, and the polarity sample changed from -0.1178283691 to +0.1178283691.
 - The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions; no remote push was authorized.
 - Fresh-tree startup passed; E2E passed on retry after an intermittent mixer-pan timeout. T-015 tracks the unresolved cause; assertions are unchanged.
@@ -41,7 +41,7 @@ Updated: 2026-11-09 after T-001–T-002.
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001 and T-002 are done with evidence in docs/VALIDATION.md; FD-20 is verified for fade-in, clip mute and polarity, while fade-out and normalize still need E2E coverage.
+- T-001–T-003 are done with evidence in docs/VALIDATION.md; FD-20 is verified for fade-in, clip mute, polarity and normalize, while fade-out still needs E2E coverage.
 - Run `npm run agent:task -- next` for queue order, or `show T-007` for the small supervised keyboard undo/redo test task.
 - Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
 - T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
