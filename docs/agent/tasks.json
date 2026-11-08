@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:33:27.574Z",
+  "updatedAt": "2026-11-08T18:39:58.326Z",
   "tasks": [
     {
       "id": "T-001",
@@ -49,7 +49,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove clip-level mute removes the clip from the mix and invert polarity flips sample sign, both undoable.",
       "context": [
         "#clip-form checkboxes name=\"audioMute\" and name=\"invertPolarity\".",
@@ -68,7 +68,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:35:02.383Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 30 steps including audio.GUI-clip-mute-silences-render and audio.GUI-clip-polarity-inverts-render. Recorded mono-sum RMS 0.0975930279 to 0 after mute; fixed PCM sample -0.1178283691 to +0.1178283691 after polarity inversion; muted-clip state and both Undo paths passed. Initial silent fake-mic baseline was corrected by supplying a deterministic tone WAV; assertions unchanged. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T18:39:58.325Z"
     },
     {
       "id": "T-003",

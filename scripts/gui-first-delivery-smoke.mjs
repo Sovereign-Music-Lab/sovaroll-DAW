@@ -19,9 +19,11 @@ await fs.mkdir(downloads);
 const tests=[],pageErrors=[],consoleErrors=[],httpErrors=[],timings={};const t0=Date.now();
 const check=id=>{tests.push(id);timings[id]=Date.now()-t0;console.log('PASS '+id);};
 const cliRaw=async(...args)=>(await exec(process.execPath,['src/cli.mjs',...args],{cwd:root,timeout:60000})).stdout;
+function sine(seconds,freq,rate=48000){const frames=Math.round(seconds*rate),c=new Float32Array(frames);for(let i=0;i<frames;i++)c[i]=.4*Math.sin(2*Math.PI*freq*i/rate);return encodeWav({sampleRate:rate,channels:[c,c]});}
+const fakeMicPath=path.join(dir,'Fake microphone.wav');await fs.writeFile(fakeMicPath,sine(2,440));
 await cliRaw('init',projectPath);
 const start=()=>startServer({projectPath,port:0,demo:false,quiet:true,backupPollMs:600000});let session=await start();
-const browser=await chromium.launch({headless:true,channel:'chrome',args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required']});
+const browser=await chromium.launch({headless:true,channel:'chrome',args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${fakeMicPath}`,'--autoplay-policy=no-user-gesture-required']});
 const context=await browser.newContext({viewport:{width:1580,height:2000},acceptDownloads:true});let page;
 const state=async()=>(await fetch(session.url+'/api/state')).json(),proj=async()=>(await state()).project;
 const cli=async(...args)=>JSON.parse(await cliRaw(...args,'--url',session.url)),cmd=(c,a={})=>cli('command',c,JSON.stringify(a));
@@ -36,7 +38,6 @@ const zoom=async()=>Number(await page.locator('#zoom').inputValue());
 async function gridPoint(tick,pitch){await scrollPianoTo(pitch);const grid=page.locator('#note-grid'),box=await grid.boundingBox();return {x:box.x+tick/960*await zoom()+3,y:box.y+(127-pitch)*19+9};}
 async function scrollPianoTo(pitch){await page.locator('#piano-scroll').evaluate((e,p)=>{e.scrollTop=Math.max(0,(127-p)*19-e.clientHeight/2);e.scrollLeft=0;},pitch);}
 async function clickRuler(selector,tick){const box=await page.locator(selector).boundingBox();const scroll=selector==='#piano-ruler'?await page.locator('#piano-scroll').evaluate(e=>e.scrollLeft):await page.locator('#timeline-scroll').evaluate(e=>e.scrollLeft);await page.mouse.click(box.x+tick/960*await zoom()-scroll+0.01,box.y+5);}
-function sine(seconds,freq,rate=48000){const frames=Math.round(seconds*rate),c=new Float32Array(frames);for(let i=0;i<frames;i++)c[i]=.4*Math.sin(2*Math.PI*freq*i/rate);return encodeWav({sampleRate:rate,channels:[c,c]});}
 const near=(a,b,tol,msg)=>assert.ok(Math.abs(a-b)<=tol,`${msg??''} ${a} expected ${b} ±${tol}`);
 const rms=ch=>Math.sqrt(ch.reduce((s,x)=>s+x*x,0)/Math.max(1,ch.length));
 let summary={};
@@ -104,14 +105,14 @@ try{
  await page.locator('#clip-form input[name="lengthFrames"]').fill('12000');p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
  assert.equal(p.clips.find(c=>c.id===audioParts[1].id).lengthFrames,12000);check('audio.GUI-clip-trim-length');
  await page.locator(`.timeline-clip[data-clip-id="${audioParts[0].id}"]`).first().click({position:{x:12,y:8}});
- const renderFadeMix=async name=>{const file=path.join(downloads,name);await cli('render',file);return decodeWav(await fs.readFile(file));};
- const beforeFade=await renderFadeMix('before-fade.wav');
+ const renderAudioMix=async name=>{const file=path.join(downloads,name);await cli('render',file);return decodeWav(await fs.readFile(file));};
+ const beforeFade=await renderAudioMix('before-fade.wav');
  await page.locator('#clip-form input[name="fadeInSeconds"]').fill('0.5');
  p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
  const fadedClip=p.clips.find(c=>c.id===audioParts[0].id);
  const fadeAsset=p.assets.find(a=>a.id===fadedClip.assetId);
  assert.equal(fadedClip.fadeInFrames,Math.round(0.5*fadeAsset.sampleRate));
- const afterFade=await renderFadeMix('after-fade.wav');
+ const afterFade=await renderAudioMix('after-fade.wav');
  const fadeWindowRms=(mix,offsetSeconds,durationSeconds)=>{
   const start=Math.round((fadedClip.startSample/p.sampleRate+offsetSeconds)*mix.sampleRate);
   const end=Math.round(start+durationSeconds*mix.sampleRate),mono=new Float32Array(end-start);
@@ -128,6 +129,45 @@ try{
  assert.ok(!p.clips.find(c=>c.id===audioParts[0].id).fadeInFrames,'Undo removes fade-in');
  check('audio.GUI-fade-in-changes-render');
  const assetBytes=await fs.readFile(path.join(dir,p.assets.find(a=>a.id===audioClip.assetId).path));assert.equal(decodeWav(assetBytes).frames,96000);check('audio.source-WAV-preserved-after-edits');
+ p=await act(()=>cmd('track.update',{trackId:midiTrack.id,mute:true}));
+ assert.equal(p.tracks.find(t=>t.id===midiTrack.id).mute,true);
+ const beforeClipControls=await renderAudioMix('before-clip-controls.wav');
+ const recordedAsset=p.assets.find(a=>a.id===recorded.assetId);
+ const recordedStart=recorded.startSample/p.sampleRate,recordedWindow=Math.min(0.5,recorded.lengthFrames/recordedAsset.sampleRate);
+ const recordedRms=mix=>{
+  const start=Math.round(recordedStart*mix.sampleRate),end=Math.round(start+recordedWindow*mix.sampleRate),mono=new Float32Array(end-start);
+  for(let i=0;i<mono.length;i++)mono[i]=(mix.channels[0][start+i]+mix.channels[1][start+i])/2;
+  return rms(mono);
+ };
+ const recordedBeforeRms=recordedRms(beforeClipControls);
+ assert.ok(recordedBeforeRms>0.0001,`recorded clip baseline must be audible: ${recordedBeforeRms}`);
+ await page.locator(`.timeline-clip[data-clip-id="${recorded.id}"]`).first().click({position:{x:12,y:8}});
+ await page.locator('#clip-form input[name="audioMute"]').check();
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ assert.equal(p.clips.find(c=>c.id===recorded.id).mute,true);
+ assert.ok(await page.locator(`.timeline-clip[data-clip-id="${recorded.id}"]`).first().evaluate(e=>e.classList.contains('muted-clip')));
+ const afterClipMute=await renderAudioMix('after-clip-mute.wav'),recordedMutedRms=recordedRms(afterClipMute);
+ assert.ok(recordedMutedRms<0.0001,`muted recorded region must be near zero: ${recordedMutedRms}`);
+ assert.ok(recordedMutedRms<recordedBeforeRms*0.01,`mute must reduce ${recordedBeforeRms} to near zero, got ${recordedMutedRms}`);
+ summary.clipMute={before:recordedBeforeRms,after:recordedMutedRms};
+ p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===recorded.id).mute,'Undo restores clip mute');
+ check('audio.GUI-clip-mute-silences-render');
+ const polarityClip=p.clips.find(c=>c.id===audioParts[0].id);
+ const polarityFrame=Math.round((polarityClip.startSample/p.sampleRate+0.13)*beforeClipControls.sampleRate);
+ const beforePolaritySample=beforeClipControls.channels[0][polarityFrame];
+ assert.ok(Math.abs(beforePolaritySample)>0.01,`polarity reference sample must be non-zero: ${beforePolaritySample}`);
+ await page.locator(`.timeline-clip[data-clip-id="${polarityClip.id}"]`).first().click({position:{x:12,y:8}});
+ await page.locator('#clip-form input[name="invertPolarity"]').check();
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ assert.equal(p.clips.find(c=>c.id===polarityClip.id).invertPolarity,true);
+ const afterPolarity=await renderAudioMix('after-polarity.wav'),invertedSample=afterPolarity.channels[0][polarityFrame];
+ assert.ok(Math.sign(invertedSample)===-Math.sign(beforePolaritySample),`polarity sign must flip: ${beforePolaritySample} vs ${invertedSample}`);
+ near(invertedSample,-beforePolaritySample,2/32768,'inverted PCM sample');
+ summary.polarity={frame:polarityFrame,before:beforePolaritySample,after:invertedSample};
+ p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===polarityClip.id).invertPolarity,'Undo restores polarity');
+ check('audio.GUI-clip-polarity-inverts-render');
+ p=await act(()=>cmd('track.update',{trackId:midiTrack.id,mute:false}));
+ assert.equal(p.tracks.find(t=>t.id===midiTrack.id).mute,false);
 
  // 4. Playback + mixer
  await clickRuler('#timeline-ruler',0);

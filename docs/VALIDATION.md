@@ -18,11 +18,13 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001 (2026-11-09)
+## Continuation — T-001–T-002 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
-- No product code changed. The check covers fade-in only; fade-out, clip mute, polarity and normalize retain their previous FD-20 verification status. PCM measurements do not establish listening quality.
+- T-001 changed no product code and covered fade-in only. PCM measurements do not establish listening quality.
+- T-002 `npm run agent:e2e`: E2E PASS, 30 steps. New mute and polarity steps verify Inspector state, `muted-clip`, CLI-rendered PCM and Undo. With other tracks excluded, recorded-region mono-sum RMS fell from 0.0975930279 to 0; a fixed PCM sample changed from -0.1178283691 to +0.1178283691 after polarity inversion.
+- The first T-002 run found that Chrome's default fake microphone produced a silent recording, so it could not provide a meaningful mute baseline. The smoke now supplies a deterministic tone WAV to Chrome's fake audio capture; no assertion was weakened. The rerun and final `npm run agent:verify` passed, with the same guard/syntax scope and no related unit tests.
 
 ## Problems encountered and resolved
 
@@ -46,4 +48,6 @@ No existing product assertions were deleted or weakened to resolve these issues.
 
 가짜 마이크·가상 MIDI 목적지·수치 검사는 실제 장치 청음과 지연, 음악적 품질을 증명하지 않습니다. Gemma 실행 성능이나 전체 자율형 작곡 연동도 검증하지 않았습니다. 구현·검증·계획 상태를 구분하고 남은 작업 큐를 유지합니다.
 
-2026-11-09 T-001에서는 Chrome 첫 납품 흐름 28단계와 `agent:verify`가 통과했습니다. 새 `audio.GUI-fade-in-changes-render` 단계는 Inspector 페이드 인 0.5초, CLI 렌더의 모노 합성 RMS 변화, Undo를 확인했습니다. 제품 코드는 바꾸지 않았으며 페이드 아웃·클립 뮤트·극성·노멀라이즈의 E2E는 아직 보강하지 않았습니다.
+2026-11-09 T-001에서는 Chrome 첫 납품 흐름 28단계와 `agent:verify`가 통과했습니다. 새 `audio.GUI-fade-in-changes-render` 단계는 Inspector 페이드 인 0.5초, CLI 렌더의 모노 합성 RMS 변화, Undo를 확인했습니다. 제품 코드는 바꾸지 않았습니다.
+
+T-002에서는 클립 뮤트·극성 반전·Undo 검사를 추가한 30단계가 통과했습니다. 기본 가짜 마이크가 무음을 녹음한 첫 실패를 확인하고 결정적 톤 WAV를 입력해 기준 RMS 0.0975930279를 확보했으며, 뮤트 후 RMS는 0이었습니다. 극성 고정 샘플은 -0.1178283691에서 +0.1178283691로 반전됐습니다. 최종 `agent:verify`도 통과했고 제품 코드는 변경하지 않았습니다. FD-20의 페이드 아웃·노멀라이즈 E2E는 아직 남아 있습니다.
