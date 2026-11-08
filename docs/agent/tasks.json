@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:45:11.754Z",
+  "updatedAt": "2026-11-08T19:49:55.512Z",
   "tasks": [
     {
       "id": "T-001",
@@ -506,7 +506,7 @@
       "doneAt": "2026-11-08T14:43:01.992Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-017",
@@ -529,7 +529,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:46:37.121Z",
+      "evidence": "Reproduced failure after 2 checks. Screenshot showed viewport resize cancellation during active drag; fullPage screenshot triggered the intended ResizeObserver reset. Changed only v78-ramp-bend-preview capture to fullPage:false, with no gesture/assertion/product change. npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs: E2E PASS, 13 steps. npm run agent:verify: VERIFY PASS. Evidence recorded in docs/VALIDATION.md and screenshots retained under .test-output/t017-screenshots/.",
+      "doneAt": "2026-11-08T19:49:55.512Z"
     },
     {
       "status": "todo",
