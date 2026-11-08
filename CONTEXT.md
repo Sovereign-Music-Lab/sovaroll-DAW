@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-018.
+Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-019.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,8 +28,8 @@ Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-018.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 36 steps passed on 2026-11-09, including T-001 fade-in, T-002 clip mute/polarity, T-003 normalize, T-004 cycle transport, T-006 MIDI tools, T-007 keyboard Undo/Redo and T-011 collapsible recording panel coverage. Fake microphone; no physical listening claim.
-- T-001–T-009, T-011–T-012, T-015 and T-017–T-018 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
-- T-018 controller-paint smoke passes 16 steps after enabling tempo-track mode in its fixture, matching the server's fixed-tempo default without changing assertions.
+- T-001–T-009, T-011–T-012, T-015 and T-017–T-019 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- T-018–T-019 controller paint/shapes smokes pass 16/23 steps after enabling tempo-track mode in their fixtures, matching the server's fixed-tempo default without changing assertions.
 - T-017 controller-bend smoke passes 13 steps after changing only its active-drag screenshot to viewport mode, avoiding ResizeObserver cancellation; product behavior/assertions unchanged.
 - T-012 CLI rendered a 150-second project with non-zero PCM at 140 seconds and preserved state on the 600-second limit rejection. Standalone GUI playback advanced and stopped without silent failure; evidence is .test-output/long-project-gui.json.
 - T-011 keeps all recording control IDs inside one closed-by-default panel that opens while recording is active. Recording workflow/protection passed 4/6 steps; before/after screenshots are in .test-output/.
@@ -48,7 +48,7 @@ Updated: 2026-11-09 after T-001–T-009, T-011–T-012, T-015 and T-017–T-018.
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-009, T-011–T-012, T-015 and T-017–T-018 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
+- T-001–T-009, T-011–T-012, T-015 and T-017–T-019 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
 - Run `npm run agent:task -- next` for queue order.
 - Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
 - T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
