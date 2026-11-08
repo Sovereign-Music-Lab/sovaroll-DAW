@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-005 (2026-11-09)
+## Continuation — T-001–T-006 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -28,6 +28,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-003 `npm run agent:e2e`: E2E PASS, 31 steps. `audio.GUI-normalize-sets-clip-gain` verifies a -1 dBFS target produces approximately +6.96 dB clip gain, no non-gain clip fields change, source WAV SHA-256 remains unchanged, and Undo restores the previous gain. Final `npm run agent:verify`: VERIFY PASS with the same guard/syntax scope and no related unit tests.
 - T-004 `npm run agent:e2e`: E2E PASS, 32 steps. `playback.GUI-cycle-loops-locator-range` sets locators to 0..3840 ticks, checks Cycle project/ARIA state, samples transport time for about three seconds within 0..2.15 seconds, observes a wrap, and verifies Stop and Cycle off. This is transport evidence, not a listening claim. Final `npm run agent:verify`: VERIFY PASS with the same guard/syntax scope and no related unit tests.
 - T-005 added `scripts/gui-new-project-delivery-smoke.mjs`. `npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs`: E2E PASS, 4 steps covering GUI Untitled creation, first MIDI track, first Save-as, server restart on the saved path and the preserved track. The initial project bytes remained unchanged and script project writes stay inside its temporary folder. The default `npm run agent:e2e` also passed all 32 steps; final `npm run agent:verify` passed guard/syntax with no related unit tests.
+- T-006 `npm run agent:e2e`: E2E PASS, 34 steps. `midi.GUI-tools-transpose` checks every selected first-part note moves +2 semitones and Undo restores its pitch; `midi.GUI-tools-velocity` checks Set 54 on every selected note and Undo restores prior velocities. Note counts remain unchanged for export. Quantize retains its previous first-delivery coverage status. Final `npm run agent:verify`: VERIFY PASS with no related unit tests.
 
 ## Problems encountered and resolved
 
@@ -60,3 +61,5 @@ T-003에서는 노멀라이즈 검사를 추가한 31단계와 최종 `agent:ver
 T-004에서는 Cycle 검사를 추가한 32단계와 최종 `agent:verify`가 통과했습니다. Locator 0..3840 tick, Cycle 프로젝트·ARIA 상태, 약 3초간 전송 위치의 0..2.15초 범위와 실제 루프 역행, Stop과 Cycle 해제를 확인했습니다. 이는 청음이 아닌 전송 상태 검증입니다.
 
 T-005에서는 새 프로젝트 전용 스모크 4단계가 통과했습니다. GUI Untitled 생성, 첫 MIDI 트랙 추가, 첫 Save-as, 저장 경로로 서버를 재시작한 뒤 같은 트랙 확인을 검증했습니다. 기존 프로젝트 바이트는 변하지 않았고 스크립트의 프로젝트 쓰기는 임시 폴 낸으로 제한했습니다. 기본 E2E 32단계와 최종 `agent:verify`도 통과했습니다.
+
+T-006에서는 MIDI 도구 검사를 추가한 34단계와 최종 `agent:verify`가 통과했습니다. 첫 파트의 선택한 모든 노트를 +2 semitone 전조하고 Undo로 복원했으며, velocity를 54로 설정하고 Undo로 각 원래 값을 복원했습니다. 노트 수는 유지됩니다. 퀀타이즈는 기존 첫 납품 E2E 범위 상태를 유지합니다.

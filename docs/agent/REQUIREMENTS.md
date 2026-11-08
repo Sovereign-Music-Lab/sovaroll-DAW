@@ -30,7 +30,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-11 | 파트 반복 | 반복 창으로 파트 복제 | verified | E2E: `midi.GUI-part-repeat` |
 | FD-12 | 파트 분할 | 커서 위치 분할, 노트 보존 | verified | E2E: `midi.GUI-part-split-at-cursor` |
 | FD-13 | Undo/Redo | 버튼으로 되돌리기·다시하기, CLI 편집도 포함 | verified | E2E: `midi.GUI-undo-redo`, `cli.edit-appears-in-GUI-and-GUI-undo-redo-covers-it` |
-| FD-14 | 퀀타이즈·전조·벨로시티 일괄 | MIDI 도구 창 | implemented (gui-editing-smoke 있음, 첫 납품 E2E 미포함) | scripts/gui-editing-smoke.mjs |
+| FD-14 | 퀀타이즈·전조·벨로시티 일괄 | MIDI 도구 창 | 전조·벨로시티 verified (첫 납품 E2E) / 퀀타이즈 implemented (gui-editing-smoke 있음, 첫 납품 E2E 미포함) | E2E: `midi.GUI-tools-transpose`, `midi.GUI-tools-velocity`, scripts/gui-editing-smoke.mjs |
 
 ### C. 오디오
 
@@ -66,5 +66,5 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 ### 첫 납품 판정
 
 - 핵심 흐름(FD-01~03, 05~13, 15~19, 22~25, 26~30)은 **자동 검증 통과** 상태입니다. FD-20은 페이드 인·클립 뮤트·극성·노멀라이즈도 검증했습니다 (E2E 32단계, 2026-11-09).
-- 남은 것: FD-04·14·21과 FD-20의 페이드 아웃 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
+- 남은 것: FD-04·21, FD-14의 퀀타이즈 첫 납품 E2E와 FD-20의 페이드 아웃 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.

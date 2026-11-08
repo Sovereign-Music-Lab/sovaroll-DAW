@@ -83,6 +83,25 @@ try{
  p=await act(()=>openMenu('arrangement-edit-menu').then(()=>page.locator('#split-clips-cursor').click()));
  const splitClips=p.clips.filter(c=>c.trackId===midiTrack.id).sort((a,b)=>a.startTick-b.startTick);assert.equal(splitClips.length,3);assert.deepEqual(splitClips.slice(0,2).map(c=>[c.startTick,c.lengthTicks]),[[0,7680],[7680,7680]]);
  assert.equal(splitClips[0].notes.length+splitClips[1].notes.length,8);check('midi.GUI-part-split-at-cursor');
+ await page.locator(`.timeline-clip[data-clip-id="${splitClips[0].id}"]`).first().click({position:{x:12,y:8}});
+ const toolOriginal=(await proj()).clips.find(c=>c.id===splitClips[0].id).notes.map(note=>({...note}));
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ await page.waitForFunction(count=>document.querySelectorAll('#note-grid .midi-note.selected').length===count,toolOriginal.length);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('transpose');await page.locator('#transpose-semitones').fill('2');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ const transposed=p.clips.find(c=>c.id===splitClips[0].id).notes;assert.equal(transposed.length,toolOriginal.length);
+ for(const note of transposed)assert.equal(note.pitch,toolOriginal.find(original=>original.id===note.id).pitch+2);
+ p=await act(()=>page.locator('#undo').click());
+ for(const note of p.clips.find(c=>c.id===splitClips[0].id).notes)assert.equal(note.pitch,toolOriginal.find(original=>original.id===note.id).pitch);
+ check('midi.GUI-tools-transpose');
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ await page.waitForFunction(count=>document.querySelectorAll('#note-grid .midi-note.selected').length===count,toolOriginal.length);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('velocity');await page.locator('#velocity-mode').selectOption('set');await page.locator('#velocity-value').fill('54');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ assert.ok(p.clips.find(c=>c.id===splitClips[0].id).notes.every(note=>note.velocity===54));
+ p=await act(()=>page.locator('#undo').click());
+ for(const note of p.clips.find(c=>c.id===splitClips[0].id).notes)assert.equal(note.velocity,toolOriginal.find(original=>original.id===note.id).velocity);
+ check('midi.GUI-tools-velocity');
  summary.midiNotes=p.clips.filter(c=>c.type==='midi').reduce((s,c)=>s+c.notes.length,0);
 
  // 3. Audio: WAV import at cursor, fake microphone recording, edit

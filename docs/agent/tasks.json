@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:52:58.645Z",
+  "updatedAt": "2026-11-08T18:57:05.855Z",
   "tasks": [
     {
       "id": "T-001",
@@ -186,7 +186,7 @@
       "requirements": [
         "FD-14"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Add first-delivery coverage for the MIDI tools dialog (#midi-tools-button → #midi-operation → submit).",
       "context": [
         "scripts/gui-editing-smoke.mjs already drives #midi-tools-button, #midi-operation (quantize/transpose/velocity), #transpose-semitones, #velocity-mode, #velocity-value, #midi-tools-form [type=submit]. Copy its sequence."
@@ -203,7 +203,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:54:15.858Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 34 steps including midi.GUI-tools-transpose and midi.GUI-tools-velocity. Every selected first-part note transposed +2 and restored on Undo; all velocities set to 54 and restored individually on Undo; note counts unchanged. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). Quantize first-delivery status unchanged; no product code changed.",
+      "doneAt": "2026-11-08T18:57:05.854Z"
     },
     {
       "id": "T-007",
