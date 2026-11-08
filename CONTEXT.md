@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-08 handoff. This file is part of the initial public release commit.
+Updated: 2026-11-09 after T-001.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended branch main.
@@ -27,7 +27,9 @@ Updated: 2026-11-08 handoff. This file is part of the initial public release com
 - Added three public-guard regression tests in one file.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
-- First-delivery Chrome E2E: 27 steps passed. Fake microphone; no physical listening claim.
+- First-delivery Chrome E2E: 28 steps passed on 2026-11-09, including T-001 audio fade-in Inspector/CLI-render/Undo coverage. Fake microphone; no physical listening claim.
+- T-001 `agent:verify`: VERIFY PASS (guard and all JavaScript syntax; unit tests skipped because the GUI-smoke-only change had no related unit test file). No product code changed.
+- The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions; no remote push was authorized.
 - Fresh-tree startup passed; E2E passed on retry after an intermittent mixer-pan timeout. T-015 tracks the unresolved cause; assertions are unchanged.
 - E2E wrapper now creates its output directory for a fresh checkout; native test command builds its bridge first.
 - Gemma coding and hardware audio latency/quality have not been verified.
@@ -38,8 +40,8 @@ Updated: 2026-11-08 handoff. This file is part of the initial public release com
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- Current work ends at publication/handoff; do not expand features automatically.
-- Start with `npm run agent:task -- show T-007` for a small supervised keyboard undo/redo test task, or `next` for queue order.
+- T-001 is done with evidence in docs/VALIDATION.md; FD-20 is verified for fade-in only, while fade-out, clip mute, polarity and normalize still need E2E coverage.
+- Run `npm run agent:task -- next` for queue order, or `show T-007` for the small supervised keyboard undo/redo test task.
 - Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
 - T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

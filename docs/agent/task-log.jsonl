@@ -4,3 +4,5 @@
 {"at":"2026-11-08T14:41:50.177Z","id":"T-016","action":"add"}
 {"at":"2026-11-08T14:41:50.257Z","id":"T-016","action":"start"}
 {"at":"2026-11-08T14:43:01.993Z","id":"T-016","action":"done","evidence":"Documentation-only: agent:verify PASS (guard and all .mjs syntax); git diff --check PASS; prompt structure, privacy and local links PASS. First prompt preserved with portable path, bilingual introduction, author credits and README links. Explicit user instruction authorizes this commit and push.","verify":"PASS"}
+{"at":"2026-11-08T18:29:28.407Z","id":"T-001","action":"start"}
+{"at":"2026-11-08T18:33:27.574Z","id":"T-001","action":"done","evidence":"npm run agent:e2e: E2E PASS, 28 steps including audio.GUI-fade-in-changes-render; fadeInFrames=0.5s in asset frames, before/after CLI mono-sum RMS comparisons, and Undo passed. npm run agent:verify: VERIFY PASS (guard and all .mjs syntax; unit tests skipped because this GUI-smoke-only change has no related unit test file). No product code changed; FD-20 scope limits recorded.","verify":"PASS"}

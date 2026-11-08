@@ -4,7 +4,7 @@ This public catalogue preserves stable IDs FD-01–FD-30 and the existing accept
 
 테스트를 실행하지 않고 상태를 올리지 않습니다. 실제 소리를 듣지 않았다면 청음했다고 쓰지 않습니다. GUI와 CLI는 같은 명령 엔진을 사용하고, 원본 미디어·편집 가능한 MIDI·실패 전 상태를 보존합니다. 상태가 바뀌면 검증 기록에 실제 근거를 적습니다.
 
-## 3. 첫 납품 요건과 현재 상태 (2026-11-08 기준)
+## 3. 첫 납품 요건과 현재 상태 (2026-11-09 기준)
 
 E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표의 `E2E:` 뒤 이름은 그 스크립트가 출력하는 `PASS` 단계 이름입니다.
 
@@ -41,7 +41,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-17 | 클립 이동 | Inspector 시작 초 | verified | E2E: `audio.GUI-clip-move` |
 | FD-18 | 클립 분할 | 커서 위치, 길이 합 보존 | verified | E2E: `audio.GUI-clip-split-at-cursor` |
 | FD-19 | 클립 길이(trim) | Inspector 길이 프레임 | verified | E2E: `audio.GUI-clip-trim-length` |
-| FD-20 | 페이드·클립 뮤트·극성·노멀라이즈 | Inspector 입력 → 렌더 결과에 반영 | implemented (E2E 없음) | docs/DEVELOPMENT.ko.md |
+| FD-20 | 페이드·클립 뮤트·극성·노멀라이즈 | Inspector 입력 → 렌더 결과에 반영 | 페이드 인 verified / 페이드 아웃·클립 뮤트·극성·노멀라이즈 implemented (E2E 없음) | E2E: `audio.GUI-fade-in-changes-render`, docs/DEVELOPMENT.ko.md |
 | FD-21 | 녹음 보조(입력 선택·게인·모니터·카운트인·메트로놈·기존 트랙 들으며 녹음) | GUI 동작 + 녹음 결과 | implemented (E2E 없음), 실제 장치 manual | public/recording-ui.mjs, metronome.mjs |
 
 ### D. 재생·믹싱
@@ -66,5 +66,5 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 ### 첫 납품 판정
 
 - 핵심 흐름(FD-01~03, 05~13, 15~19, 22~24, 26~30)은 **자동 검증 통과** 상태입니다 (E2E 27단계, 2026-11-08).
-- 남은 것: FD-04·14·20·21·25의 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
+- 남은 것: FD-04·14·21·25와 FD-20의 페이드 아웃·클립 뮤트·극성·노멀라이즈 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.

@@ -103,6 +103,30 @@ try{
  await page.locator(`.timeline-clip[data-clip-id="${audioParts[1].id}"]`).first().click({position:{x:12,y:8}});
  await page.locator('#clip-form input[name="lengthFrames"]').fill('12000');p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
  assert.equal(p.clips.find(c=>c.id===audioParts[1].id).lengthFrames,12000);check('audio.GUI-clip-trim-length');
+ await page.locator(`.timeline-clip[data-clip-id="${audioParts[0].id}"]`).first().click({position:{x:12,y:8}});
+ const renderFadeMix=async name=>{const file=path.join(downloads,name);await cli('render',file);return decodeWav(await fs.readFile(file));};
+ const beforeFade=await renderFadeMix('before-fade.wav');
+ await page.locator('#clip-form input[name="fadeInSeconds"]').fill('0.5');
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ const fadedClip=p.clips.find(c=>c.id===audioParts[0].id);
+ const fadeAsset=p.assets.find(a=>a.id===fadedClip.assetId);
+ assert.equal(fadedClip.fadeInFrames,Math.round(0.5*fadeAsset.sampleRate));
+ const afterFade=await renderFadeMix('after-fade.wav');
+ const fadeWindowRms=(mix,offsetSeconds,durationSeconds)=>{
+  const start=Math.round((fadedClip.startSample/p.sampleRate+offsetSeconds)*mix.sampleRate);
+  const end=Math.round(start+durationSeconds*mix.sampleRate),mono=new Float32Array(end-start);
+  for(let i=0;i<mono.length;i++)mono[i]=(mix.channels[0][start+i]+mix.channels[1][start+i])/2;
+  return rms(mono);
+ };
+ const earlyBefore=fadeWindowRms(beforeFade,0,0.05),lateBefore=fadeWindowRms(beforeFade,0.45,0.05);
+ const earlyAfter=fadeWindowRms(afterFade,0,0.05),lateAfter=fadeWindowRms(afterFade,0.45,0.05);
+ assert.ok(earlyAfter<lateAfter/2,`faded clip start ${earlyAfter} must be less than half of ${lateAfter}`);
+ assert.ok(earlyAfter<earlyBefore,`fade must reduce the matching start window: ${earlyAfter} vs ${earlyBefore}`);
+ assert.ok(lateAfter<lateBefore,`fade must reduce the matching late window: ${lateAfter} vs ${lateBefore}`);
+ summary.fadeIn={earlyBefore,lateBefore,earlyAfter,lateAfter};
+ p=await act(()=>page.locator('#undo').click());
+ assert.ok(!p.clips.find(c=>c.id===audioParts[0].id).fadeInFrames,'Undo removes fade-in');
+ check('audio.GUI-fade-in-changes-render');
  const assetBytes=await fs.readFile(path.join(dir,p.assets.find(a=>a.id===audioClip.assetId).path));assert.equal(decodeWav(assetBytes).frames,96000);check('audio.source-WAV-preserved-after-edits');
 
  // 4. Playback + mixer

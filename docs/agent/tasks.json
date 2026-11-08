@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T14:43:01.993Z",
+  "updatedAt": "2026-11-08T18:33:27.574Z",
   "tasks": [
     {
       "id": "T-001",
@@ -11,7 +11,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove in the real GUI that setting a fade-in on an audio clip makes the rendered mix quieter at the clip start, and that Undo removes it.",
       "context": [
         "Inspector audio clip form (#clip-form) has inputs name=\"fadeInSeconds\" and name=\"fadeOutSeconds\" (rendered in public/app.mjs around line 724).",
@@ -35,7 +35,10 @@
       ],
       "notes": [
         "Do not change product code unless the test reveals a real bug; if it does, record it in the evidence."
-      ]
+      ],
+      "startedAt": "2026-11-08T18:29:28.407Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 28 steps including audio.GUI-fade-in-changes-render; fadeInFrames=0.5s in asset frames, before/after CLI mono-sum RMS comparisons, and Undo passed. npm run agent:verify: VERIFY PASS (guard and all .mjs syntax; unit tests skipped because this GUI-smoke-only change has no related unit test file). No product code changed; FD-20 scope limits recorded.",
+      "doneAt": "2026-11-08T18:33:27.574Z"
     },
     {
       "id": "T-002",
