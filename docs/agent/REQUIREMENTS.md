@@ -51,7 +51,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-22 | MIDI+오디오 재생 | Play → 재생 중·위치 진행, Stop → 정지 | verified (상태·진행만, 청음은 manual) | E2E: `playback.GUI-MIDI-and-audio-play-advance-stop` |
 | FD-23 | 탐색 | 눈금자 클릭으로 커서 이동 | verified | E2E: `playback.GUI-seek-by-ruler` |
 | FD-24 | 믹서 | 트랙 mute/solo/gain/pan, master gain | verified | E2E: `mixer.GUI-mute-solo-gain-pan-master` |
-| FD-25 | Cycle(구간 반복) 재생 | Locator 구간 반복 | implemented (E2E 없음) | docs/DEVELOPMENT.ko.md |
+| FD-25 | Cycle(구간 반복) 재생 | Locator 구간 반복 | verified (전송 위치만, 청음은 manual) | E2E: `playback.GUI-cycle-loops-locator-range` |
 
 ### E. 내보내기·CLI
 
@@ -65,6 +65,6 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 
 ### 첫 납품 판정
 
-- 핵심 흐름(FD-01~03, 05~13, 15~19, 22~24, 26~30)은 **자동 검증 통과** 상태입니다 (E2E 27단계, 2026-11-08).
-- 남은 것: FD-04·14·21·25와 FD-20의 페이드 아웃 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
+- 핵심 흐름(FD-01~03, 05~13, 15~19, 22~25, 26~30)은 **자동 검증 통과** 상태입니다. FD-20은 페이드 인·클립 뮤트·극성·노멀라이즈도 검증했습니다 (E2E 32단계, 2026-11-09).
+- 남은 것: FD-04·14·21과 FD-20의 페이드 아웃 E2E 보강(작업 큐 T-0xx), 실제 장치 청음·지연 확인(manual, 사람이 해야 함), 화면 정리.
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.

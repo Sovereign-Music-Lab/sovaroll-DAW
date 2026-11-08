@@ -195,6 +195,26 @@ try{
  p=await setRange(head(midiTrack.id).locator('input[data-action="gain"]'),-3);assert.equal(p.tracks.find(t=>t.id===midiTrack.id).gainDb,-3);
  p=await setRange(head(audioTrack.id).locator('input[data-action="pan"]'),0.3);assert.equal(p.tracks.find(t=>t.id===audioTrack.id).pan,0.3);
  p=await setRange(page.locator('#master-gain'),-4);assert.equal(p.masterGainDb,-4);check('mixer.GUI-mute-solo-gain-pan-master');
+ p=await act(()=>cmd('project.locators',{range:{startTick:0,endTick:3840}}));
+ assert.deepEqual(p.locators,{startTick:0,endTick:3840});await clickRuler('#timeline-ruler',0);
+ p=await act(()=>page.locator('#cycle-playback').click());assert.equal(p.cycleEnabled,true);
+ assert.equal(await page.locator('#cycle-playback').getAttribute('aria-pressed'),'true');
+ await page.locator('#play').click();await page.waitForFunction(()=>document.getElementById('playback-status').textContent.includes('재생 중'),null,{timeout:60000});
+ const cycleSamples=[],cyclePollStart=Date.now();
+ while(Date.now()-cyclePollStart<3000){
+  const parts=(await page.locator('#position-time').textContent()).split(/[:.]/).map(Number);
+  assert.equal(parts.length,3);const seconds=parts[0]*60+parts[1]+parts[2]/1000;
+  assert.ok(Number.isFinite(seconds),`cycle position must be numeric: ${parts}`);cycleSamples.push(seconds);
+  await page.waitForTimeout(75);
+ }
+ await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('playback-status').textContent==='정지');
+ assert.ok(cycleSamples.length>=10,`expected repeated cycle samples, got ${cycleSamples.length}`);
+ for(const seconds of cycleSamples)assert.ok(seconds>=0&&seconds<=2.15,`cycle position outside locator range: ${seconds}`);
+ const cycleWrapped=cycleSamples.some((seconds,index)=>index>0&&seconds+0.1<cycleSamples[index-1]);
+ assert.ok(cycleWrapped,`expected a transport wrap: ${cycleSamples.join(', ')}`);
+ summary.cycle={samples:cycleSamples.length,min:Math.min(...cycleSamples),max:Math.max(...cycleSamples),wrapped:cycleWrapped};
+ p=await act(()=>page.locator('#cycle-playback').click());assert.equal(p.cycleEnabled,false);
+ assert.equal(await page.locator('#cycle-playback').getAttribute('aria-pressed'),'false');check('playback.GUI-cycle-loops-locator-range');
 
  // 5. Export: WAV mix, MIDI, bundle
  await page.locator('#render-button').click();await page.locator('#mix-export-submit').click();

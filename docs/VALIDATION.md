@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-003 (2026-11-09)
+## Continuation — T-001–T-004 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -26,6 +26,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-002 `npm run agent:e2e`: E2E PASS, 30 steps. New mute and polarity steps verify Inspector state, `muted-clip`, CLI-rendered PCM and Undo. With other tracks excluded, recorded-region mono-sum RMS fell from 0.0975930279 to 0; a fixed PCM sample changed from -0.1178283691 to +0.1178283691 after polarity inversion.
 - The first T-002 run found that Chrome's default fake microphone produced a silent recording, so it could not provide a meaningful mute baseline. The smoke now supplies a deterministic tone WAV to Chrome's fake audio capture; no assertion was weakened. The rerun and final `npm run agent:verify` passed, with the same guard/syntax scope and no related unit tests.
 - T-003 `npm run agent:e2e`: E2E PASS, 31 steps. `audio.GUI-normalize-sets-clip-gain` verifies a -1 dBFS target produces approximately +6.96 dB clip gain, no non-gain clip fields change, source WAV SHA-256 remains unchanged, and Undo restores the previous gain. Final `npm run agent:verify`: VERIFY PASS with the same guard/syntax scope and no related unit tests.
+- T-004 `npm run agent:e2e`: E2E PASS, 32 steps. `playback.GUI-cycle-loops-locator-range` sets locators to 0..3840 ticks, checks Cycle project/ARIA state, samples transport time for about three seconds within 0..2.15 seconds, observes a wrap, and verifies Stop and Cycle off. This is transport evidence, not a listening claim. Final `npm run agent:verify`: VERIFY PASS with the same guard/syntax scope and no related unit tests.
 
 ## Problems encountered and resolved
 
@@ -54,3 +55,5 @@ No existing product assertions were deleted or weakened to resolve these issues.
 T-002에서는 클립 뮤트·극성 반전·Undo 검사를 추가한 30단계가 통과했습니다. 기본 가짜 마이크가 무음을 녹음한 첫 실패를 확인하고 결정적 톤 WAV를 입력해 기준 RMS 0.0975930279를 확보했으며, 뮤트 후 RMS는 0이었습니다. 극성 고정 샘플은 -0.1178283691에서 +0.1178283691로 반전됐습니다. 최종 `agent:verify`도 통과했고 제품 코드는 변경하지 않았습니다.
 
 T-003에서는 노멀라이즈 검사를 추가한 31단계와 최종 `agent:verify`가 통과했습니다. -1 dBFS 대상이 클립 gain을 약 +6.96 dB로 설정하고, 다른 클립 속성과 원본 WAV SHA-256은 유지하며, Undo가 이전 gain을 복원함을 확인했습니다. FD-20의 페이드 아웃 E2E는 아직 남아 있습니다.
+
+T-004에서는 Cycle 검사를 추가한 32단계와 최종 `agent:verify`가 통과했습니다. Locator 0..3840 tick, Cycle 프로젝트·ARIA 상태, 약 3초간 전송 위치의 0..2.15초 범위와 실제 루프 역행, Stop과 Cycle 해제를 확인했습니다. 이는 청음이 아닌 전송 상태 검증입니다.

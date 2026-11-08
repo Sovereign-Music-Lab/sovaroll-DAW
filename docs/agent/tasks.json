@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:43:40.439Z",
+  "updatedAt": "2026-11-08T18:47:41.235Z",
   "tasks": [
     {
       "id": "T-001",
@@ -115,7 +115,7 @@
       "requirements": [
         "FD-25"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove that with locators set and #cycle-playback pressed, playback position loops inside the locator range.",
       "context": [
         "Locators: CLI command project.locators {range:{startTick,endTick}}; GUI button #cycle-playback runs project.cycle {enabled}.",
@@ -136,7 +136,10 @@
       ],
       "notes": [
         "Headless Chrome needs --autoplay-policy=no-user-gesture-required (already set in the smoke)."
-      ]
+      ],
+      "startedAt": "2026-11-08T18:44:51.622Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 32 steps including playback.GUI-cycle-loops-locator-range. Locators 0..3840 ticks; cycleEnabled and aria-pressed checked; ~3 seconds of position-time samples stayed within 0..2.15s and a wrap was observed; Stop and Cycle off passed. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). Transport evidence only; no listening claim or product code change.",
+      "doneAt": "2026-11-08T18:47:41.235Z"
     },
     {
       "id": "T-005",
