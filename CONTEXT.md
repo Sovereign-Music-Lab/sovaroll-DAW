@@ -33,6 +33,10 @@ Updated: 2026-11-08 handoff. This file is part of the initial public release com
 - Gemma coding and hardware audio latency/quality have not been verified.
 - Detailed release record: docs/VALIDATION.md; tasks: docs/agent/tasks.json.
 
+## First continuation prompt
+- T-016 records the first Gemma continuation prompt in docs/agent/FIRST_GEMMA_PROMPT.md, with bilingual introduction and README links.
+- This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
+
 ## Next task and unresolved decisions
 - Current work ends at publication/handoff; do not expand features automatically.
 - Start with `npm run agent:task -- show T-007` for a small supervised keyboard undo/redo test task, or `next` for queue order.

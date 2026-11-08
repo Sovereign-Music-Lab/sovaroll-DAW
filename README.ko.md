@@ -83,3 +83,5 @@ npm run agent:e2e
 ## 개발 인계
 
 [CONTEXT.md](CONTEXT.md) · [Model operations / 모델 운영](docs/MODEL_OPERATIONS.ko.md) · [Reusable skill / 재사용 스킬](skills/model-tier-handoff/SKILL.md)
+
+[첫 Gemma 4 인계 프롬프트](docs/agent/FIRST_GEMMA_PROMPT.md) — 2026-11-08

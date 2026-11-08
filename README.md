@@ -83,3 +83,5 @@ The project file extension `.newdaw.json`, `NEWDAW_*` environment variables, and
 ## Development handoff
 
 [CONTEXT.md](CONTEXT.md) · [Model operations / 모델 운영](docs/MODEL_OPERATIONS.en.md) · [Reusable skill / 재사용 스킬](skills/model-tier-handoff/SKILL.md)
+
+[First Gemma 4 handoff prompt](docs/agent/FIRST_GEMMA_PROMPT.md) — 2026-11-08

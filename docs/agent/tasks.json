@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T14:33:24.495Z",
+  "updatedAt": "2026-11-08T14:43:01.993Z",
   "tasks": [
     {
       "id": "T-001",
@@ -441,6 +441,33 @@
         "npm run agent:verify",
         "npm run agent:e2e"
       ]
+    },
+    {
+      "status": "done",
+      "priority": 0,
+      "area": "docs",
+      "id": "T-016",
+      "title": "Archive the first Gemma 4 handoff prompt",
+      "size": "S",
+      "goal": "Publish the first handoff prompt with bilingual introduction and README links.",
+      "files": [
+        "docs/agent/FIRST_GEMMA_PROMPT.md",
+        "README.md",
+        "README.ko.md",
+        "CONTEXT.md"
+      ],
+      "acceptance": [
+        "Prompt is preserved with a portable checkout path and bilingual milestone introduction",
+        "Both READMEs link to it and English context records the handoff",
+        "Verification passes and the documentation is ready for the explicitly requested commit and push; remote identity is checked after publication."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "git diff --check"
+      ],
+      "startedAt": "2026-11-08T14:41:50.256Z",
+      "evidence": "Documentation-only: agent:verify PASS (guard and all .mjs syntax); git diff --check PASS; prompt structure, privacy and local links PASS. First prompt preserved with portable path, bilingual introduction, author credits and README links. Explicit user instruction authorizes this commit and push.",
+      "doneAt": "2026-11-08T14:43:01.992Z"
     }
   ]
 }
