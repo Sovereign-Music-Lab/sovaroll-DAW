@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-019 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-020 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -38,6 +38,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-017 reproduced `gui-controller-bend-smoke.mjs` failing after 2 checks. The failure screenshot showed `화면 크기가 바뀌어 드래그를 취소했습니다.` A full-page screenshot during an active drag caused viewport resize and triggered the intended ResizeObserver cancellation. Only that evidence capture now uses `fullPage: false`; all gestures, assertions and product code remain unchanged. The targeted E2E passed all 13 steps and final `npm run agent:verify` passed.
 - T-018 reproduced `gui-controller-paint-smoke.mjs` failing before browser launch. New server projects default to fixed tempo (`tempoTrackEnabled: false`), so the old fixture's multi-point `tempo.set` was rejected. Enabling `tempo.mode` before setting the map preserves the intended tempo-map test without weakening assertions. The targeted E2E passed all 16 steps and final `npm run agent:verify` passed.
 - T-019 reproduced the same fixed-tempo fixture rejection in `gui-controller-shapes-smoke.mjs`. Adding `tempo.mode enabled:true` before `tempo.set` resolved that drift without changing gestures or assertions. All 23 targeted E2E steps and final `npm run agent:verify` passed.
+- T-020 reproduced the same fixed-tempo rejection in `gui-controller-snap-smoke.mjs` and applied the same fixture-only `tempo.mode` enablement. All 13 targeted E2E steps and final `npm run agent:verify` passed with assertions unchanged.
 
 ## Problems encountered and resolved
 
@@ -90,3 +91,5 @@ T-017에서는 컨트롤러 벤드 스모크가 2개 검사 후 실패한 것을
 T-018에서는 컨트롤러 페인트 스모크가 브라우저 이전에 실패함을 재현했습니다. 새 서버 프로젝트가 고정 템포로 시작하면서 기존 fixture의 복수 포인트 `tempo.set`이 거부된 drift였습니다. `tempo.mode`를 먼저 활성화해 원래 템포 맵 검사 의도를 유지하고 assertions는 바꾸지 않았습니다. 대상 E2E 16단계와 최종 verify가 통과했습니다.
 
 T-019에서는 컨트롤러 셰이프 스모크에서 같은 고정 템포 fixture 거부를 재현했습니다. `tempo.set` 전에 `tempo.mode`를 활성화하는 동일한 최소 수정으로 제스처와 assertions를 유지했습니다. 대상 E2E 23단계와 최종 verify가 통과했습니다.
+
+T-020에서는 컨트롤러 스냅 스모크의 같은 고정 템포 거부를 재현하고 fixture에만 `tempo.mode` 활성화를 적용했습니다. assertions는 바꾸지 않았으며 대상 E2E 13단계와 최종 verify가 통과했습니다.
