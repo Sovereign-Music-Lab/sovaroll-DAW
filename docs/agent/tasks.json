@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T18:47:41.235Z",
+  "updatedAt": "2026-11-08T18:52:58.645Z",
   "tasks": [
     {
       "id": "T-001",
@@ -150,7 +150,7 @@
       "requirements": [
         "FD-01"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Cover creating a new Untitled project from the GUI projects dialog and saving it under a name, then reopening it.",
       "context": [
         "Dialog: #projects-button opens #projects-dialog (public/projects.mjs). New project: <details> with summary #projects-new-toggle and form #projects-new-form.",
@@ -172,7 +172,10 @@
         "npm run agent:verify",
         "npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:49:00.182Z",
+      "evidence": "npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs: E2E PASS, 4 steps (GUI Untitled, MIDI track, first Save-as, restart/reopen same track). Initial project bytes unchanged; script project writes confined to its temp folder. npm run agent:e2e: E2E PASS, 32 existing steps. npm run agent:verify: VERIFY PASS (guard and all .mjs syntax; no related unit tests). agent:map regenerated CODEMAP; no product code changed.",
+      "doneAt": "2026-11-08T18:52:58.644Z"
     },
     {
       "id": "T-006",

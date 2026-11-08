@@ -207,7 +207,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-editing-smoke.mjs | 74 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 165 | 388 |  |
+| gui-first-delivery-smoke.mjs | 260 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |
@@ -218,6 +218,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-midi-playback-smoke.mjs | 86 | 831 |  |
 | gui-musical-time-smoke.mjs | 45 | 877 |  |
 | gui-native-midi-smoke.mjs | 48 | 848 |  |
+| gui-new-project-delivery-smoke.mjs | 78 | 211 |  |
 | gui-note-arrow-smoke.mjs | 37 | 1211 |  |
 | gui-note-audition-form-smoke.mjs | 54 | 616 |  |
 | gui-note-audition-races-smoke.mjs | 57 | 616 |  |

@@ -12,7 +12,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 
 | ID | 요건 | 수용 기준 | 상태 | 근거 |
 |---|---|---|---|---|
-| FD-01 | 새 프로젝트 생성 | CLI `init PATH` 또는 GUI 프로젝트 창 → 새 프로젝트로 빈 프로젝트가 열린다 | verified (CLI init + GUI 열림) / GUI 새 프로젝트 창 흐름은 implemented | E2E: `project.new-empty-project-opens-in-GUI`, tests/project-drafts·workspace 테스트 |
+| FD-01 | 새 프로젝트 생성 | CLI `init PATH` 또는 GUI 프로젝트 창 → 새 프로젝트로 빈 프로젝트가 열린다 | verified (CLI init + GUI 열림 + GUI 새 Untitled 생성) | E2E: `project.new-empty-project-opens-in-GUI`, `scripts/gui-new-project-delivery-smoke.mjs`: `project.GUI-create-new-Untitled`, tests/project-drafts·workspace 테스트 |
 | FD-02 | 명시 저장 | Cmd/Ctrl+S 또는 CLI `save`로 저장 기준이 갱신된다 | verified | E2E: `project.explicit-save-restart-reopen-same-content` |
 | FD-03 | 재시작 후 재열기 | 서버 종료 → 재시작 후 트랙·클립·에셋이 동일하고 편집·Undo가 된다 | verified | E2E: `project.explicit-save-restart-reopen-same-content`, `midi.edit-and-undo-after-restart` |
 | FD-04 | 자동 백업·복구 | 비정상 종료 뒤 복구 목록에서 이어서 작업 | implemented (단위·통합 테스트 있음, 첫 납품 E2E 미포함) | tests/auto-backup, process-recovery |
