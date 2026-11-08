@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {navigateNoteSelection as nav} from '../public/note-keyboard-selection.mjs';
+const notes=[{id:'late',startTick:960,pitch:60},{id:'high',startTick:0,pitch:72},{id:'low',startTick:0,pitch:60}];
+test('Note arrow selection traverses chronological display order with deterministic chord order and bounded edges',()=>{const before=structuredClone(notes);assert.equal(nav(notes,{direction:1}).activeId,'low');assert.equal(nav(notes,{activeId:'low',direction:1}).activeId,'high');assert.equal(nav(notes,{activeId:'late',direction:1}).activeId,'late');assert.equal(nav(notes,{direction:-1}).activeId,'late');assert.deepEqual(notes,before);});
+test('Shift arrow extends only valid note IDs without editing notes and handles empty clips',()=>{assert.deepEqual(nav(notes,{activeId:'low',selectedIds:['low','stale'],direction:1,extend:true}),{activeId:'high',selectedIds:['low','high']});assert.deepEqual(nav([],{direction:1}),{activeId:null,selectedIds:[]});});
+
+import {selectNotePitch as pitch} from '../public/note-keyboard-selection.mjs';
+test('Pitch selection spans channels but not octaves and limits following notes by source onset',()=>{const notes=[{id:'early',pitch:60,startTick:0,channel:0},{id:'anchor',pitch:60,startTick:480,channel:1},{id:'twin',pitch:60,startTick:480,channel:2},{id:'octave',pitch:72,startTick:960},{id:'later',pitch:60,startTick:960}];const before=structuredClone(notes);assert.deepEqual(pitch(notes,{pitch:60}),['early','anchor','twin','later']);assert.deepEqual(pitch(notes,{pitch:60,fromTick:480}),['anchor','twin','later']);assert.deepEqual(pitch(notes,{pitch:61}),[]);assert.deepEqual(notes,before);});
+
+import {selectNoteMenu as menu} from '../public/note-keyboard-selection.mjs';
+test('Selection menu distinguishes all octaves and exact pitch and requires a single anchor',()=>{assert.deepEqual(menu(notes,{mode:'pitchClass',selectedIds:['low']}),['late','high','low']);assert.deepEqual(menu(notes,{mode:'samePitch',selectedIds:['low']}),['late','low']);assert.throws(()=>menu(notes,{mode:'samePitch',selectedIds:['low','high']}));assert.deepEqual(menu(notes,{mode:'invert',selectedIds:['low']}),['late','high']);});
+test('Selection cursor predicates use strict onset/end boundaries including crossing notes',()=>{const ns=[{id:'ends',startTick:0,durationTicks:100},{id:'cross',startTick:50,durationTicks:100},{id:'starts',startTick:100,durationTicks:10}];assert.deepEqual(menu(ns,{mode:'beforeCursor',cursorTick:100}),['ends','cross']);assert.deepEqual(menu(ns,{mode:'afterCursor',cursorTick:100}),['cross','starts']);assert.deepEqual(menu(ns,{mode:'none'}),[]);});

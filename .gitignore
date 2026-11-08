@@ -1,0 +1,23 @@
+node_modules/
+sessions/
+.test-output/
+.native-build/
+.agent/
+.private/
+.env
+.env.*
+*.pem
+*.key
+*.lock
+*.tmp
+.DS_Store
+__pycache__/
+# Local source collections and personal media are not distribution assets.
+analysis/
+refer/
+requirements/
+models/
+weights/
+*.pdf
+*.gguf
+*.safetensors

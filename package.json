@@ -1,0 +1,33 @@
+{
+  "name": "sovaroll-daw",
+  "version": "0.129.0",
+  "private": true,
+  "type": "module",
+  "description": "Sovereign DAW / SovaRoll: a local MIDI and audio workstation with a shared GUI and CLI engine",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs serve",
+    "cli": "node src/cli.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "demo": "node src/cli.mjs init examples/First-Light.newdaw.json --demo",
+    "check": "node scripts/check.mjs",
+    "agent:verify": "node scripts/agent/verify.mjs",
+    "agent:verify:full": "node scripts/agent/verify.mjs --full",
+    "agent:e2e": "node scripts/agent/e2e.mjs",
+    "agent:guard": "node scripts/agent/guard.mjs",
+    "agent:checkpoint": "node scripts/agent/checkpoint.mjs",
+    "agent:find": "node scripts/agent/find.mjs",
+    "agent:show": "node scripts/agent/show.mjs",
+    "agent:task": "node scripts/agent/task.mjs",
+    "agent:map": "node scripts/agent/map.mjs",
+    "test:native": "node --test native/tests/*.test.mjs",
+    "pretest:native": "node scripts/build-native-midi.mjs"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git"
+  }
+}

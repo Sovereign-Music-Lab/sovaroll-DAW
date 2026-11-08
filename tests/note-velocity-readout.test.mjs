@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {buildNoteVelocityReadout as build,queryNoteVelocityReadout as query} from '../public/note-velocity-readout.mjs';
+const clip={startTick:1000,lengthTicks:960,notes:[{startTick:100,channel:0,velocity:40},{startTick:200,channel:0,velocity:80},{startTick:200,channel:1,velocity:90,releaseVelocity:30}]};
+test('Velocity cursor follows source onset through clip offset and boundaries without editing notes',()=>{const before=structuredClone(clip),i=build(clip);assert.equal(query(i,{projectTick:999}).status,'outside-clip');assert.equal(query(i,{projectTick:1050}).status,'no-data');assert.deepEqual(query(i,{projectTick:1199}).values,[40]);assert.deepEqual(query(i,{projectTick:1200}).values,[80,90]);assert.equal(query(i,{projectTick:1961}).status,'outside-clip');assert.deepEqual(clip,before);});
+test('Velocity cursor preserves coincident values and holds each channel independently',()=>{const i=build(clip);assert.deepEqual(query(i,{projectTick:1200,channel:0}).values,[80]);assert.deepEqual(query(i,{projectTick:1199,channel:1}).values,[]);assert.deepEqual(query(i,{projectTick:1960,channel:1,field:'releaseVelocity'}).values,[30]);assert.throws(()=>query(i,{projectTick:NaN}));});

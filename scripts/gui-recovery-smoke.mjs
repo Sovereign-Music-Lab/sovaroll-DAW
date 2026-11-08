@@ -1,0 +1,95 @@
+// Isolated GUI/CLI regression: media recovery, Pool references and quantize origins.
+import assert from 'node:assert/strict';
+import {promises as fs} from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {startServer} from '../src/server.mjs';
+import {encodeWav} from '../src/media/wav.mjs';
+const {chromium}=await import(process.env.NEWDAW_PLAYWRIGHT_MODULE||'playwright');
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),exec=promisify(execFile);
+const directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-recovery-gui-'));
+const projectPath=path.join(directory,'session.newdaw.json');
+const session=await startServer({projectPath,port:0,demo:true,quiet:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'});
+const page=await browser.newPage({viewport:{width:1512,height:1100}}),errors=[],checks=[];
+page.on('pageerror',error=>errors.push(error.message));
+const state=async()=>(await(await fetch(session.url+'/api/state')).json());
+const project=async()=>(await state()).project;
+const clip=p=>p.clips.find(c=>c.id==='clip-keys'),first=p=>clip(p).notes[0];
+const check=name=>{checks.push(name);console.log(`PASS ${name}`);};
+const waitRevision=async revision=>page.waitForFunction(r=>Number(document.querySelector('#revision-label')?.textContent.match(/\d+/)?.[0])===r,revision);
+const cli=async(command,args)=>{
+ const result=JSON.parse((await exec(process.execPath,['src/cli.mjs','command',command,JSON.stringify(args),'--url',session.url],{cwd:root})).stdout);
+ await waitRevision(result.projectRevision);return result;
+};
+const tools=async operation=>{await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption(operation);};
+const apply=async()=>{
+ const responsePromise=page.waitForResponse(r=>r.url().endsWith('/api/command')&&r.request().method()==='POST');
+ await page.locator('#midi-tools-form [type=submit]').click();const response=await responsePromise;assert.ok(response.ok(),await response.text());
+ const result=await response.json();await waitRevision(result.projectRevision);await page.waitForFunction(()=>!document.querySelector('#midi-tools-dialog').open);return project();
+};
+const chooseClip=async(id,options={})=>page.locator(`.timeline-clip[data-clip-id="${id}"]`).click(options);
+const openPool=async()=>{await page.locator('#media-pool-button').click();await page.waitForSelector('.media-table tbody tr');};
+const closePool=async()=>page.getByRole('button',{name:'미디어 풀 닫기',exact:true}).click();
+const recover=async(assetId,bytes,name='original.wav')=>{
+ const chooserPromise=page.waitForEvent('filechooser');
+ await page.locator(`[data-restore-asset="${assetId}"]`).click();const chooser=await chooserPromise;
+ const resultPromise=page.waitForResponse(r=>r.url().includes(`/api/assets/${assetId}/restore`)&&r.request().method()==='POST');
+ await chooser.setFiles({name,mimeType:'audio/wav',buffer:bytes});return resultPromise;
+};
+try{
+ await page.goto(session.url);await page.waitForSelector('.midi-note');
+ await cli('midi.notes.update',{clipId:'clip-keys',noteId:'key-0-0',startTick:350});
+ await page.locator('[data-note-id="key-0-0"]').click();
+ const base={...first(await project())};
+ await tools('quantize');await page.locator('#quantize-grid').selectOption('0.5');let p=await apply();
+ assert.equal(first(p).startTick,480);assert.equal(first(p).quantizeReference.startTick,350);
+ await tools('quantize');await page.locator('#quantize-grid').selectOption('0.25');p=await apply();
+ assert.equal(first(p).startTick,240);assert.equal(first(p).durationTicks,base.durationTicks);check('gui.quantize.original-grid-recalculation');
+ await tools('transpose');await page.locator('#transpose-semitones').fill('3');await apply();
+ await tools('velocity');await page.locator('#velocity-mode').selectOption('set');await page.locator('#velocity-value').fill('77');await apply();
+ await tools('resetQuantize');p=await apply();assert.equal(first(p).startTick,350);assert.equal(first(p).durationTicks,base.durationTicks);assert.equal(first(p).pitch,base.pitch+3);assert.equal(first(p).velocity,77);check('gui.quantize.reset-keeps-pitch-and-velocity');
+ await tools('quantize');await page.locator('#quantize-grid').selectOption('0.5');await apply();
+ await tools('freezeQuantize');p=await apply();assert.equal(first(p).quantizeReference.startTick,480);
+ await tools('quantize');await page.locator('#quantize-grid').selectOption('1');await apply();
+ await tools('resetQuantize');p=await apply();assert.equal(first(p).startTick,480);check('gui.quantize.freeze-new-origin');
+ await cli('midi.notes.update',{clipId:'clip-keys',noteId:'key-0-0',startTick:350});
+ await tools('quantize');await page.locator('#quantize-basis').selectOption('current');await page.locator('#quantize-grid').selectOption('0.5');await page.locator('#quantize-strength').fill('50');p=await apply();assert.equal(first(p).startTick,415);
+ await tools('quantize');p=await apply();assert.equal(first(p).startTick,448);check('gui.quantize.current-strength-iteration');
+ await cli('midi.notes.update',{clipId:'clip-keys',noteId:'key-0-0',startTick:370});
+ await tools('resetQuantize');p=await apply();assert.equal(first(p).startTick,370);check('gui.quantize.manual-move-reset-exception');
+ // Prepare two source assets and three events, using the real CLI and WAV import API.
+ const copied=await cli('clip.duplicate',{clipId:'clip-pulse'});const copyId=copied.changes.created.find(id=>(copied.project.clips).some(c=>c.id===id));
+ const additional=encodeWav({sampleRate:48000,channels:[Float32Array.from({length:4800},(_,i)=>Math.sin(i*.08)*.1)]});
+ const beforeImport=await project();const imported=await fetch(session.url+`/api/import/wav?name=Reference%20two.wav&expectedRevision=${beforeImport.revision}`,{method:'POST',headers:{'Content-Type':'audio/wav'},body:additional});assert.ok(imported.ok,await imported.clone().text());
+ p=(await imported.json()).project;await waitRevision(p.revision);const otherClip=p.clips.find(c=>!beforeImport.clips.some(old=>old.id===c.id));
+ await chooseClip('clip-pulse');await openPool();assert.equal(await page.locator('.media-table tr.selected').count(),1);
+ await page.locator('#media-select-events').click();assert.equal(await page.locator('.timeline-clip.selected').count(),2);assert.ok(await page.locator(`.timeline-clip[data-clip-id="${copyId}"]`).getAttribute('aria-pressed')==='true');assert.equal((await project()).revision,p.revision);check('gui.pool.source-selects-all-references');
+ await chooseClip(otherClip.id,{modifiers:['Shift']});assert.equal(await page.locator('.timeline-clip.selected').count(),3);await openPool();assert.equal(await page.locator('.media-table tr.selected').count(),2);await page.locator('#media-select-events').click();assert.equal(await page.locator('.timeline-clip.selected').count(),3);assert.equal((await project()).revision,p.revision);check('gui.pool.multi-events-find-multiple-sources');
+ await chooseClip('clip-keys');await openPool();assert.equal(await page.locator('.media-table tr.selected').count(),0);
+ const names=page.locator('[data-select-asset]');await names.nth(0).click();await names.nth(1).click({modifiers:['ControlOrMeta']});assert.equal(await page.locator('.media-table tr.selected').count(),2);await page.locator('#media-select-events').click();assert.equal(await page.locator('.timeline-clip.selected').count(),3);check('gui.pool.multi-source-reference-union');
+ await openPool();await page.locator('[data-reveal-clip="clip-pulse"]').click();assert.equal(await page.locator('.timeline-clip.selected').count(),1);assert.equal(await page.locator('.timeline-clip[data-clip-id="clip-pulse"]').getAttribute('aria-pressed'),'true');check('gui.pool.individual-reference-navigation');
+ await cli('clip.remove',{clipId:otherClip.id});await openPool();await page.locator(`[data-select-asset="${otherClip.assetId}"]`).click();assert.match(await page.locator('#media-references').textContent(),/사용하는 클립이 없습니다/);assert.equal(await page.locator('#media-select-events').count(),0);await closePool();check('gui.pool.unused-source-navigation');
+ // Damage only the isolated fixture. Never touch the user's sessions directory.
+ p=await project();const asset=p.assets.find(a=>a.id===p.clips.find(c=>c.id==='clip-pulse').assetId),assetPath=path.join(directory,asset.path),original=await fs.readFile(assetPath);
+ await fs.rm(assetPath);await page.reload();await page.waitForSelector('.timeline-clip');await page.waitForFunction(()=>document.querySelector('#resolve-dialog')?.open);await page.locator('#resolve-close').click();await chooseClip('clip-pulse');await openPool();await page.waitForSelector('.media-missing');
+ let response=await recover(asset.id,Buffer.from('wrong WAV'));assert.equal(response.status(),422);await page.waitForSelector('#media-message.error');assert.equal((await project()).revision,p.revision);await assert.rejects(fs.stat(assetPath),{code:'ENOENT'});check('gui.recovery.reject-wrong-original');
+ const chooserPromise=page.waitForEvent('filechooser');await page.locator(`[data-restore-asset="${asset.id}"]`).click();const chooser=await chooserPromise;
+ await cli('project.rename',{name:'Recovered source study'});const staleResponse=page.waitForResponse(r=>r.url().includes(`/api/assets/${asset.id}/restore`));await chooser.setFiles({name:'original.wav',mimeType:'audio/wav',buffer:original});response=await staleResponse;assert.equal(response.status(),409);await page.waitForFunction(()=>document.querySelector('#media-message').textContent.includes('프로젝트가 변경'));await assert.rejects(fs.stat(assetPath),{code:'ENOENT'});check('gui.recovery.stale-picker-does-not-restore');
+ await page.locator('#media-refresh').click();await page.waitForSelector('.media-missing');const savedBefore=await fs.readFile(projectPath),stateBefore=await state();
+ response=await recover(asset.id,original);assert.ok(response.ok());const restored=await response.json();assert.equal(restored.status,'restored');assert.equal(restored.projectRevision,stateBefore.project.revision);assert.equal(restored.mediaRevision,stateBefore.mediaRevision+1);await page.waitForFunction(()=>!document.querySelector('.media-missing'));assert.deepEqual(await fs.readFile(projectPath),savedBefore);assert.deepEqual(await fs.readFile(assetPath),original);check('gui.recovery.restore-missing-without-musical-edit');
+ await closePool();await page.waitForSelector('.timeline-clip[data-clip-id="clip-pulse"] .clip-waveform path');check('gui.recovery.refresh-failed-waveform-cache');
+ const damaged=Buffer.from('damaged source bytes for preservation');await fs.writeFile(assetPath,damaged);await openPool();await page.waitForSelector('.media-changed');response=await recover(asset.id,original);assert.ok(response.ok());const repaired=await response.json();assert.ok(repaired.preservedDamagedCopy?.path);assert.deepEqual(await fs.readFile(path.join(directory,repaired.preservedDamagedCopy.path)),damaged);assert.deepEqual(await fs.readFile(assetPath),original);assert.deepEqual(await fs.readFile(projectPath),savedBefore);await page.waitForFunction(()=>!document.querySelector('.media-changed'));check('gui.recovery.preserve-damaged-copy');
+ await fs.mkdir(path.join(root,'docs','screenshots'),{recursive:true});await page.screenshot({path:path.join(root,'docs','screenshots','v39-media-recovery.png'),fullPage:true});await closePool();await chooseClip('clip-keys');await tools('quantize');await page.screenshot({path:path.join(root,'docs','screenshots','v39-quantize-origin.png'),fullPage:true});
+ assert.deepEqual(errors,[]);
+ const evidencePaths=['public/app.mjs','public/editing.mjs','public/index.html','public/styles.css','src/core/editing.mjs','src/core/engine.mjs','src/core/schema.mjs','src/server.mjs','src/project-locations.mjs','src/folder-browser.mjs','src/storage.mjs','src/session-store.mjs','src/auto-backup.mjs','src/workspace.mjs','src/project-open.mjs','src/document-session.mjs','src/project-drafts.mjs','public/session.mjs','public/projects.mjs','src/project-files.mjs','src/cli.mjs','scripts/gui-recovery-smoke.mjs' ,'public/document.mjs','public/midi-events.mjs','public/resolution.mjs','src/core/midi-events.mjs','src/demo.mjs','src/media-resolution.mjs','src/media-search.mjs','src/media/common.mjs','src/media/midi.mjs','src/media/render.mjs','src/media/midi-stream.mjs','src/media/midi-playback.mjs','src/core/controllers.mjs','src/media/midi-curves.mjs','src/media/midi-chase.mjs','src/media/controller-bend.mjs','src/media/midi-controllers-query.mjs','src/core/modifiers.mjs','src/media/midi-modifiers.mjs','public/midi-modifiers.mjs','src/core/merge.mjs','public/midi-merge.mjs','src/chase-settings.mjs','public/chase-settings.mjs','src/controller-settings.mjs','public/controller-settings.mjs','src/media/controller-readout.mjs','public/controller-lanes.mjs','src/media/time.mjs','src/media/wav.mjs','src/project-save.mjs','src/recent-projects.mjs','src/render-worker.mjs','src/revert-media.mjs'];
+ for(const file of ['public/native-midi.mjs', 'src/native-midi-settings.mjs', 'src/native-transport.mjs', 'native/macos/client.mjs', 'native/macos/project-plan.mjs', 'native/macos/midi-bridge.swift', 'scripts/build-native-midi.mjs','src/reset-settings.mjs','public/reset-settings.mjs','native/macos/reset-policy.mjs','src/media/midi-display-time.mjs','src/media/midi-length-adjustment.mjs','src/timing-settings.mjs','public/timing-settings.mjs','src/media/musical-time.mjs','public/musical-time-display.mjs','src/media/display-time-edit.mjs','public/inspector-time.mjs','src/media/elapsed-time.mjs','src/media/timecode.mjs','src/media/timeline-projection.mjs','src/media/time-display.mjs','public/time-display-settings.mjs','src/media/editor-geometry.mjs','src/media/ruler-intervals.mjs'])if(!evidencePaths.includes(file))evidencePaths.push(file);
+ for(const file of ['src/media/note-paint.mjs','src/media/note-shapes.mjs','src/media/exact-tempo.mjs','src/media/time-edit-resolver.mjs','src/media/formatted-time-command.mjs','src/core/controller-paint.mjs','src/media/controller-shape-gesture.mjs','src/media/controller-shapes.mjs','src/media/controller-paint.mjs','src/media/controller-time-gesture.mjs','src/media/pointer-time-grid.mjs','src/media/snap-grid.mjs','public/snap-grid-settings.mjs'])if(!evidencePaths.includes(file))evidencePaths.push(file);
+ const sourceHashes=Object.fromEntries(await Promise.all(evidencePaths.map(async file=>[file,createHash('sha256').update(await fs.readFile(path.join(root,file))).digest('hex')])));
+ const receipt={status:'passed',executedAt:new Date().toISOString(),command:'NEWDAW_PLAYWRIGHT_MODULE=<installed playwright> node scripts/gui-recovery-smoke.mjs',tests:checks,pageErrors:errors,sourceHashes};
+ await fs.mkdir(path.join(root,'.test-output'),{recursive:true});await fs.writeFile(path.join(root,'.test-output','gui-recovery.json'),JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt,null,2));
+} finally {await browser.close();await session.close();await fs.rm(directory,{recursive:true,force:true});}

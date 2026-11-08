@@ -1,0 +1,446 @@
+{
+  "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
+  "updatedAt": "2026-11-08T14:33:24.495Z",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "E2E: audio fade-in/out from Inspector changes the rendered mix",
+      "area": "audio",
+      "priority": 1,
+      "size": "S",
+      "requirements": [
+        "FD-20"
+      ],
+      "status": "todo",
+      "goal": "Prove in the real GUI that setting a fade-in on an audio clip makes the rendered mix quieter at the clip start, and that Undo removes it.",
+      "context": [
+        "Inspector audio clip form (#clip-form) has inputs name=\"fadeInSeconds\" and name=\"fadeOutSeconds\" (rendered in public/app.mjs around line 724).",
+        "They are hidden unless the server capability audioClipFades is true (it is true in the current server).",
+        "Renderer applies fadeInFrames/fadeOutFrames in src/media/render.mjs; source WAV is never modified."
+      ],
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs (search: fadeInSeconds)",
+        "src/media/render.mjs (search: fadeIn)"
+      ],
+      "acceptance": [
+        "New E2E step(s) in scripts/gui-first-delivery-smoke.mjs, placed after audio.GUI-clip-trim-length: select the first imported audio clip, set fadeInSeconds=0.5, submit, assert project clip fadeInFrames equals 0.5 s in asset frames.",
+        "Render via CLI (cli('render', file)) and assert RMS of the first 0.05 s of that clip region is less than half of the RMS at 0.45–0.5 s into the clip (compute on the mono sum (L+R)/2; the MIDI track also sounds at those times, so compare against the same window rendered before the fade was set).",
+        "Click #undo and assert fadeInFrames is gone/0, then #redo is NOT required; leave project state consistent for later steps (later steps' expectations must still pass).",
+        "Step name: audio.GUI-fade-in-changes-render. Whole E2E still passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ],
+      "notes": [
+        "Do not change product code unless the test reveals a real bug; if it does, record it in the evidence."
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "E2E: audio clip mute and polarity invert from Inspector",
+      "area": "audio",
+      "priority": 1,
+      "size": "S",
+      "requirements": [
+        "FD-20"
+      ],
+      "status": "todo",
+      "goal": "Prove clip-level mute removes the clip from the mix and invert polarity flips sample sign, both undoable.",
+      "context": [
+        "#clip-form checkboxes name=\"audioMute\" and name=\"invertPolarity\".",
+        "Muted clips render dimmed (class muted-clip on .timeline-clip)."
+      ],
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs (search: invertPolarity)"
+      ],
+      "acceptance": [
+        "Check audioMute on the recorded clip, submit; project clip.mute === true; the .timeline-clip for it has class muted-clip; CLI render RMS over the recorded clip region drops to (near) zero compared to before.",
+        "Undo restores mute false.",
+        "Check invertPolarity on the imported clip; CLI render sample at a fixed frame inside that clip has opposite sign to the render before (compare with tolerance, other tracks muted via CLI command track.update or measure where only that clip plays).",
+        "Undo restores. Step names: audio.GUI-clip-mute-silences-render, audio.GUI-clip-polarity-inverts-render. Whole E2E passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "E2E: clip normalize button sets clip gain to reach the target peak",
+      "area": "audio",
+      "priority": 2,
+      "size": "S",
+      "requirements": [
+        "FD-20"
+      ],
+      "status": "todo",
+      "goal": "Prove the Inspector 'clip normalize' action (data-action=normalize-audio, target #audio-normalize-target) changes only clip gainDb, is undoable, and leaves the asset file unchanged.",
+      "context": [
+        "Handler: public/app.mjs (search: normalize-audio) → POST /api/audio/normalize → clip.update gainDb.",
+        "Imported test tone has peak 0.4 (≈ -7.96 dBFS)."
+      ],
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs",
+        "src/server.mjs (search: /api/audio/normalize)"
+      ],
+      "acceptance": [
+        "Set #audio-normalize-target to -1, click the normalize button for the imported clip; clip gainDb ≈ +6.96 (±0.05).",
+        "Asset WAV sha256 unchanged.",
+        "Undo restores the previous gainDb. Step name audio.GUI-normalize-sets-clip-gain. Whole E2E passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "E2E: cycle (locator loop) playback wraps the transport",
+      "area": "playback",
+      "priority": 2,
+      "size": "M",
+      "requirements": [
+        "FD-25"
+      ],
+      "status": "todo",
+      "goal": "Prove that with locators set and #cycle-playback pressed, playback position loops inside the locator range.",
+      "context": [
+        "Locators: CLI command project.locators {range:{startTick,endTick}}; GUI button #cycle-playback runs project.cycle {enabled}.",
+        "Preview renders the locator range and loops the AudioBuffer; position display is #position-time / #position-bars."
+      ],
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs (search: cycle-playback, cycleEnabled)"
+      ],
+      "acceptance": [
+        "Set locators to bar 1–2 (0..3840 ticks at 4/4) via CLI command, click #cycle-playback, assert project.cycleEnabled === true and aria-pressed=true.",
+        "Play; poll #position-time for ~3 s of wall time; every sampled position stays within [0 s, 2 s + 0.15 s] and at least one later sample is smaller than an earlier one (wrap observed).",
+        "Stop; toggle cycle off; Undo/redo not required. Step name playback.GUI-cycle-loops-locator-range. Whole E2E passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ],
+      "notes": [
+        "Headless Chrome needs --autoplay-policy=no-user-gesture-required (already set in the smoke)."
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "E2E: GUI 'new project' flow and first Save-as",
+      "area": "project",
+      "priority": 2,
+      "size": "M",
+      "requirements": [
+        "FD-01"
+      ],
+      "status": "todo",
+      "goal": "Cover creating a new Untitled project from the GUI projects dialog and saving it under a name, then reopening it.",
+      "context": [
+        "Dialog: #projects-button opens #projects-dialog (public/projects.mjs). New project: <details> with summary #projects-new-toggle and form #projects-new-form.",
+        "There is an existing scripts/gui-projects-smoke.mjs and scripts/gui-drafts-smoke.mjs — read them first and reuse their selectors.",
+        "First save of an Untitled document asks for a path (public/document.mjs showFirstSave)."
+      ],
+      "files": [
+        "scripts/gui-projects-smoke.mjs",
+        "scripts/gui-drafts-smoke.mjs",
+        "public/projects.mjs",
+        "public/document.mjs"
+      ],
+      "acceptance": [
+        "A new smoke scripts/gui-new-project-delivery-smoke.mjs (copy structure of gui-first-delivery-smoke.mjs) starts a server on an existing temp project, uses the GUI to create a new Untitled project in a temp folder, adds a MIDI track via #empty-add, saves with a name via the first-save dialog, restarts the server on the saved path, and sees the track.",
+        "No files outside the temp folder are created or changed.",
+        "Script prints PASS lines and {\"status\":\"passed\"}; npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs",
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "E2E: MIDI tools quantize/transpose/velocity in the delivery flow",
+      "area": "midi",
+      "priority": 3,
+      "size": "S",
+      "requirements": [
+        "FD-14"
+      ],
+      "status": "todo",
+      "goal": "Add first-delivery coverage for the MIDI tools dialog (#midi-tools-button → #midi-operation → submit).",
+      "context": [
+        "scripts/gui-editing-smoke.mjs already drives #midi-tools-button, #midi-operation (quantize/transpose/velocity), #transpose-semitones, #velocity-mode, #velocity-value, #midi-tools-form [type=submit]. Copy its sequence."
+      ],
+      "files": [
+        "scripts/gui-editing-smoke.mjs",
+        "scripts/gui-first-delivery-smoke.mjs"
+      ],
+      "acceptance": [
+        "After midi.GUI-part-split-at-cursor: select all notes of the first part, transpose +2 via the dialog, assert every pitch +2; undo restores.",
+        "Set velocity to 54 via the dialog; assert all selected notes velocity 54; undo restores.",
+        "Step names midi.GUI-tools-transpose, midi.GUI-tools-velocity. Later E2E steps still pass (note counts unchanged)."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-007",
+      "title": "E2E: keyboard Undo/Redo (Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z)",
+      "area": "project",
+      "priority": 3,
+      "size": "XS",
+      "requirements": [
+        "FD-13"
+      ],
+      "status": "todo",
+      "goal": "Prove the keyboard shortcuts undo and redo the last edit when focus is not in an input.",
+      "context": [
+        "Handler in public/app.mjs keydown: (metaKey||ctrlKey)&&key 'z' → history.undo / history.redo (shift)."
+      ],
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs"
+      ],
+      "acceptance": [
+        "After any edit, focus #timeline-scroll, press ControlOrMeta+z → revision increases and the edit is reverted; press ControlOrMeta+Shift+z → re-applied.",
+        "Step name project.GUI-keyboard-undo-redo. Whole E2E passes."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-008",
+      "title": "Run the existing recording protection smoke in the harness and record result",
+      "area": "audio",
+      "priority": 3,
+      "size": "XS",
+      "requirements": [
+        "FD-16",
+        "FD-21"
+      ],
+      "status": "todo",
+      "goal": "Confirm scripts/gui-recording-protection-smoke.mjs and scripts/gui-recording-workflow-smoke.mjs still pass with the harness runner, and fix only test drift if they fail.",
+      "context": [
+        "Run with: npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
+      ],
+      "files": [
+        "scripts/gui-recording-protection-smoke.mjs",
+        "scripts/gui-recording-workflow-smoke.mjs"
+      ],
+      "acceptance": [
+        "Both scripts pass via npm run agent:e2e -- <script>.",
+        "If a script fails because of stale selectors/expectations (not a product bug), fix the script minimally and explain why in evidence. If it is a product bug, block the task with details instead of patching blindly.",
+        "Add a line to docs/VALIDATION.md with the result."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs"
+      ]
+    },
+    {
+      "id": "T-009",
+      "title": "Sweep all gui-*-smoke.mjs scripts and list which pass",
+      "area": "harness",
+      "priority": 4,
+      "size": "S",
+      "requirements": [],
+      "status": "todo",
+      "goal": "Produce .test-output/smoke-sweep.json listing every scripts/gui-*-smoke.mjs with pass/fail and first error line, without changing product code.",
+      "context": [
+        "64 smoke scripts exist. Some may be stale. Use scripts/agent/e2e.mjs per script or write scripts/agent/smoke-sweep.mjs that loops and records results (timeout 5 min each)."
+      ],
+      "files": [
+        "scripts/agent/e2e.mjs",
+        "scripts/agent/lib.mjs"
+      ],
+      "acceptance": [
+        "New scripts/agent/smoke-sweep.mjs runs each gui-*-smoke.mjs sequentially (NOT gui-first-delivery twice), writes .test-output/smoke-sweep.json {script,status,ms,firstError}.",
+        "Add npm script agent:smoke-sweep in package.json.",
+        "For each failing smoke, add ONE follow-up task with npm run agent:task -- add (do not fix them in this task)."
+      ],
+      "verify": [
+        "node --check scripts/agent/smoke-sweep.mjs",
+        "npm run agent:guard"
+      ]
+    },
+    {
+      "id": "T-010",
+      "title": "Decide: should a ruler click snap the cursor to the grid?",
+      "area": "ux",
+      "priority": 5,
+      "size": "XS",
+      "requirements": [],
+      "status": "blocked",
+      "blockedReason": "Needs a human product decision. Currently clicking the timeline/piano ruler sets the cursor to the exact pointer position (e.g. 7700 ticks instead of 7680), so pasting/importing 'at cursor' lands slightly off-grid. Ask the user whether ruler clicks should follow the Snap setting.",
+      "goal": "Get a decision; if yes, snap seekRuler() result with the existing noteSnap()/compileEditorSnap and add a test.",
+      "context": [
+        "public/app.mjs seekRuler(event, scope) (search: async function seekRuler)."
+      ],
+      "files": [
+        "public/app.mjs"
+      ],
+      "acceptance": [
+        "Human decision recorded in this task's notes before any code change."
+      ],
+      "verify": [
+        "npm run agent:e2e"
+      ]
+    },
+    {
+      "id": "T-011",
+      "title": "Declutter: collapse the two recording bars into one collapsible panel",
+      "area": "ux",
+      "priority": 4,
+      "size": "M",
+      "requirements": [],
+      "status": "todo",
+      "dependsOn": [
+        "T-008"
+      ],
+      "goal": "The microphone and MIDI recording controls currently occupy two full rows above the arrangement. Put them inside a <details id=\"recording-panel\"> (summary '녹음') that is closed by default but opens automatically while recording is active, without changing any control id.",
+      "context": [
+        "Audio recording controls are created by public/recording-ui.mjs (host.className='recording-controls'); MIDI recording controls by public/web-midi-input.mjs. Check where each host is inserted in the DOM.",
+        "All existing ids (audio-record, audio-record-stop, …) must stay the same because smoke tests use them."
+      ],
+      "files": [
+        "public/recording-ui.mjs",
+        "public/web-midi-input.mjs",
+        "public/styles.css",
+        "public/index.html"
+      ],
+      "acceptance": [
+        "Recording controls live inside one <details id=\"recording-panel\">; default closed; the transport row is directly followed by the arrangement when closed.",
+        "Smoke scripts that click recording controls open the panel first (update gui-first-delivery-smoke and gui-recording-* with openMenu('recording-panel')).",
+        "npm run agent:e2e and both recording smokes pass; screenshot before/after saved to .test-output/."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e",
+        "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
+      ]
+    },
+    {
+      "id": "T-012",
+      "title": "Long project: preview/export of a project longer than 120 s",
+      "area": "playback",
+      "priority": 4,
+      "size": "S",
+      "requirements": [
+        "FD-22",
+        "FD-26"
+      ],
+      "status": "todo",
+      "goal": "Find out and test what happens when a project is ~150 s long: CLI render must succeed (limit is 600 s); GUI Play must either work or show a clear Korean message — never fail silently.",
+      "context": [
+        "src/media/render-limits.mjs MAX_RENDER_SECONDS=600. Older docs mention a 120 s preview window for the built-in instrument path; verify current behaviour in public/app.mjs play() and src/server.mjs /api/render."
+      ],
+      "files": [
+        "src/media/render-limits.mjs",
+        "src/media/render.mjs",
+        "public/app.mjs (search: async function play)"
+      ],
+      "acceptance": [
+        "New integration test tests/long-project-render-integration.test.mjs: create a project with a MIDI note at 140 s via commands, CLI render succeeds and output frames ≥ 140 s × sampleRate.",
+        "Document the GUI behaviour in the evidence; if Play fails silently, add a follow-up task (do not redesign playback here)."
+      ],
+      "verify": [
+        "node --test tests/long-project-render-integration.test.mjs",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "id": "T-013",
+      "title": "Manual check list for the human: real microphone and speakers",
+      "area": "docs",
+      "priority": 5,
+      "size": "XS",
+      "requirements": [
+        "FD-16",
+        "FD-21",
+        "FD-22"
+      ],
+      "status": "todo",
+      "goal": "Write docs/agent/MANUAL_CHECKS.md: a short checklist a human follows with a real mic/headphones (record, overdub with backing, count-in, metronome, monitor latency, listen to mix export).",
+      "context": [
+        "Agents cannot listen. This file lets the human record results; agents must not mark these items verified."
+      ],
+      "files": [
+        "docs/agent/REQUIREMENTS.md"
+      ],
+      "acceptance": [
+        "File exists with numbered steps, expected result per step, and a result column left empty.",
+        "REQUIREMENTS.md links to it in the FD-16/21/22 rows."
+      ],
+      "verify": [
+        "npm run agent:guard"
+      ]
+    },
+    {
+      "id": "T-014",
+      "status": "done",
+      "priority": 0,
+      "area": "release",
+      "size": "M",
+      "title": "Prepare the initial Apache-2.0 public release and Gemma 4 handoff",
+      "goal": "Ship a standalone, documented SovaRoll source tree with bilingual philosophy, manuals and development notes.",
+      "files": [
+        "README.md",
+        "README.ko.md",
+        "PHILOSOPHY.en.md",
+        "PHILOSOPHY.ko.md",
+        "docs/",
+        "scripts/agent/"
+      ],
+      "acceptance": [
+        "English and Korean docs preserve the product roles and human-feedback loop, distinguish current capabilities from the professional-grade target, and document the Gemma 4 future development policy.",
+        "The source tree runs independently and retains all existing product and native tests.",
+        "Apache-2.0 LICENSE and NOTICE are present; public files contain no credentials, personal projects, or unredistributable source collections.",
+        "Full verification, native tests, first-delivery E2E, public guard regression tests, links, and fresh-tree smoke checks pass."
+      ],
+      "verify": [
+        "npm run agent:verify:full",
+        "npm run test:native",
+        "npm run agent:e2e",
+        "fresh-tree smoke and publication audit"
+      ],
+      "startedAt": "2026-11-08T14:16:19.862Z",
+      "evidence": "VERIFY PASS full suite 171 files; original 177 test files unchanged; native 97 PASS after Swift build; Chrome E2E 27 PASS; fresh-tree startup PASS and E2E 27 PASS on unchanged retry (intermittent pan timeout tracked as T-015); public-content, Markdown/navigation and skill checks PASS.",
+      "doneAt": "2026-11-08T14:33:24.494Z"
+    },
+    {
+      "status": "todo",
+      "priority": 3,
+      "area": "test-reliability",
+      "id": "T-015",
+      "title": "Investigate intermittent first-delivery mixer pan timeout",
+      "size": "S",
+      "goal": "Determine why audio pan sometimes does not advance revision in the first-delivery browser flow, while preserving behavioral assertions.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs (lines 119–121)",
+        "public/app.mjs (track pan input handling)"
+      ],
+      "context": [
+        "One fresh-tree publication run timed out at audio-track pan after gain; screenshot showed no HTTP failures.",
+        "The same unchanged source/test passed all 27 steps on rerun. Cause is unconfirmed."
+      ],
+      "acceptance": [
+        "Capture a minimal reproduction or instrumented evidence for the pan event/revision sequence.",
+        "Distinguish a test synchronization race from a product defect without removing assertions or increasing timeout merely to hide it.",
+        "If a fix is justified, add meaningful coverage and rerun the first-delivery flow; otherwise record observed limits and leave the issue open."
+      ],
+      "verify": [
+        "npm run agent:verify",
+        "npm run agent:e2e"
+      ]
+    }
+  ]
+}
