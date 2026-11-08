@@ -183,7 +183,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | tap-tempo-ui.mjs | 21 | 904 | setupTapTempo |
 | time-display-settings.mjs | 32 | 1866 | setupTimeDisplaySettings |
 | timing-settings.mjs | 18 | 1782 | readTimingProfile, setupTimingSettings |
-| web-midi-input.mjs | 204 | 1982 | setupBrowserMidiInput, setupBrowserMidiRecording, createMidiTakeStore, createMidiMonitorChannel, midiMonitorVoiceHeld, midiMonitorPitch, applyMidiMonitorCC |
+| web-midi-input.mjs | 205 | 1982 | setupBrowserMidiInput, setupBrowserMidiRecording, createMidiTakeStore, createMidiMonitorChannel, midiMonitorVoiceHeld, midiMonitorPitch, applyMidiMonitorCC |
 
 ## scripts/
 
@@ -207,7 +207,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-editing-smoke.mjs | 74 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 297 | 388 |  |
+| gui-first-delivery-smoke.mjs | 301 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |
@@ -242,8 +242,8 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-note-velocity-cursor-smoke.mjs | 42 | 470 |  |
 | gui-paste-time-smoke.mjs | 42 | 621 |  |
 | gui-projects-smoke.mjs | 195 | 1414 |  |
-| gui-recording-protection-smoke.mjs | 40 | 2091 |  |
-| gui-recording-workflow-smoke.mjs | 40 | 1053 |  |
+| gui-recording-protection-smoke.mjs | 41 | 2159 |  |
+| gui-recording-workflow-smoke.mjs | 41 | 1087 |  |
 | gui-recovery-smoke.mjs | 96 | 1400 |  |
 | gui-reset-smoke.mjs | 54 | 894 |  |
 | gui-resolution-smoke.mjs | 91 | 1394 |  |

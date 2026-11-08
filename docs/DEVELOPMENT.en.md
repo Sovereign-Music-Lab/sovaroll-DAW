@@ -48,7 +48,7 @@ These notes describe this repository's behavior and testable decisions. They mak
 | MIDI | Note edit/selection/clipboard, quantization, step input, controllers/curves, events, modifiers, merge/freeze, import/export | The simple internal oscillator does not render every preserved MIDI event |
 | Arrangement | Clips, folders, ordering, locators, markers, timing and tempo | Larger sessions and all platform/input combinations need more testing |
 | Audio | WAV/AIFF, trim/split/slip, gain/fades/polarity, normalize/DC, statistics, optional FFmpeg tempo processing | Snapshot preview is not a low-latency native engine; format and processing limits apply |
-| Recording | Browser audio/Web MIDI, take preservation, count-in and monitoring | Fake-device tests do not establish hardware quality, latency or permission behavior |
+| Recording | Browser audio/Web MIDI in a collapsible panel that opens while recording is active, take preservation, count-in and monitoring | Fake-device tests do not establish hardware quality, latency or permission behavior |
 | Mixing/export | Track/master controls, EQ/effects, mix/stems, MIDI and project bundles | External plugin/instrument hosting and advanced mastering are unfinished |
 | Native MIDI | Optional macOS bridge, routing, cancellation, reset/chase policies | MIDI output only; no synchronized native audio or cross-platform native backend claim |
 
@@ -56,7 +56,7 @@ See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQU
 
 ## Open work
 
-T-001–T-013 retain browser coverage work for fades, clip mute/polarity, normalization, cycle, recording support, keyboard undo/redo, fresh-project GUI flow, audio shortcuts, backup recovery, MIDI input, and layout. T-010 awaits a human decision about snapping ruler clicks. Publishing does not promote their status.
+The remaining queue includes T-012 long-project preview/export, T-013 manual hardware validation and T-017–T-035 for the failed smokes found by T-009. T-010 awaits a human decision about snapping ruler clicks. Completed continuation evidence is recorded in [VALIDATION.md](VALIDATION.md); publication does not promote unverified status.
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

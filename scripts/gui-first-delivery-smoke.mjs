@@ -33,7 +33,7 @@ async function after(rev){await page.waitForFunction(r=>Number(document.querySel
 async function act(fn){const rev=(await proj()).revision;await fn();await after(rev);return proj();}
 async function openPage(){page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>pageErrors.push(e.message));page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});page.on('response',r=>{if(r.status()>=400)httpErrors.push(`${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}`);});await page.goto(session.url);await synced();}
 async function download(trigger,name){const [d]=await Promise.all([page.waitForEvent('download',{timeout:60000}),trigger()]);const file=path.join(downloads,name);await d.saveAs(file);return file;}
-const openMenu=async id=>{const d=page.locator('#'+id);if(!(await d.evaluate(e=>e.open)))await d.locator('summary').click();};
+const openMenu=async id=>{const d=page.locator('#'+id);if(!(await d.evaluate(e=>e.open)))await d.locator(':scope > summary').click();};
 const zoom=async()=>Number(await page.locator('#zoom').inputValue());
 async function gridPoint(tick,pitch){await scrollPianoTo(pitch);const grid=page.locator('#note-grid'),box=await grid.boundingBox();return {x:box.x+tick/960*await zoom()+3,y:box.y+(127-pitch)*19+9};}
 async function scrollPianoTo(pitch){await page.locator('#piano-scroll').evaluate((e,p)=>{e.scrollTop=Math.max(0,(127-p)*19-e.clientHeight/2);e.scrollLeft=0;},pitch);}
@@ -44,6 +44,10 @@ let summary={};
 try{
  // 1. Project
  await openPage();
+ await page.waitForSelector('#recording-panel .recording-controls',{state:'attached'});await page.waitForSelector('#recording-panel .midi-input-controls',{state:'attached'});
+ assert.equal(await page.locator('.transport').evaluate(e=>e.nextElementSibling?.id),'recording-panel');
+ assert.equal(await page.locator('#recording-panel').evaluate(e=>e.open),false);
+ assert.equal(await page.locator('#recording-panel .recording-controls').isVisible(),false);check('recording.GUI-panel-default-collapsed');
  assert.equal((await proj()).tracks.length,0);assert.equal(await page.locator('#timeline-empty').isVisible(),true);check('project.new-empty-project-opens-in-GUI');
 
  // 2. MIDI track + notes
@@ -111,7 +115,7 @@ try{
  let audioClip=p.clips.find(c=>c.type==='audio');assert.ok(audioClip,'imported audio clip');const audioTrack=p.tracks.find(t=>t.id===audioClip.trackId);assert.equal(audioTrack.type,'audio');
  summary.importStartSample=audioClip.startSample;near(audioClip.startSample,48000,48,'imported at cursor (1 s)');check('audio.GUI-WAV-import-at-cursor');
  await clickRuler('#timeline-ruler',960*12);
- const recordRev=(await proj()).revision;await page.locator('#audio-record').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('녹음 중'));await page.waitForTimeout(1200);
+ const recordRev=(await proj()).revision;await openMenu('recording-panel');await page.locator('#audio-record').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('녹음 중'));assert.equal(await page.locator('#recording-panel').evaluate(e=>e.open),true);await page.waitForTimeout(1200);
  await page.locator('#audio-record-stop').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('클립 저장 완료'),null,{timeout:30000});
  p=await proj();assert.equal(p.revision,recordRev+1);const recorded=p.clips.find(c=>c.type==='audio'&&c.id!==audioClip.id);assert.ok(recorded);near(recorded.startSample,48000*6,48,'recorded at cursor');assert.ok(recorded.lengthFrames>0);check('audio.GUI-fake-microphone-recording-to-cursor-clip');
  // move imported clip to 0.5 s via inspector, then split it at 2 s, then trim the tail

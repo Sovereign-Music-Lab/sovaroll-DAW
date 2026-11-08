@@ -121,7 +121,10 @@
 #controller-shape-preview{flex:0 0 100%;height:16px;line-height:16px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 #controller-shape-tools>span{flex:0 0 100%}
 
-/* Primary recording workflow: keep controls outside the arrangement grid. */
+/* One compact recording panel; both device hosts stay outside the arrangement grid. */
+#recording-panel{background:#16251d;border-bottom:1px solid var(--line)}
+#recording-panel>summary{cursor:pointer;padding:8px 22px;color:var(--muted);font-size:11px}
+#recording-panel[open]>summary{color:var(--mint)}
 .recording-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 22px;background:#1c2620;border-bottom:1px solid var(--line);min-height:48px}
 .recording-controls button{padding:7px 12px;border:1px solid #506151;border-radius:5px;background:#26362b;color:var(--text)}
 #audio-record{color:#ffb4ae}#audio-record-stop{color:var(--mint)}.recording-controls meter{width:100px;height:16px}.recording-controls [role=status]{color:var(--muted);font-size:12px}.recording-controls a{color:var(--mint);margin-left:auto}

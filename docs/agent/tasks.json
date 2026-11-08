@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:27:40.276Z",
+  "updatedAt": "2026-11-08T19:36:21.908Z",
   "tasks": [
     {
       "id": "T-001",
@@ -328,7 +328,7 @@
       "priority": 4,
       "size": "M",
       "requirements": [],
-      "status": "todo",
+      "status": "done",
       "dependsOn": [
         "T-008"
       ],
@@ -353,7 +353,10 @@
         "npm run agent:e2e",
         "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
         "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:28:56.901Z",
+      "evidence": "Audio/Web MIDI hosts now share closed-by-default details#recording-panel immediately after transport; control IDs unchanged and prepare/record/save opens it automatically. Screenshots saved to .test-output/recording-panel-before.png and recording-panel-after.png. npm run agent:e2e: E2E PASS, 36 steps including default collapsed/hosts and active auto-open. Recording workflow E2E PASS 4; protection E2E PASS 6 using direct :scope>summary. npm run agent:verify: VERIFY PASS. English/Korean development notes and validation updated; physical devices unverified.",
+      "doneAt": "2026-11-08T19:36:21.907Z"
     },
     {
       "id": "T-012",
