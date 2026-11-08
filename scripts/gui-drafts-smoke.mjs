@@ -62,7 +62,10 @@ try {
 
   await edit('project.settings', { masterGainDb: -9 });
   const sourceBytes = Buffer.from(encodeWav({ sampleRate: 8000, channels: [Float32Array.from({ length: 8000 }, (_, index) => .1 * Math.sin(index * .13))] })), source = path.join(directory, 'Original.wav'); await fs.writeFile(source, sourceBytes);
-  const upload = page.waitForResponse(response => new URL(response.url()).pathname === '/api/import/wav' && response.request().method() === 'POST'); await page.locator('#import-file').setInputFiles(source); assert.equal((await upload).status(), 200); current = await waitState();
+  const upload = page.waitForResponse(response => new URL(response.url()).pathname === '/api/import/wav' && response.request().method() === 'POST');
+  await page.locator('#import-button').click();
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('#import-choose-file').click()]);
+  await chooser.setFiles(source); assert.equal((await upload).status(), 200); current = await waitState();
   const draftAsset = current.project.assets.find(asset => asset.sha256 === hash(sourceBytes)); assert.ok(draftAsset); assert.deepEqual(await fs.readFile(path.join(folder1, draftAsset.path)), sourceBytes); await absent(`${working(draft1)}.saved.json`);
   check('gui.drafts.edit-and-import-persist-working-state-without-first-save');
 

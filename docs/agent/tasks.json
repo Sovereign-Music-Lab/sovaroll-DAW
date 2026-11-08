@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T20:07:19.288Z",
+  "updatedAt": "2026-11-08T20:11:11.789Z",
   "tasks": [
     {
       "id": "T-001",
@@ -651,7 +651,7 @@
       "doneAt": "2026-11-08T20:07:19.288Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-022",
@@ -674,7 +674,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-drafts-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T20:08:39.236Z",
+      "evidence": "Reproduced null-draft import timeout after four passing steps. Routed upload through Import options and actual file chooser as in the current GUI contract; assertions unchanged. npm run agent:e2e -- scripts/gui-drafts-smoke.mjs: E2E PASS, 17 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T20:11:11.788Z"
     },
     {
       "status": "todo",
