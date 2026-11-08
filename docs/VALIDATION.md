@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-024 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-025 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -43,6 +43,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-022 reproduced the same null-draft import timeout in `gui-drafts-smoke.mjs` and routed its upload through the real Import options and chooser. All 17 targeted steps and final `npm run agent:verify` passed without changing assertions.
 - T-023 is resolved after focused investigation. The stale MIDI conflict now checks the intentional warning and closes with Escape. DOM ancestry proved `clip-tools-button` is inside closed `details#arrangement-edit-menu`; the smoke now opens its direct summary before every clip-tools click, rather than forcing clicks or changing layout. Track duplication now submits the actual confirmation dialog, and reorder uses stable `[data-track-edit="up"]`. The full targeted E2E passed all 14 steps. No product code changed; final `npm run agent:verify` passed.
 - T-024 reproduced a timeout after 12 MIDI-event checks. The export format control lives in a dialog that closes after download, so the smoke now opens `#midi-export-dialog` before each SMF 0/1 export. All 16 targeted steps and final `npm run agent:verify` passed without product changes.
+- T-025 reproduced the MIDI-modifiers freeze timeout after 8 checks. The implementation now reports `저장된 출력을 확정`, while the smoke waited for the older `실제 이벤트로 확정` phrase. Only the completion-text wait changed; revision, source, MIDI output, reset, no-op and Undo/Redo assertions remain. All 12 targeted steps and final `npm run agent:verify` passed.
 
 ## Problems encountered and resolved
 
@@ -105,3 +106,5 @@ T-022에서는 drafts 스모크의 같은 null draft 가져오기 timeout을 재
 T-023은 집중 조사 후 해결했습니다. MIDI 충돌 경고와 Escape 종료를 검증하고, DOM 조상 조사로 `clip-tools-button`이 닫힌 `details#arrangement-edit-menu` 안에 있음을 확정했습니다. force click이나 레이아웃 변경 대신 각 클립 편집 클릭 전에 직접 summary를 엽니다. 트랙 복제는 실제 확인 대화상자를 제출하고 순서 이동은 안정적인 `[data-track-edit="up"]`을 사용합니다. 대상 E2E 14단계가 모두 통과했고 제품 코드는 변경하지 않았습니다. 최종 verify도 통과했습니다.
 
 T-024에서는 MIDI 이벤트 12개 검사 후보내기 timeout을 재현했습니다. 형식 선택이 다운로드 후 닫히는 대화상자 안에 있으므로 각 SMF 0/1보내기 전에 `#midi-export-dialog`를 엽니다. 대상 E2E 16단계와 최종 verify가 통과했고 제품 코드는 변경하지 않았습니다.
+
+T-025에서는 MIDI modifier Freeze 후 timeout을 재현했습니다. 현재 완료 문구 `저장된 출력을 확정`과 달리 옛 문구 `실제 이벤트로 확정`을 기다린 drift였습니다. 완료 대기 문구만 바꾸고 revision·원본·MIDI 출력·초기화·no-op·Undo/Redo 검증은 유지했습니다. 대상 E2E 12단계와 최종 verify가 통과했습니다.

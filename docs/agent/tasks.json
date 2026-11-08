@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T23:34:33.694Z",
+  "updatedAt": "2026-11-08T23:38:06.959Z",
   "tasks": [
     {
       "id": "T-001",
@@ -739,7 +739,7 @@
       "doneAt": "2026-11-08T23:34:33.693Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-025",
@@ -762,7 +762,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T23:35:36.959Z",
+      "evidence": "Reproduced freeze timeout after 8 checks. Current status says 저장된 출력을 확정, test waited for 실제 이벤트로 확정. Updated only completion text wait; all revision/source/MIDI/reset/no-op/Undo assertions unchanged. npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs: E2E PASS, 12 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:38:06.959Z"
     },
     {
       "status": "todo",
