@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T19:00:34.615Z",
+  "updatedAt": "2026-11-08T19:03:32.115Z",
   "tasks": [
     {
       "id": "T-001",
@@ -247,7 +247,7 @@
         "FD-16",
         "FD-21"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Confirm scripts/gui-recording-protection-smoke.mjs and scripts/gui-recording-workflow-smoke.mjs still pass with the harness runner, and fix only test drift if they fail.",
       "context": [
         "Run with: npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
@@ -264,7 +264,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
         "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:01:44.613Z",
+      "evidence": "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs: E2E PASS, 6 steps. npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs: E2E PASS, 4 steps. Both scripts passed unchanged; no selector drift, product bug, or code change. docs/VALIDATION.md records scope and physical-device limitation. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests).",
+      "doneAt": "2026-11-08T19:03:32.114Z"
     },
     {
       "id": "T-009",
