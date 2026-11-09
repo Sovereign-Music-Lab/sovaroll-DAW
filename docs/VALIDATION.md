@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-049 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-050 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -71,6 +71,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-047 writes actual PCM16 WAV from the helper, reads it before temporary-file cleanup and exposes a server-owned download with matching PCM hash. Server tests decode and verify frames/rate/channels/hash; GUI download decoded to non-empty stereo 48 kHz WAV. Targeted server 1 and GUI 3 passed; native 106 and full verification 172 files passed. Source render/project revision are unchanged. T-048 adds editable clip import.
 - T-048 imports the server-owned processed WAV through the existing verified `/api/import/wav` path, without a new executable or arbitrary file-path input. The GUI test moves the ruler cursor to 4 seconds, verifies exactly one new audio clip at sample `4 * sampleRate` with the processed frame count, and confirms that one Undo restores the prior clips, tracks and assets. Audio Unit self-import alone preserves the offline instance/output; other project edits retain existing cleanup. Targeted GUI passed 4 steps, default E2E passed 40, native tests passed 106 and full verification passed 172 files. No listening or plugin-compatibility claim.
 - T-049 adds explicit whole-mix/locator-range selection. Missing locators reject before a render or project edit. The locator test renders 0.25–1.25 seconds with zero added tail, verifies 48,000 stereo frames at 48 kHz and a server-recorded `sourceStartSample` of 12,000, then imports at that position despite the cursor remaining at 4 seconds. One Undo restores clips/tracks/assets. The owner snapshot now retains processed `outputUrl` and range metadata across refreshes. Targeted GUI passed 6 steps, default E2E passed 40, native tests passed 106 and full verification passed 172 files. No realtime-hosting, listening or compatibility claim.
+- T-050 adds all-track/selected-track mode using the renderer's existing validated `trackIds`. Empty selection rejects without a project edit. Two sounding MIDI tracks establish that selected-track source PCM SHA-256 differs from the all-track source, and selected-track rendering also passes the locator-range/import/Undo path. Targeted GUI passed 8 steps, default E2E passed 40, native tests passed 106 and full verification passed 172 files. No arbitrary track IDs or executable paths were added; no listening or compatibility claim.
 
 ## Problems encountered and resolved
 
@@ -189,3 +190,5 @@ T-047에서는 helper가 실제 PCM16 WAV를 쓰고 서버가 임시 파일 정�
 T-048에서는 새 실행 파일이나 임의 경로 입력 없이 기존 `/api/import/wav`로 서버 소유 처리 WAV를 가져옵니다. GUI 검사는 눈금자 커서를 4초로 이동한 뒤 정확히 하나의 오디오 클립이 `4 * sampleRate`와 처리본 프레임 수로 생성되는지 확인하고, 한 번의 Undo가 기존 트랙·클립·에셋을 복원하는지 검증합니다. Audio Unit 자체 처리본 가져오기에만 오프라인 인스턴스·출력을 유지하며 다른 편집의 정리 동작은 그대로입니다. 대상 GUI 4단계, 기본 E2E 40단계, native 106개, 전체 제품 172개 파일이 통과했습니다. 청음이나 플러그인 호환성은 주장하지 않습니다.
 
 T-049에서는 전체 믹스/Locator 구간 선택을 추가했습니다. Locator가 없으면 렌더나 프로젝트 변경 전에 거부합니다. 0.25–1.25초를 추가 꼬리 없이 처리해 48kHz stereo 48,000프레임과 서버 기록 `sourceStartSample` 12,000을 확인했고, 커서가 4초에 있어도 해당 구간 시작에 클립을 가져왔습니다. 한 번의 Undo로 트랙·클립·에셋이 복원됩니다. 소유자 스냅숏은 새로고침 후에도 처리본 `outputUrl`과 구간 메타데이터를 유지합니다. 대상 GUI 6단계, 기본 E2E 40단계, native 106개, 전체 제품 172개 파일이 통과했습니다. 실시간 호스팅·청음·호환성은 주장하지 않습니다.
+
+T-050에서는 기존 렌더러의 검증된 `trackIds`를 사용한 모든 트랙/선택 트랙 모드를 추가했습니다. 빈 선택은 프로젝트 변경 없이 거부합니다. 두 개의 sounding MIDI 트랙으로 선택 트랙 source PCM SHA-256이 전체 source와 다른지 확인했고, 선택 트랙 모드도 Locator 구간·가져오기·Undo 경로를 통과했습니다. 대상 GUI 8단계, 기본 E2E 40단계, native 106개, 전체 제품 172개 파일이 통과했습니다. 임의 트랙 ID나 실행 경로를 추가하지 않았으며 청음·호환성은 주장하지 않습니다.

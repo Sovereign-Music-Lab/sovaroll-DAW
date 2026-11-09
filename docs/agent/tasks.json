@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:27:39.792Z",
+  "updatedAt": "2026-11-09T05:35:07.728Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1509,6 +1509,49 @@
       "startedAt": "2026-11-09T05:18:48.069Z",
       "evidence": "Targeted GUI E2E PASS: 6 steps. Missing locators rejected without project edit; whole-mix cursor import retained; 0.25–1.25s locator render produced 48,000 stereo frames at 48kHz, sourceStartSample=12000, imported at 12000 despite cursor at 4s with matching WAV SHA-256, and one Undo restored clips/tracks/assets. Owner snapshot retains outputUrl/range metadata. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. No realtime-hosting, listening or compatibility claim.",
       "doneAt": "2026-11-09T05:27:39.791Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-050",
+      "title": "Audio Unit offline processing for selected tracks",
+      "size": "M",
+      "dependsOn": [
+        "T-049"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-24"
+      ],
+      "goal": "Allow the explicit Audio Unit offline probe to render only selected tracks, combined with whole-project or locator time range, and import the result with Undo.",
+      "context": [
+        "src/server.mjs render endpoint already validates trackIds for export; no renderer or plugin-path changes are needed.",
+        "public/app.mjs owns selectedTrackIds; the Audio Unit dialog currently sends no track selection.",
+        "Default remains all tracks; empty selection in selected-track mode must fail clearly before creating a render job."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The dialog defaults to all tracks and offers selected-track mode with a clear empty-selection error and no project edit.",
+        "Selected-track mode passes only current selected track IDs through the existing validated export renderer and works with both time-range modes without changing default playback.",
+        "Browser tests use at least two sounding tracks and verify selected-only source PCM differs from the all-track source, output/import identity and Undo; no arbitrary track IDs or plugin paths are accepted by the Audio Unit API.",
+        "Update bilingual notes and validation; retain full default E2E, native and product verification without listening or compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:28:10.633Z",
+      "evidence": "Targeted GUI E2E PASS: 8 steps. Empty selected-track mode rejected without edit; two sounding MIDI tracks verified selected-only source PCM SHA-256 differs from all-track source; selected-track mode also passed locator-range 48,000-frame render, sourceStartSample=12000 import with matching asset hash and one-Undo restoration. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full: VERIFY PASS, 172 product files; final agent:verify guard/syntax PASS. No arbitrary IDs/paths, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:35:07.727Z"
     }
   ]
 }
