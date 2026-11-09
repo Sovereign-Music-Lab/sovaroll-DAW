@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-056 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-057 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -78,6 +78,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-054 fixes GUI/server lifecycle divergence by locking component discovery, selection and repeated instantiation while an instance is active. Explicit release clears parameter choices, re-enables selection/listing and successfully reinstantiates the same exact component. The browser test initially observed loading-state and locator-API mistakes in its new assertions; corrected synchronization and option-count observation passed without weakening behavior checks. Targeted GUI passed 13 steps, default E2E passed 40 and full verification passed 173 files. No realtime-hosting or listening claim.
 - T-055 adds per-parameter default restoration through the existing guarded setter. The GUI reads back the captured initial value and a subsequent render returns to the exact baseline PCM hash after the changed-render check. Project revision remains unchanged. Targeted GUI passed 14 steps, default E2E passed 40 and full verification passed 173 files. Reset is offline-instance state, not project history or realtime automation.
 - T-056 adds native-only real-time AVAudioEngine playback through the active Audio Unit. Explicit output permission, malformed/no-instance/duplicate/render-while-playing errors, silent completion, Stop, release and offline-render recovery passed using silent PCM16 on the actual default-output path. Targeted native tests passed 6, native suite passed 108 and full verification passed 173 files. No audible test signal, listening/latency judgment, server/GUI routing or MIDI synchronization claim.
+- T-057 adds guarded server/GUI Play and Stop for server-owned completed WAV jobs. Play reuses selected clip/track/locator scope, while wrong-job, stale, arbitrary-path and missing-permission requests preserve active state. Stop retains the instance; project edit stops/releases preview without changing default playback. The new controlled-helper GUI smoke passed 3 steps without opening an audio device; offline GUI passed 14, default E2E passed 40, native passed 108 and full verification passed 173 files. No listening, latency or MIDI synchronization claim.
 
 ## Problems encountered and resolved
 
@@ -210,3 +211,5 @@ T-054에서는 활성 인스턴스 중 구성요소 검색·선택·재인스턴
 T-055에서는 기존 검증 setter로 파라미터별 기본값 복원을 추가했습니다. GUI가 초기 저장 값을 다시 읽고, 변경 렌더 뒤 기본값 복원 렌더가 원래 PCM 해시와 정확히 일치함을 확인했습니다. 프로젝트 revision은 변하지 않습니다. 대상 GUI 14단계, 기본 E2E 40단계, 전체 제품 173개 파일이 통과했습니다. 복원은 오프라인 인스턴스 상태이며 프로젝트 이력이나 실시간 오토메이션이 아닙니다.
 
 T-056에서는 활성 Audio Unit을 통과하는 native 실시간 AVAudioEngine 재생을 추가했습니다. 명시적 출력 권한, 형식·인스턴스 부재·중복·재생 중 렌더 오류, 무음 완료, Stop, release와 오프라인 렌더 복구를 실제 기본 출력 경로의 무음 PCM16으로 검증했습니다. 대상 native 6개, 전체 native 108개, 제품 173개 파일이 통과했습니다. 가청 신호·청음·지연 판단, 서버/GUI 라우팅·MIDI 동기화는 주장하지 않습니다.
+
+T-057에서는 서버 소유 완료 WAV job의 guarded server/GUI Play·Stop을 추가했습니다. Play는 선택 클립·트랙·Locator 범위를 재사용하고 wrong-job·stale·임의 path·권한 누락 요청은 활성 상태를 유지합니다. Stop은 인스턴스를 유지하고 프로젝트 편집은 기본 재생 변경 없이 미리 듣기를 정지·해제합니다. 새 controlled-helper GUI 3단계는 오디오 장치를 열지 않고 통과했고, 오프라인 GUI 14단계, 기본 E2E 40단계, native 108개, 제품 173개 파일이 통과했습니다. 청음·지연·MIDI 동기화는 주장하지 않습니다.

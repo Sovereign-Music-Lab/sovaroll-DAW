@@ -154,3 +154,6 @@
 {"at":"2026-11-09T06:53:03.296Z","id":"T-056","action":"add"}
 {"at":"2026-11-09T06:53:03.383Z","id":"T-056","action":"start"}
 {"at":"2026-11-09T06:57:52.223Z","id":"T-056","action":"done","evidence":"Targeted native tests 6/6 PASS. Silent PCM16 traversed the actual AVAudioEngine default-output path and completed; permission/no-instance/malformed/duplicate/render-while-playing errors, Stop, release, status and offline recovery passed. npm run test:native: 108/108 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. No audible signal, listening/latency judgment, server/GUI routing or MIDI synchronization claim.","verify":"PASS"}
+{"at":"2026-11-09T06:58:28.112Z","id":"T-057","action":"add"}
+{"at":"2026-11-09T06:58:28.198Z","id":"T-057","action":"start"}
+{"at":"2026-11-09T07:09:16.753Z","id":"T-057","action":"done","evidence":"New controlled-helper GUI E2E PASS: 3 steps for scoped server-job Play, wrong-job/stale/path/permission guards, Stop and project-edit stop/release without device output or default playback changes. Existing offline Audio Unit GUI PASS: 14 steps; default E2E PASS: 40. npm run test:native: 108/108. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No listening, latency or MIDI synchronization claim.","verify":"PASS"}

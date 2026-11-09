@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T06:57:52.223Z",
+  "updatedAt": "2026-11-09T07:09:16.753Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1775,6 +1775,45 @@
       "startedAt": "2026-11-09T06:53:03.383Z",
       "evidence": "Targeted native tests 6/6 PASS. Silent PCM16 traversed the actual AVAudioEngine default-output path and completed; permission/no-instance/malformed/duplicate/render-while-playing errors, Stop, release, status and offline recovery passed. npm run test:native: 108/108 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. No audible signal, listening/latency judgment, server/GUI routing or MIDI synchronization claim.",
       "doneAt": "2026-11-09T06:57:52.222Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-057",
+      "title": "Server and GUI Audio Unit real-time preview controls",
+      "size": "M",
+      "dependsOn": [
+        "T-056"
+      ],
+      "goal": "Connect explicit Audio Unit default-output preview to server-owned completed render jobs with Play/Stop controls and project-edit cleanup.",
+      "context": [
+        "T-056 native helper supports play/stop/status through the active component.",
+        "Browser tests use a controlled helper that emits no device audio; native silent-device evidence remains T-056.",
+        "Default built-in/native-audio playback and project revision must remain unchanged until explicit Audio Unit Play."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-unit-preview-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "Play requires active document/revision, a completed server-owned WAV job and explicit allowDefaultOutput=true; no browser paths or arbitrary executables are accepted.",
+        "GUI Play uses the selected clip/track/locator render scope, exposes current preview status and Stop, and rejects stale/wrong-job Stop without stopping a newer job.",
+        "Project edits/document changes stop and release active preview state; default playback, processed offline output and project history retain their existing behavior.",
+        "Controlled GUI/server tests and full suites pass; documentation separates this from audible listening, latency and MIDI synchronization."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-preview-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:58:28.198Z",
+      "evidence": "New controlled-helper GUI E2E PASS: 3 steps for scoped server-job Play, wrong-job/stale/path/permission guards, Stop and project-edit stop/release without device output or default playback changes. Existing offline Audio Unit GUI PASS: 14 steps; default E2E PASS: 40. npm run test:native: 108/108. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No listening, latency or MIDI synchronization claim.",
+      "doneAt": "2026-11-09T07:09:16.753Z"
     }
   ]
 }
