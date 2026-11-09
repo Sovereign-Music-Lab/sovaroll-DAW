@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T04:54:21.936Z",
+  "updatedAt": "2026-11-09T05:03:41.270Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1403,7 +1403,7 @@
       "doneAt": "2026-11-09T04:54:21.935Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-047",
@@ -1426,6 +1426,37 @@
         "GUI download is explicit and decoded WAV is non-empty; source render and project revision remain unchanged.",
         "Tests verify output bytes, metadata and cleanup without claiming sound quality; documentation records the actual offline output scope.",
         "Targeted tests, native and full suites pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:55:00.872Z",
+      "evidence": "Helper writes actual PCM16 WAV and server reads before cleanup; download returns decoded frames/rate/channels and matching PCM hash. Server test 1 PASS and GUI 3 PASS including non-empty stereo 48kHz download. Native 106 PASS; full verification 172 files PASS. Source render/project unchanged. T-048 added for editable clip import.",
+      "doneAt": "2026-11-09T05:03:41.269Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-048",
+      "title": "Import processed Audio Unit WAV as an editable clip with Undo",
+      "size": "M",
+      "dependsOn": [
+        "T-047"
+      ],
+      "goal": "Use the existing verified WAV import path to add the processed Audio Unit output as a new editable audio clip at the cursor, with revision history and Undo.",
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The GUI import action fetches the server-owned processed WAV and uses the existing import endpoint; no new executable or arbitrary path is accepted.",
+        "A new editable audio clip appears at the cursor, source render/output remains unchanged, and one Undo removes the imported clip.",
+        "Tests verify revision/history and decoded output without claiming sound quality; existing suites pass and both development notes record the scope."
       ],
       "verify": [
         "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",

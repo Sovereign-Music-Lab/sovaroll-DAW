@@ -5,6 +5,7 @@ import path from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {startServer} from '../src/server.mjs';
+import {decodeWav} from '../src/media/wav.mjs';
 const {chromium}=await import(process.env.NEWDAW_PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(import.meta.dirname,'..'),exec=promisify(execFile);
 await exec(process.execPath,['scripts/build-native-audio-units.mjs'],{cwd:root,timeout:120000});
@@ -26,5 +27,7 @@ try{
  const result=await page.locator('#audio-units-result').textContent();assert.match(result,/frames/);assert.match(result,/출력 [a-f0-9]{64}/);
  assert.equal(await page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))),revision);
  assert.deepEqual(pageErrors,[]);check('audioUnits.GUI-offline-render-preserves-project-and-default-playback');
+ const downloadEvent=page.waitForEvent('download');await page.locator('#audio-units-download').click();const download=await downloadEvent,output=path.join(dir,'processed.wav');await download.saveAs(output);
+ const wav=decodeWav(await fs.readFile(output));assert.ok(wav.frames>0);assert.equal(wav.sampleRate,48000);assert.equal(wav.channels.length,2);check('audioUnits.GUI-processed-WAV-download');
  console.log(JSON.stringify({status:'passed',tests:tests.length}));
 }finally{await browser.close();await session.close();await fs.rm(dir,{recursive:true,force:true});}

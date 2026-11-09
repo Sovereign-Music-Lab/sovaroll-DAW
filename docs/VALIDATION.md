@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-046 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-047 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -68,6 +68,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-044 adds explicit offline-only instantiation for an exact discovered ID, with offline-intent validation, structured errors and release lifecycle. A system effect was instantiated in the observed environment and its input/output format and cleanup passed; no environment-independent compatibility claim. Targeted native tests passed 3, native suite passed 104 and full verification passed 172 files. T-045 tracks bounded offline PCM processing; no GUI or playback behavior changed.
 - T-045 renders bounded PCM16 WAV through an explicitly instantiated system effect using AVAudioEngine offline mode. Two repeated renders produced identical output hashes, frame/rate/channel and source hashes were checked, and missing-instance/file errors preserved lifecycle. Targeted native tests passed 4, native suite passed 105 and full verification passed 172 files. T-046 tracks the server/GUI offline probe; no listening, compatibility or low-latency claim.
 - T-046 exposes on-demand server/GUI discovery, exact selection, explicit instantiation, current-mix offline render and release with revision/document guards and no browser executable paths. Server and GUI targeted tests passed 1 and 2; default E2E passed 40, native suite passed 106 and full verification passed 172 files after suppressing no-op idle reset events. T-047 adds downloadable processed WAV. No hardware, compatibility or quality claim.
+- T-047 writes actual PCM16 WAV from the helper, reads it before temporary-file cleanup and exposes a server-owned download with matching PCM hash. Server tests decode and verify frames/rate/channels/hash; GUI download decoded to non-empty stereo 48 kHz WAV. Targeted server 1 and GUI 3 passed; native 106 and full verification 172 files passed. Source render/project revision are unchanged. T-048 adds editable clip import.
 
 ## Problems encountered and resolved
 
@@ -180,3 +181,5 @@ T-044에서는 정확한 ID와 offline 의도가 있는 경우에만 인스턴�
 T-045에서는 명시적으로 인스턴스화한 시스템 effect를 AVAudioEngine 오프라인으로 처리했습니다. 반복 렌더의 출력 해시가 일치하고 프레임·레이트·채널·원본 해시를 확인했으며, 인스턴스 부재·파일 오류 후에도 수명주기를 유지했습니다. 대상 native 4개, 전체 native 105개, 제품 172개 파일이 통과했습니다. T-046에서 서버/GUI 오프라인 probe를 연결하며 청음·호환성·저지연 품질은 주장하지 않습니다.
 
 T-046에서는 서버/GUI의 요청 시 검색·정확한 선택·명시적 인스턴스화·현재 믹스 렌더·해제를 연결하고 revision/문서 검증을 적용했습니다. 서버 1개·GUI 2개 대상 검사, 기본 E2E 40단계, native 106개, 전체 제품 172개 파일이 통과했습니다. 변경 없는 idle reset 이벤트는 발행하지 않도록 기존 SSE 호환성도 유지했습니다. T-047에서 처리 WAV 다운로드를 추가하며 하드웨어·호환성·품질은 주장하지 않습니다.
+
+T-047에서는 helper가 실제 PCM16 WAV를 쓰고 서버가 임시 파일 정리 전에 읽어 다운로드를 제공합니다. 서버에서 디코딩한 프레임·레이트·채널·PCM 해시가 일치하고, GUI 다운로드는 비어 있지 않은 stereo 48kHz WAV로 디코딩됐습니다. 대상 서버 1개·GUI 3개, native 106개, 제품 172개 파일이 통과했습니다. 원본 렌더와 프로젝트 revision은 유지되며 T-048에서 편집 가능한 클립 가져오기를 추가합니다.

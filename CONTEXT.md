@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-046 are done; T-047 adds downloadable processed WAV next. Real-device observations remain human work.
+Updated: 2026-11-09. T-001–T-047 are done; T-048 adds editable processed-audio clip import next. Real-device observations remain human work.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,8 +28,8 @@ Updated: 2026-11-09. T-001–T-046 are done; T-047 adds downloadable processed W
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
-- T-001–T-046 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 106 after T-046; no complete bilingual UI, low-latency or full plugin-hosting claim.
-- T-046 server/GUI offline probe preserves revision/default playback and validates helper ownership. T-047 adds downloadable processed WAV next.
+- T-001–T-047 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 106 after T-047; no complete bilingual UI, low-latency or full plugin-hosting claim.
+- T-047 processed WAV download preserves source/revision and matches decoded PCM hash. T-048 adds editable clip import next.
 - T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
 - T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
 - Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
@@ -52,7 +52,7 @@ Updated: 2026-11-09. T-001–T-046 are done; T-047 adds downloadable processed W
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-046 are done with evidence in docs/VALIDATION.md. Continue with T-047 downloadable processed WAV, then add scoped follow-ups for remaining product goals.
+- T-001–T-047 are done with evidence in docs/VALIDATION.md. Continue with T-048 editable processed-audio clip import, then add scoped follow-ups for remaining product goals.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

@@ -418,6 +418,10 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         assertRequestDocument();return json(res,200,await nativeAudio.stop(input.jobId));
       }
       if(req.method==='GET'&&route==='/api/audio-units')return json(res,200,audioUnits.snapshot());
+      if(req.method==='GET'&&route==='/api/audio-units/output'){
+        const output=audioUnits.output();if(!output)throw problem('AUDIO_UNIT_OUTPUT_NOT_READY','No processed WAV is available',409);
+        res.writeHead(200,{'Content-Type':'audio/wav','Content-Disposition':`attachment; filename="audio-unit-r${output.revision}.wav"`});return res.end(output.bytes);
+      }
       if(req.method==='POST'&&route==='/api/audio-units/list'){
         const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','limit'].includes(k))||input.limit!==undefined&&(!Number.isSafeInteger(input.limit)||input.limit<1||input.limit>256))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide expectedRevision and optional limit 1..256',422);
         assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.list(input.limit));

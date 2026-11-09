@@ -7,8 +7,8 @@ const problem=(code,message)=>Object.assign(new Error(message),{code,status:code
 /** Explicit offline Audio Unit helper owner. No plugin code runs before instantiate. */
 export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','newdaw-audio-units'),onChange=()=>{}}={}){
  let child=null,input='',events=[],waiters=[],directory=null,queue=Promise.resolve(),closed=false;
- let state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null};
- const snapshot=()=>({supported:process.platform==='darwin',integrated:true,offline:true,...structuredClone(state)});
+ let state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null},processedOutput=null;
+ const snapshot=()=>({supported:process.platform==='darwin',integrated:true,offline:true,hasOutput:processedOutput!==null,...structuredClone(state)});
  const publish=()=>onChange(snapshot());
  function next(predicate,timeout=15000){
   const index=events.findIndex(predicate);if(index>=0)return Promise.resolve(events.splice(index,1)[0]);
@@ -49,18 +49,25 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
   instantiate:id=>send('instantiate',{id,offline:true},event=>event.event==='instantiated'),
   async render({bytes,renderJobId,revision,documentId}){
    await cleanup();directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-audio-unit-render-'));const file=path.join(directory,'input.wav');await fs.writeFile(file,Buffer.from(bytes));
-   try{return await send('render',{path:file,offline:true},event=>event.event==='rendered');}finally{await cleanup();}
+   try{
+    const event=await send('render',{path:file,offline:true},event=>event.event==='rendered');
+    if(!event.outputPath)throw problem('AUDIO_UNIT_OUTPUT_MISSING','Audio Unit helper returned no WAV output');
+    const outputBytes=await fs.readFile(event.outputPath);
+    processedOutput={bytes:outputBytes,renderJobId,revision,documentId,metadata:{...event}};
+    return {...event,outputUrl:'/api/audio-units/output'};
+   }finally{await cleanup();}
   },
+  output(){return processedOutput;},
   async release(){if(!child){state={...state,instantiated:false,status:'released',error:null};publish();return {event:'released',instantiated:false};}const event=await send('release',{},event=>event.event==='released');return event;},
   async reset(){
    if(!child&&state.status==='idle'&&!state.selected&&!state.lastRender&&!state.error&&!directory)return;
    if(state.instantiated)await send('release',{},event=>event.event==='released');
-   state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null};publish();await cleanup();
+   state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null};processedOutput=null;publish();await cleanup();
   },
   async close(){
    if(closed)return;closed=true;if(state.instantiated)await send('release',{},event=>event.event==='released').catch(()=>{});
    if(child){const exiting=new Promise(resolve=>child.once('exit',resolve));child.stdin.write(JSON.stringify({command:'quit'})+'\n');await exiting;}child=null;
-   for(const waiter of waiters.splice(0)){clearTimeout(waiter.timer);waiter.reject(new Error('Audio Unit owner closed'));}await cleanup();
+   for(const waiter of waiters.splice(0)){clearTimeout(waiter.timer);waiter.reject(new Error('Audio Unit owner closed'));}processedOutput=null;await cleanup();
   },
  };
 }

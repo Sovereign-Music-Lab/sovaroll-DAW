@@ -102,6 +102,14 @@ func auPCMBytes(_ buffer: AVAudioPCMBuffer, channels: Int) -> Data {
     return data
 }
 func shaHex(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined() }
+func auWavData(_ pcm: Data, sampleRate: Int, channels: Int) -> Data {
+    var data = Data()
+    func text(_ value: String) { data.append(contentsOf: value.utf8) }
+    func u16(_ value: Int) { data.append(UInt8(value & 255)); data.append(UInt8((value >> 8) & 255)) }
+    func u32(_ value: Int) { for shift in [0, 8, 16, 24] { data.append(UInt8((value >> shift) & 255)) } }
+    text("RIFF"); u32(36 + pcm.count); text("WAVE"); text("fmt "); u32(16); u16(1); u16(channels); u32(sampleRate); u32(sampleRate * channels * 2); u16(channels * 2); u16(16); text("data"); u32(pcm.count); data.append(pcm)
+    return data
+}
 func renderAudioUnit(_ path: String, offline: Bool) throws {
     guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Audio Unit processing requires explicit offline=true") }
     guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before offline processing") }
@@ -113,7 +121,10 @@ func renderAudioUnit(_ path: String, offline: Bool) throws {
     guard let output = AVAudioPCMBuffer(pcmFormat: wave.format, frameCapacity: AVAudioFrameCount(wave.frames)) else { throw AudioUnitError(code: "AUDIO_BUFFER_FAILED", message: "Cannot allocate output buffer") }
     let status = try engine.renderOffline(AVAudioFrameCount(wave.frames), to: output)
     guard status == .success, output.frameLength == wave.frames else { throw AudioUnitError(code: "OFFLINE_PROCESSING_FAILED", message: "Audio Unit offline processing did not produce the expected frames: \(status.rawValue)") }
-    emit(["event": "rendered", "componentId": selected as Any, "frames": wave.frames, "sampleRate": wave.sampleRate, "channels": wave.channels, "sourceSha256": shaHex(wave.pcm), "pcmSha256": shaHex(auPCMBytes(output, channels: wave.channels)), "offline": true])
+    let renderedPCM = auPCMBytes(output, channels: wave.channels)
+    let outputPath = path + ".processed.wav"
+    try auWavData(renderedPCM, sampleRate: wave.sampleRate, channels: wave.channels).write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+    emit(["event": "rendered", "componentId": selected as Any, "frames": wave.frames, "sampleRate": wave.sampleRate, "channels": wave.channels, "sourceSha256": shaHex(wave.pcm), "pcmSha256": shaHex(renderedPCM), "outputPath": outputPath, "offline": true])
 }
 func discover() -> [AVAudioUnitComponent] {
     components = AVAudioUnitComponentManager.shared().components(matching: AudioComponentDescription()).sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
