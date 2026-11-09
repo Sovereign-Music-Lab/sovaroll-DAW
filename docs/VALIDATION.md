@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-035 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-036 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -57,6 +57,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-013 added bilingual `docs/agent/MANUAL_CHECKS.md` with six numbered real-device steps, expected results and empty observation columns. FD-16/21/22 link to it. Structural checks and `npm run agent:guard` passed. This documents work for a human; no microphone, speaker, listening or latency verification is claimed.
 - The post-follow-up `npm run agent:smoke-sweep` completed with exit 0: all 64 unique GUI smokes passed, with one first-delivery run. Results are in `.test-output/smoke-sweep.json`; generated screenshots remain under `.test-output/final-smoke-sweep-screenshots/`.
 - T-010 records the maintainer's explicit Snap decision before code. Ruler clicks now snap through the current primary/piano grid, while Alt/Option preserves exact position. The default E2E passed 37 steps, including `playback.GUI-ruler-click-snap-and-alt-override` on both rulers and the Alt path; final `npm run agent:verify` passed.
+- T-036 adds `audio.GUI-fade-out-changes-render`: Inspector 0.5-second fade-out is checked in asset frames, CLI-rendered ending RMS decreases against the matching baseline and attenuates more than the fade's beginning, and Undo removes it. The default E2E passed 38 steps and final `npm run agent:verify` passed. FD-20 is now verified for fade-in/out, mute, polarity and normalize within the tested scope.
 
 ## Problems encountered and resolved
 
@@ -147,3 +148,5 @@ T-013에서는 실제 장치용 `docs/agent/MANUAL_CHECKS.md`를 이중 언어�
 후속 수정 후 `agent:smoke-sweep`가 종료 코드 0으로 완료되어 고유한 GUI 스모크 64개가 모두 통과했습니다. first-delivery는 한 번 실행했고 결과는 `.test-output/smoke-sweep.json`, 생성 화면은 `.test-output/final-smoke-sweep-screenshots/`에 있습니다.
 
 T-010에서는 관리자의 Snap 결정을 코드보다 먼저 기록했습니다. 눈금자 클릭은 현재 primary/piano 그리드에 맞추고 Alt/Option은 정확한 위치를 유지합니다. 두 눈금자와 Alt 경로를 검증한 기본 E2E 37단계와 최종 verify가 통과했습니다.
+
+T-036에서는 `audio.GUI-fade-out-changes-render`를 추가해 Inspector 0.5초 페이드 아웃의 자산 프레임 변환, CLI 렌더의 종료 RMS 감소와 시작보다 큰 감쇠, Undo 제거를 확인했습니다. 기본 E2E 38단계와 최종 verify가 통과했습니다. FD-20은 검사한 범위에서 페이드 인/아웃·뮤트·극성·노멀라이즈가 모두 verified입니다.

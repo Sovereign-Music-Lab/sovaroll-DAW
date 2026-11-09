@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T00:19:30.115Z",
+  "updatedAt": "2026-11-09T01:54:05.704Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1064,6 +1064,111 @@
       "startedAt": "2026-11-09T00:05:12.608Z",
       "evidence": "Reproduced workspace render timeouts after 6 and 20 checks. Normal and delayed-gate paths now submit mix-export-submit; media and stale-render assertions unchanged. npm run agent:e2e -- scripts/gui-workspace-smoke.mjs: E2E PASS, 21 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
       "doneAt": "2026-11-09T00:08:38.682Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "audio",
+      "id": "T-036",
+      "title": "E2E: audio fade-out changes rendered mix and Undo",
+      "size": "S",
+      "requirements": [
+        "FD-20"
+      ],
+      "goal": "Prove in the real GUI that an Inspector fade-out attenuates the imported clip ending and Undo restores it.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs"
+      ],
+      "acceptance": [
+        "Select an imported audio clip and set fadeOutSeconds=0.5 in the Inspector; verify fadeOutFrames in asset frames.",
+        "Compare CLI-rendered mono-sum RMS at the clip ending before/after the fade, with unrelated tracks controlled as needed.",
+        "Undo removes fade-out and the whole first-delivery E2E passes."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T01:50:40.491Z",
+      "evidence": "audio.GUI-fade-out-changes-render passed: 0.5s Inspector fade-out converted to asset frames, ending RMS decreased versus matching baseline and attenuated more than fade beginning, Undo removed it. npm run agent:e2e: E2E PASS, 38 steps. npm run agent:verify: VERIFY PASS. FD-20 requirements and validation updated.",
+      "doneAt": "2026-11-09T01:54:05.703Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "midi",
+      "id": "T-037",
+      "title": "E2E: quantize selected MIDI notes in delivery flow",
+      "size": "S",
+      "requirements": [
+        "FD-14"
+      ],
+      "goal": "Add first-delivery coverage for the existing MIDI tools quantize dialog without changing note counts or weakening later assertions.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "scripts/gui-editing-smoke.mjs"
+      ],
+      "acceptance": [
+        "Use the MIDI tools dialog to quantize a known off-grid note and verify the exact expected startTick.",
+        "Undo restores the original startTick and note counts remain unchanged.",
+        "The whole first-delivery E2E passes."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "project",
+      "id": "T-038",
+      "title": "E2E: automatic backup and recovery in the delivery flow",
+      "size": "M",
+      "requirements": [
+        "FD-04"
+      ],
+      "goal": "Verify automatic backup creation and recovery through the real GUI in an isolated temporary project.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "scripts/gui-recovery-smoke.mjs"
+      ],
+      "acceptance": [
+        "Create a backup through the existing GUI and confirm the backup entry is available.",
+        "Recover through the actual GUI and verify the expected project content without modifying user projects.",
+        "The targeted recovery smoke and first-delivery E2E pass, or record a justified separate recovery-script command."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ]
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "audio",
+      "id": "T-039",
+      "title": "E2E: recording assistance controls and real captured results",
+      "size": "M",
+      "requirements": [
+        "FD-21"
+      ],
+      "goal": "Verify input selection, gain, monitoring, count-in, metronome and backing-track controls through the GUI using fake devices without claiming hardware verification.",
+      "files": [
+        "scripts/gui-recording-protection-smoke.mjs",
+        "scripts/gui-recording-workflow-smoke.mjs",
+        "public/recording-ui.mjs"
+      ],
+      "acceptance": [
+        "Exercise each supported recording assistance control through the GUI and verify the stored or rendered behavior that is observable in the harness.",
+        "Preserve project state on rejected or cancelled actions and keep the fake-device limitation explicit.",
+        "Both recording smokes and agent:verify pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
+        "npm run agent:verify"
+      ]
     }
   ]
 }
