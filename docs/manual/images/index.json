@@ -1,0 +1,327 @@
+{
+  "capturedAt": "2026-11-09T13:29:52.958Z",
+  "viewport": "1600x1000",
+  "project": "built-in First Light demo + markers/locators",
+  "shots": [
+    {
+      "lang": "en",
+      "name": "01-overview"
+    },
+    {
+      "lang": "en",
+      "name": "02-overview-numbered"
+    },
+    {
+      "lang": "en",
+      "name": "03-transport"
+    },
+    {
+      "lang": "en",
+      "name": "04-arrangement"
+    },
+    {
+      "lang": "en",
+      "name": "05-inspector"
+    },
+    {
+      "lang": "en",
+      "name": "06-piano-roll"
+    },
+    {
+      "lang": "en",
+      "name": "07-controller-lanes"
+    },
+    {
+      "lang": "en",
+      "name": "08-score-view"
+    },
+    {
+      "lang": "en",
+      "name": "09-midi-tools"
+    },
+    {
+      "lang": "en",
+      "name": "10-step-input"
+    },
+    {
+      "lang": "en",
+      "name": "11-midi-events"
+    },
+    {
+      "lang": "en",
+      "name": "12-import-options"
+    },
+    {
+      "lang": "en",
+      "name": "13-mix-export"
+    },
+    {
+      "lang": "en",
+      "name": "14-midi-export"
+    },
+    {
+      "lang": "en",
+      "name": "15-projects"
+    },
+    {
+      "lang": "en",
+      "name": "16-history"
+    },
+    {
+      "lang": "en",
+      "name": "17-backups"
+    },
+    {
+      "lang": "en",
+      "name": "18-tempo-signature"
+    },
+    {
+      "lang": "en",
+      "name": "19-markers"
+    },
+    {
+      "lang": "en",
+      "name": "20-track-folders"
+    },
+    {
+      "lang": "en",
+      "name": "21-locators"
+    },
+    {
+      "lang": "en",
+      "name": "22-add-tracks"
+    },
+    {
+      "lang": "en",
+      "name": "23-clip-tools"
+    },
+    {
+      "lang": "en",
+      "name": "24-help-shortcuts"
+    },
+    {
+      "lang": "en",
+      "name": "25-media-pool"
+    },
+    {
+      "lang": "en",
+      "name": "26-time-display"
+    },
+    {
+      "lang": "en",
+      "name": "27-snap-grid"
+    },
+    {
+      "lang": "en",
+      "name": "28-editing-tools-menu"
+    },
+    {
+      "lang": "en",
+      "name": "29-clip-operations-menu"
+    },
+    {
+      "lang": "en",
+      "name": "30-audition-menu"
+    },
+    {
+      "lang": "en",
+      "name": "31-recording-panel"
+    },
+    {
+      "lang": "en",
+      "name": "32-audio-clip-inspector"
+    },
+    {
+      "lang": "en",
+      "name": "33-master-meter"
+    },
+    {
+      "lang": "en",
+      "name": "34-playing"
+    },
+    {
+      "lang": "en",
+      "name": "35-language-select"
+    },
+    {
+      "lang": "ko",
+      "name": "01-overview"
+    },
+    {
+      "lang": "ko",
+      "name": "02-overview-numbered"
+    },
+    {
+      "lang": "ko",
+      "name": "03-transport"
+    },
+    {
+      "lang": "ko",
+      "name": "04-arrangement"
+    },
+    {
+      "lang": "ko",
+      "name": "05-inspector"
+    },
+    {
+      "lang": "ko",
+      "name": "06-piano-roll"
+    },
+    {
+      "lang": "ko",
+      "name": "07-controller-lanes"
+    },
+    {
+      "lang": "ko",
+      "name": "08-score-view"
+    },
+    {
+      "lang": "ko",
+      "name": "09-midi-tools"
+    },
+    {
+      "lang": "ko",
+      "name": "10-step-input"
+    },
+    {
+      "lang": "ko",
+      "name": "11-midi-events"
+    },
+    {
+      "lang": "ko",
+      "name": "12-import-options"
+    },
+    {
+      "lang": "ko",
+      "name": "13-mix-export"
+    },
+    {
+      "lang": "ko",
+      "name": "14-midi-export"
+    },
+    {
+      "lang": "ko",
+      "name": "15-projects"
+    },
+    {
+      "lang": "ko",
+      "name": "16-history"
+    },
+    {
+      "lang": "ko",
+      "name": "17-backups"
+    },
+    {
+      "lang": "ko",
+      "name": "18-tempo-signature"
+    },
+    {
+      "lang": "ko",
+      "name": "19-markers"
+    },
+    {
+      "lang": "ko",
+      "name": "20-track-folders"
+    },
+    {
+      "lang": "ko",
+      "name": "21-locators"
+    },
+    {
+      "lang": "ko",
+      "name": "22-add-tracks"
+    },
+    {
+      "lang": "ko",
+      "name": "23-clip-tools"
+    },
+    {
+      "lang": "ko",
+      "name": "24-help-shortcuts"
+    },
+    {
+      "lang": "ko",
+      "name": "25-media-pool"
+    },
+    {
+      "lang": "ko",
+      "name": "26-time-display"
+    },
+    {
+      "lang": "ko",
+      "name": "27-snap-grid"
+    },
+    {
+      "lang": "ko",
+      "name": "28-editing-tools-menu"
+    },
+    {
+      "lang": "ko",
+      "name": "29-clip-operations-menu"
+    },
+    {
+      "lang": "ko",
+      "name": "30-audition-menu"
+    },
+    {
+      "lang": "ko",
+      "name": "31-recording-panel"
+    },
+    {
+      "lang": "ko",
+      "name": "32-audio-clip-inspector"
+    },
+    {
+      "lang": "ko",
+      "name": "33-master-meter"
+    },
+    {
+      "lang": "ko",
+      "name": "34-playing"
+    },
+    {
+      "lang": "ko",
+      "name": "35-language-select"
+    },
+    {
+      "lang": "cli",
+      "name": "01-guide"
+    },
+    {
+      "lang": "cli",
+      "name": "02-document"
+    },
+    {
+      "lang": "cli",
+      "name": "09-guide-edit"
+    },
+    {
+      "lang": "cli",
+      "name": "10-import"
+    },
+    {
+      "lang": "cli",
+      "name": "03-markers"
+    },
+    {
+      "lang": "cli",
+      "name": "04-dry-run"
+    },
+    {
+      "lang": "cli",
+      "name": "05-render"
+    },
+    {
+      "lang": "cli",
+      "name": "06-export-midi"
+    },
+    {
+      "lang": "cli",
+      "name": "07-history"
+    },
+    {
+      "lang": "cli",
+      "name": "08-help"
+    }
+  ]
+}

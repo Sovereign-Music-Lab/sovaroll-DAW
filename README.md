@@ -7,16 +7,20 @@
 ## Abstract
 **The Sovereign MIDI Workstation · A professional-grade open-source DAW in development**
 
-[한국어](README.ko.md) · [English manual](docs/MANUAL.en.md) · [CLI guide](docs/CLI-GUIDE.en.md) · [한국어 설명서](docs/MANUAL.ko.md) · [Philosophy](PHILOSOPHY.en.md) · [철학](PHILOSOPHY.ko.md)
+[한국어](README.ko.md) · **[The SovaRoll Book (user manual)](docs/manual/en/README.md)** · [SovaRoll 교본](docs/manual/ko/README.md) · [CLI guide](docs/CLI-GUIDE.en.md) · [Philosophy](PHILOSOPHY.en.md) · [철학](PHILOSOPHY.ko.md)
 
 SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser interface and CLI share the same project, command engine, validation, and undo history. Keep music editable, work on your own computer, and carry MIDI and audio into the production tools you choose.
 
-**Version 0.129.0 is a development release.** Professional-grade production is the goal. Playback currently uses a rendered audio snapshot; low-latency native audio, plugin hosting and a score editor are still future work. The interface switches between Korean and English (**English / 한국어** in the top bar), including dialogs; both user manuals explain the controls.
+**Version 0.129.0 is a development release.** Professional-grade production is the goal. Playback currently uses a rendered audio snapshot; low-latency native audio and real-time plugin instrument hosting are still future work. The interface switches between Korean and English (**English / 한국어** in the top bar), including dialogs. The illustrated user manual exists in both languages.
+
+![SovaRoll with the built-in demo song](docs/manual/images/en/01-overview.jpg)
 
 ## Contents
 
-- [Quick start (5 minutes)](#quick-start-5-minutes)
+- [Install — no programming needed](#install--no-programming-needed)
 - [Your daily routine](#your-daily-routine)
+- [Update or uninstall](#update-or-uninstall)
+- [The user manual](#the-user-manual)
 - [Using the CLI](#using-the-cli)
 - [Philosophy in one minute](#philosophy-in-one-minute)
 - [What is here](#what-is-here)
@@ -25,45 +29,42 @@ SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser 
 - [License](#license)
 - [Development handoff](#development-handoff)
 
-## Quick start (5 minutes)
+## Install — no programming needed
 
-You need **Node.js 22+**, Git and desktop Chrome. No `npm install`, account, LLM or model weights.
+1. Install **Node.js 22 or newer** (the LTS installer from <https://nodejs.org>) and Google Chrome.
+2. Download SovaRoll: green **Code** button above → **Download ZIP**, unpack it, and move the `sovaroll-DAW` folder somewhere permanent (for example Documents). Git users: `git clone https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git`.
+3. Start it:
+   - **macOS**: double-click **`Start SovaRoll.command`** (first time: right-click → **Open** → **Open**).
+   - **Windows**: double-click **`Start SovaRoll.bat`**.
+   - **Terminal**: `npm start` (opens the demo song in `sessions/`).
+4. Your browser opens **http://127.0.0.1:4317**. The terminal window that appeared is SovaRoll's engine — keep it open while you work.
 
-```sh
-git clone https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git
-cd sovaroll-DAW
-npm start
-```
-
-1. Open [http://127.0.0.1:4317](http://127.0.0.1:4317). The first run creates a short synthetic demo in `sessions/`; an existing project is never replaced.
-2. Press **Play** (or Space) to hear the demo, and click a MIDI clip to open it in the piano roll.
-3. Stop with **Ctrl+C** in the terminal. Closing the tab does not stop the server.
-
-Port 4317 busy? `npm start -- --port 4318`, open that port, and add `--url http://127.0.0.1:4318` to CLI commands.
-
-**Start your own song** (keep it outside the app folder so updates never touch it):
-
-```sh
-mkdir -p "$HOME/Music/SovaRoll/My-Song"
-node src/cli.mjs init "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
-node src/cli.mjs serve --project "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
-```
+The double-click starters keep your songs **outside the app**, in `Music/SovaRoll/My First Song` in your home folder, so updating or deleting the app never touches your music. No `npm install`, account, model or internet service is needed. The macOS starter is tested; the Windows starter is provided but less tested.
 
 ## Your daily routine
 
-| Step | In the browser | In a terminal |
-|---|---|---|
-| 1. Open | Start the server, confirm the project name at the top | `npm start` |
-| 2. Safety point | **저장·버전** → save a version before a big edit | `npm run cli -- save-new-version` |
-| 3. Make music | Add a MIDI track, click the piano roll, or **가져오기** your own WAV/AIFF/MIDI | `npm run cli -- import FILE.mid` |
-| 4. Try and compare | Edit, listen, **Ctrl/Cmd+Z** to compare alternatives | `... command NAME JSON --dry-run`, then without it |
-| 5. Mix | Track gain, pan, mute, solo; check mute/solo before export | `npm run cli -- status` |
-| 6. Save | **Ctrl/Cmd+S** (edits autosave; Save is your reference point) | `npm run cli -- save` |
-| 7. Export | **MIDI 내보내기**, **믹스 WAV 내보내기** | `render`, `export-midi` |
-| 8. Back up | **백업 ZIP** | `npm run cli -- export-bundle backup.zip` |
-| 9. Stop | Stop playback, then **Ctrl+C** | |
+| Step | What to do |
+|---|---|
+| 1. Open | Double-click the starter; confirm the song name at the top |
+| 2. Safety point | **Ctrl/Cmd+S** before a big change (or **Save · versions → Save new version**) |
+| 3. Make music | **+ Track**, click in the piano roll to add notes, or **Import** your WAV/AIFF/MIDI; record in the **Recording** panel |
+| 4. Listen and compare | **Space** to play/stop; **Ctrl/Cmd+Z** / **Ctrl/Cmd+Shift+Z** to compare versions |
+| 5. Mix | Track gain, pan, **M**ute, **S**olo, master output; **Clear mute/solo** before exporting |
+| 6. Export | **Export WAV mix** (audio), **Export MIDI** (editable notes), **MusicXML** in the score view |
+| 7. Back up | **Backup ZIP** (project + audio) |
+| 8. Quit | Stop playback, then close the terminal window (or Ctrl+C in it) |
 
-Habits that keep your music safe: keep the project folder together (JSON + `assets/`), keep MIDI and source audio next to every mix you export, and make a backup ZIP before updating. If something goes wrong, see **Troubleshooting** and **Save, recover and move work** in the [manual](docs/MANUAL.en.md).
+Everything is also saved automatically after each edit; **Save** marks the reference point you can revert to. Copy a song by copying its **whole folder** (the `.json` plus `assets/`).
+
+## Update or uninstall
+
+**Update:** quit SovaRoll, make a **Backup ZIP** of important songs, replace the app folder with the new download (Git: `git pull --ff-only`), start again. Your songs in `Music/SovaRoll` are not inside the app folder.
+
+**Uninstall:** export what you want to keep, quit SovaRoll, and move the `sovaroll-DAW` folder to the Trash. Your songs stay in `Music/SovaRoll` until you delete that folder yourself. SovaRoll installs no services, drivers or login items. Node.js and Chrome are separate programs you may keep or remove. Details: [manual chapter 1](docs/manual/en/01-install.md).
+
+## The user manual
+
+**[The SovaRoll Book](docs/manual/en/README.md)** — 12 illustrated chapters with real screenshots of the program: install, a screen tour, a guided first-song lesson (chords, melody, bass, dynamics, mix, export), projects and safety, arrangement, MIDI in depth, score view and MusicXML, audio and recording, playback and mixing, export, the complete CLI, and reference tables (shortcuts, note values, dynamics, MIDI numbers, tempo terms, troubleshooting, glossary). Korean edition with the Korean interface: [SovaRoll 교본](docs/manual/ko/README.md). Screenshots are reproducible with `node scripts/manual/capture-screens.mjs`.
 
 ## Using the CLI
 
@@ -100,7 +101,7 @@ Read the full [philosophy](PHILOSOPHY.en.md) / [철학](PHILOSOPHY.ko.md). The s
 
 ## What is here
 
-- MIDI piano roll, note and controller editing, clips, track folders, timing, quantization, step input, and undo/redo.
+- MIDI piano roll, grand-staff score view with MusicXML export, note and controller editing, clips, track folders, timing, quantization, step input, and undo/redo.
 - WAV/AIFF and MIDI import, audio clip editing, browser recording, mixer controls, and WAV/MIDI/project bundle export.
 - Local project files, explicit save, versions, automatic backup/recovery, and media integrity checks.
 - One command interface for people and agents, with validation, dry runs, revision conflict checks, and atomic batches.

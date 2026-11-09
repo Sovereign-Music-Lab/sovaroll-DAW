@@ -7,16 +7,20 @@
 ## 초록
 **The Sovereign MIDI Workstation · 프로급 오픈소스 DAW 개발 프로젝트**
 
-[English](README.md) · [한국어 설명서](docs/MANUAL.ko.md) · [CLI 가이드](docs/CLI-GUIDE.ko.md) · [English manual](docs/MANUAL.en.md) · [철학](PHILOSOPHY.ko.md) · [Philosophy](PHILOSOPHY.en.md)
+[English](README.md) · **[SovaRoll 교본(사용 설명서)](docs/manual/ko/README.md)** · [The SovaRoll Book](docs/manual/en/README.md) · [CLI 가이드](docs/CLI-GUIDE.ko.md) · [철학](PHILOSOPHY.ko.md) · [Philosophy](PHILOSOPHY.en.md)
 
 SovaRoll은 Sovereign Music Lab의 로컬 MIDI·오디오 워크스테이션, **소버린 DAW**입니다. 브라우저 화면과 CLI가 같은 프로젝트, 명령 엔진, 검증과 실행 취소 이력을 공유합니다. 음악을 편집 가능한 상태로 유지하고, 자신의 컴퓨터에서 작업하며, 선택한 제작 도구로 MIDI와 오디오를 이어갈 수 있게 만듭니다.
 
-**0.129.0은 개발 중인 버전입니다.** 프로급 제작 환경을 목표로 합니다. 현재 재생은 렌더된 오디오 스냅샷을 사용하며, 저지연 네이티브 오디오, 플러그인 호스팅, 악보 편집기는 앞으로의 과제입니다. 화면은 대화상자까지 한국어·영어로 전환할 수 있으며(상단 **English / 한국어**), 두 언어의 사용 설명서를 제공합니다.
+**0.129.0은 개발 중인 버전입니다.** 프로급 제작 환경을 목표로 합니다. 현재 재생은 렌더된 오디오 스냅샷을 사용하며, 저지연 네이티브 오디오와 플러그인 악기의 실시간 호스팅은 앞으로의 과제입니다. 화면은 대화상자까지 한국어·영어로 전환할 수 있으며(상단 **English / 한국어**), 그림이 들어간 사용 설명서를 두 언어로 제공합니다.
+
+![내장 데모 곡을 연 SovaRoll](docs/manual/images/ko/01-overview.jpg)
 
 ## 목차
 
-- [빠른 시작 (5분)](#빠른-시작-5분)
+- [설치 — 프로그래밍 몰라도 됩니다](#설치--프로그래밍-몰라도-됩니다)
 - [매일의 사용 루틴](#매일의-사용-루틴)
+- [업데이트와 삭제](#업데이트와-삭제)
+- [사용 설명서](#사용-설명서)
 - [CLI 사용법](#cli-사용법)
 - [철학 1분 요약](#철학-1분-요약)
 - [포함된 기능](#포함된-기능)
@@ -25,45 +29,42 @@ SovaRoll은 Sovereign Music Lab의 로컬 MIDI·오디오 워크스테이션, **
 - [라이선스](#라이선스)
 - [개발 인계](#개발-인계)
 
-## 빠른 시작 (5분)
+## 설치 — 프로그래밍 몰라도 됩니다
 
-**Node.js 22 이상**, Git, 데스크톱 Chrome이 필요합니다. `npm install`, 계정, LLM, 모델 가중치는 필요 없습니다.
+1. **Node.js 22 이상**(<https://nodejs.org>의 LTS 설치 파일)과 Google Chrome을 설치합니다.
+2. SovaRoll 내려받기: 위의 초록색 **Code** 버튼 → **Download ZIP**, 압축을 풀고 `sovaroll-DAW` 폴더를 고정된 곳(예: 문서)에 둡니다. Git 사용자는 `git clone https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git`.
+3. 시작:
+   - **macOS**: **`Start SovaRoll.command`** 더블클릭(처음에는 오른쪽 클릭 → **열기** → **열기**).
+   - **Windows**: **`Start SovaRoll.bat`** 더블클릭.
+   - **터미널**: `npm start`(`sessions/`의 데모 곡을 엽니다).
+4. 브라우저가 **http://127.0.0.1:4317**로 열립니다. 함께 뜬 터미널 창이 SovaRoll의 엔진이니 작업하는 동안 열어 두세요.
 
-```sh
-git clone https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git
-cd sovaroll-DAW
-npm start
-```
-
-1. [http://127.0.0.1:4317](http://127.0.0.1:4317)을 엽니다. 첫 실행은 `sessions/`에 짧은 합성 데모를 만들며, 기존 프로젝트는 절대 교체하지 않습니다.
-2. **재생**(또는 Space)으로 데모를 듣고, MIDI 클립을 눌러 피아노롤에서 열어 봅니다.
-3. 종료는 터미널에서 **Ctrl+C**입니다. 브라우저 탭을 닫아도 서버는 꺼지지 않습니다.
-
-4317 포트가 사용 중이면 `npm start -- --port 4318`로 시작하고 그 포트를 열며, CLI 명령에는 `--url http://127.0.0.1:4318`을 붙입니다.
-
-**내 곡 시작하기** (업데이트가 건드리지 않도록 앱 폴더 밖에 둡니다):
-
-```sh
-mkdir -p "$HOME/Music/SovaRoll/My-Song"
-node src/cli.mjs init "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
-node src/cli.mjs serve --project "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
-```
+더블클릭 실행 파일은 곡을 **앱 밖**, 홈 폴더의 `Music/SovaRoll/My First Song`에 저장하므로 앱을 업데이트하거나 지워도 음악은 그대로입니다. `npm install`, 계정, 모델, 인터넷 서비스가 필요 없습니다. macOS 실행 파일은 검증했고, Windows 실행 파일은 제공하지만 검증이 적습니다.
 
 ## 매일의 사용 루틴
 
-| 단계 | 브라우저에서 | 터미널에서 |
-|---|---|---|
-| 1. 열기 | 서버를 켜고 상단의 프로젝트 이름 확인 | `npm start` |
-| 2. 안전 지점 | **저장·버전**에서 큰 편집 전에 버전 저장 | `npm run cli -- save-new-version` |
-| 3. 음악 만들기 | MIDI 트랙 추가 후 피아노롤 클릭, 또는 **가져오기**로 WAV/AIFF/MIDI | `npm run cli -- import FILE.mid` |
-| 4. 시도와 비교 | 편집하고 들어 보고 **Ctrl/Cmd+Z**로 비교 | `... command 이름 JSON --dry-run` 후 `--dry-run` 없이 |
-| 5. 믹스 | 트랙 게인·팬·뮤트·솔로. 내보내기 전에 뮤트/솔로 확인 | `npm run cli -- status` |
-| 6. 저장 | **Ctrl/Cmd+S** (편집은 자동 저장, 저장은 기준점) | `npm run cli -- save` |
-| 7. 내보내기 | **MIDI 내보내기**, **믹스 WAV 내보내기** | `render`, `export-midi` |
-| 8. 백업 | **백업 ZIP** | `npm run cli -- export-bundle backup.zip` |
-| 9. 종료 | 재생 정지 후 **Ctrl+C** | |
+| 단계 | 할 일 |
+|---|---|
+| 1. 열기 | 실행 파일 더블클릭, 상단의 곡 이름 확인 |
+| 2. 안전 지점 | 큰 변경 전 **Ctrl/Cmd+S**(또는 **저장·버전 → 새 버전 저장**) |
+| 3. 음악 만들기 | **+ 트랙**, 피아노롤을 클릭해 노트 추가, 또는 **가져오기**로 WAV/AIFF/MIDI. 녹음은 **녹음** 패널 |
+| 4. 듣고 비교 | **Space**로 재생/정지, **Ctrl/Cmd+Z** / **Ctrl/Cmd+Shift+Z**로 비교 |
+| 5. 믹스 | 트랙 게인, 팬, **M**(뮤트), **S**(솔로), 마스터 출력. 내보내기 전 **뮤트 해제/솔로 해제** |
+| 6. 내보내기 | **믹스 WAV 내보내기**(오디오), **MIDI 내보내기**(편집 가능한 노트), 악보 보기의 **MusicXML** |
+| 7. 백업 | **백업 ZIP**(프로젝트 + 오디오) |
+| 8. 끝내기 | 재생을 멈추고 터미널 창 닫기(또는 그 창에서 Ctrl+C) |
 
-작업물을 지키는 습관: 프로젝트 폴더(JSON + `assets/`)를 함께 보관하고, 내보낸 믹스 옆에 MIDI와 원본 오디오를 남기며, 업데이트 전에 백업 ZIP을 만듭니다. 문제가 생기면 [설명서](docs/MANUAL.ko.md)의 문제 해결과 저장·복구 장을 보세요.
+편집할 때마다 자동 저장도 되며, **저장**은 되돌아갈 기준점을 표시합니다. 곡을 복사할 때는 **폴더 통째로**(`.json`과 `assets/`) 복사하세요.
+
+## 업데이트와 삭제
+
+**업데이트:** SovaRoll을 끝내고, 중요한 곡은 **백업 ZIP**을 만들고, 앱 폴더를 새로 받은 것으로 바꾼 뒤(Git: `git pull --ff-only`) 다시 시작합니다. `Music/SovaRoll`의 곡은 앱 폴더 안에 있지 않습니다.
+
+**삭제:** 남길 것을 내보내고, SovaRoll을 끝내고, `sovaroll-DAW` 폴더를 휴지통으로 옮깁니다. 곡은 직접 지우기 전까지 `Music/SovaRoll`에 남습니다. SovaRoll은 서비스·드라이버·로그인 항목을 설치하지 않습니다. Node.js와 Chrome은 별개 프로그램이라 남겨도, 지워도 됩니다. 자세히: [설명서 1장](docs/manual/ko/01-install.md).
+
+## 사용 설명서
+
+**[SovaRoll 교본](docs/manual/ko/README.md)** — 실제 프로그램 화면을 담은 12장: 설치, 화면 둘러보기, 첫 곡 수업(화음·멜로디·베이스·셈여림·믹스·내보내기), 프로젝트와 안전장치, 편곡, MIDI 깊이 보기, 악보 보기와 MusicXML, 오디오와 녹음, 재생과 믹싱, 내보내기, CLI 전체, 참고 표(단축키, 음표 값, 셈여림, MIDI 번호, 빠르기말, 문제 해결, 용어집). 영어 화면을 쓰는 영어판: [The SovaRoll Book](docs/manual/en/README.md). 그림은 `node scripts/manual/capture-screens.mjs`로 다시 만들 수 있습니다.
 
 ## CLI 사용법
 
@@ -100,7 +101,7 @@ npm run cli -- render sessions/mix.wav
 
 ## 포함된 기능
 
-- MIDI 피아노롤, 노트·컨트롤러 편집, 클립, 트랙 폴더, 시간·퀀타이즈·스텝 입력과 Undo/Redo.
+- MIDI 피아노롤, MusicXML 내보내기가 되는 큰보표 악보 보기, 노트·컨트롤러 편집, 클립, 트랙 폴더, 시간·퀀타이즈·스텝 입력과 Undo/Redo.
 - WAV/AIFF·MIDI 가져오기, 오디오 클립 편집, 브라우저 녹음, 믹서, WAV·MIDI·프로젝트 묶음 내보내기.
 - 로컬 프로젝트, 명시 저장, 버전 저장, 자동 백업·복구와 미디어 무결성 확인.
 - 사람과 에이전트가 함께 사용하는 명령 인터페이스: 검증, 미리 검사, 리비전 충돌 거부와 원자적 일괄 편집.

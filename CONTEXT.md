@@ -74,3 +74,5 @@ Updated: 2026-11-09. T-001–T-069 are done; the MIDI editor has a grand-staff s
 
 ## Update rule
 Read AGENTS.md, this file, Git status, then one task. Update this English file after each completed/blocked task and before ending a session. Keep it short; archive detail under docs/context/. Recheck the working directory and remote whenever switching repositories. Git and actual test output outrank stale summaries. Publication must be verified against the remote; this document alone is not proof of a push.
+
+- 2026-11-09 (Claude; the maintainer explicitly asked to finish SovaFlow, write non-programmer READMEs and an illustrated GUI+CLI manual, then commit and push everything): `docs/manual/{en,ko}` 12-chapter book with 80 real screenshots (`scripts/manual/capture-screens.mjs`), README install/routine/update/uninstall rewrite, `Start SovaRoll.command`/`.bat` starters keeping songs in ~/Music/SovaRoll, server capability version 0.129.0. Full verify PASS (176 files) + E2E PASS. Windows starter not run. Default policy text unchanged.
