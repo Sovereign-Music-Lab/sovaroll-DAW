@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:40:54.838Z",
+  "updatedAt": "2026-11-09T05:48:45.181Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1588,6 +1588,45 @@
       "startedAt": "2026-11-09T05:35:27.656Z",
       "evidence": "Targeted native Audio Unit tests: 5/5 PASS. New parameter test verifies no-instance/unknown/malformed/out-of-range errors, bounded metadata and initial/default values, exact-keyPath setting/readback, changed PCM versus baseline and identical repeated renders with preserved lifecycle. npm run test:native: 107/107 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 172 product files. Native-only scope; no server/GUI parameter route, custom GUI, realtime automation, listening or compatibility claim.",
       "doneAt": "2026-11-09T05:40:54.837Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-052",
+      "title": "Server and GUI Audio Unit parameter control",
+      "size": "M",
+      "dependsOn": [
+        "T-051"
+      ],
+      "goal": "Connect bounded native Audio Unit parameter inspection and validated setting to revision-guarded server routes and the existing offline probe dialog.",
+      "context": [
+        "T-051 native helper supports parameters and setParameter for one explicitly instantiated effect.",
+        "Use current document/revision guards and exact keyPath; parameter edits do not create project history entries.",
+        "The generic numeric GUI is not a custom plugin editor or realtime automation."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "Guarded server routes list parameters and set one exact keyPath/value without browser executable paths or project revision changes; stale/invalid requests preserve lifecycle.",
+        "The dialog loads parameters after explicit instantiation, displays current/default/range metadata, rejects invalid input visibly and applies a valid value to later offline renders.",
+        "Browser evidence compares default versus changed PCM hash and retains existing range/track/import/Undo behavior; native server tests cover guards and actual parameter readback.",
+        "Default E2E, native and full product suites pass; bilingual documentation states numeric offline control only."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:41:22.708Z",
+      "evidence": "Targeted GUI E2E PASS: 10 steps including parameter range rejection, valid readback, unchanged project revision and changed PCM on the next offline render; all scope/track/import/Undo checks retained. Native server test covers stale/malformed/unknown/out-of-range guards and actual parameter state. Default E2E PASS: 40. npm run test:native: 107/107. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. Generic numeric offline control only; no custom GUI, realtime automation, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:48:45.180Z"
     }
   ]
 }

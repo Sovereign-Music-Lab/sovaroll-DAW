@@ -434,6 +434,14 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','id'].includes(k))||typeof input.id!=='string')throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide component id and expectedRevision',422);
         assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.instantiate(input.id));
       }
+      if(req.method==='POST'&&route==='/api/audio-units/parameters'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>k!=='expectedRevision'))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide only expectedRevision for Audio Unit parameters',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.parameters());
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/parameter'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','keyPath','value'].includes(k))||typeof input.keyPath!=='string'||!input.keyPath||input.keyPath.length>512||typeof input.value!=='number'||!Number.isFinite(input.value))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide expectedRevision, exact parameter keyPath and one finite numeric value',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.setParameter(input.keyPath,input.value));
+      }
       if(req.method==='POST'&&route==='/api/audio-units/render'){
         const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','jobId'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_AUDIO_UNIT_RENDER','Provide render jobId and expectedRevision',422);
         assertRequestDocument();nativeRevision(input.expectedRevision);const job=jobs.get(input.jobId);

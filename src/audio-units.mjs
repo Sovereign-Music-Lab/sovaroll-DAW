@@ -7,7 +7,7 @@ const problem=(code,message)=>Object.assign(new Error(message),{code,status:code
 /** Explicit offline Audio Unit helper owner. No plugin code runs before instantiate. */
 export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','newdaw-audio-units'),onChange=()=>{}}={}){
  let child=null,input='',events=[],waiters=[],directory=null,queue=Promise.resolve(),closed=false;
- let state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null},processedOutput=null;
+ let state={status:'idle',selected:null,instantiated:false,availableCount:0,parameters:[],lastRender:null,error:null},processedOutput=null;
  const snapshot=()=>({supported:process.platform==='darwin',integrated:true,offline:true,hasOutput:processedOutput!==null,...structuredClone(state)});
  const publish=()=>onChange(snapshot());
  function next(predicate,timeout=15000){
@@ -17,10 +17,12 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
  function accept(event){
   if(event.event==='error')state={...state,error:event.message??event.code};
   if(event.event==='list')state={...state,availableCount:event.availableCount??event.count,status:'ready',error:null};
-  if(event.event==='selected'){state={...state,selected:event.component.id,instantiated:false,status:'selected',error:null};}
-  if(event.event==='instantiated'){state={...state,selected:event.component.id,instantiated:true,status:'instantiated',error:null};}
+  if(event.event==='selected'){state={...state,selected:event.component.id,instantiated:false,parameters:[],status:'selected',error:null};}
+  if(event.event==='instantiated'){state={...state,selected:event.component.id,instantiated:true,parameters:[],status:'instantiated',error:null};}
+  if(event.event==='parameters')state={...state,parameters:event.parameters??[],status:'parameters',error:null};
+  if(event.event==='parameterSet')state={...state,parameters:(state.parameters??[]).map(parameter=>parameter.keyPath===event.parameter.keyPath?event.parameter:parameter),status:'parameter-set',error:null};
   if(event.event==='rendered'){state={...state,lastRender:event,status:'rendered',error:null};}
-  if(event.event==='released'){state={...state,instantiated:false,status:'released',error:null};}
+  if(event.event==='released'){state={...state,instantiated:false,parameters:[],status:'released',error:null};}
   publish();events.push(event);
   for(const waiter of [...waiters])if(waiter.predicate(event)){events.splice(events.indexOf(event),1);waiters.splice(waiters.indexOf(waiter),1);clearTimeout(waiter.timer);waiter.resolve(event);}
  }
@@ -47,6 +49,8 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
   list:(limit=64)=>send('list',{limit},event=>event.event==='list'),
   select:id=>send('select',{id},event=>event.event==='selected'),
   instantiate:id=>send('instantiate',{id,offline:true},event=>event.event==='instantiated'),
+  parameters:()=>send('parameters',{},event=>event.event==='parameters'),
+  setParameter:(keyPath,value)=>send('setParameter',{keyPath,value},event=>event.event==='parameterSet'),
   async render({bytes,renderJobId,revision,documentId,sourceStartSample=null}){
    await cleanup();directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-audio-unit-render-'));const file=path.join(directory,'input.wav');await fs.writeFile(file,Buffer.from(bytes));
    try{
@@ -64,7 +68,7 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
   async reset(){
    if(!child&&state.status==='idle'&&!state.selected&&!state.lastRender&&!state.error&&!directory)return;
    if(state.instantiated)await send('release',{},event=>event.event==='released');
-   state={status:'idle',selected:null,instantiated:false,availableCount:0,lastRender:null,error:null};processedOutput=null;publish();await cleanup();
+   state={status:'idle',selected:null,instantiated:false,availableCount:0,parameters:[],lastRender:null,error:null};processedOutput=null;publish();await cleanup();
   },
   async close(){
    if(closed)return;closed=true;if(state.instantiated)await send('release',{},event=>event.event==='released').catch(()=>{});
