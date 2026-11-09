@@ -153,13 +153,14 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
-| app.mjs | 2292 | 7381 |  |
+| app.mjs | 2294 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
 | controller-settings.mjs | 102 | 346 | controllerProfile, subscribeControllerSettings, refreshControllerSettings, fillControllerMenu, openControllerSettings |
 | document.mjs | 76 | 782 | setupDocumentUI |
 | editing.mjs | 444 | 1406 | setupEditingUI, planTrackMix, planTrackStep, planTrackDrop, planMidiPartCommands |
+| i18n.mjs | 71 | 368 | applyLanguage, setupI18n |
 | inspector-time.mjs | 102 | 473 | setupInspectorTime |
 | metronome.mjs | 25 | 461 | setupMetronome |
 | microphone-recorder.mjs | 27 | 1772 | recordingBlockWindow, createMicrophoneRecorder |
@@ -208,7 +209,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-editing-smoke.mjs | 77 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 334 | 388 |  |
+| gui-first-delivery-smoke.mjs | 342 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |

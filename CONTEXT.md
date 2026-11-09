@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-039 are done. Real-device observations remain human work; choose the next scoped product task.
+Updated: 2026-11-09. T-001–T-040 are done. Real-device observations remain human work; choose the next scoped product task.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -27,8 +27,8 @@ Updated: 2026-11-09. T-001–T-039 are done. Real-device observations remain hum
 - Added three public-guard regression tests in one file.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
-- First-delivery Chrome E2E: 39 steps passed on 2026-11-09, including recording panel, fade-in/out, audio controls, cycle, quantize/transpose/velocity, keyboard history and ruler Snap/Alt coverage. Fake microphone; no physical listening claim.
-- T-001–T-039 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
+- T-001–T-040 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 97 after T-040; no complete bilingual UI claim.
 - T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
 - T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
 - Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
@@ -51,7 +51,7 @@ Updated: 2026-11-09. T-001–T-039 are done. Real-device observations remain hum
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-039 are done with evidence in docs/VALIDATION.md. Add the next scoped product task for future features or newly discovered defects.
+- T-001–T-040 are done with evidence in docs/VALIDATION.md. Add the next scoped product task for native audio, plugin hosting, remaining translations or newly discovered defects.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

@@ -49,6 +49,14 @@ try{
  assert.equal(await page.locator('#recording-panel').evaluate(e=>e.open),false);
  assert.equal(await page.locator('#recording-panel .recording-controls').isVisible(),false);check('recording.GUI-panel-default-collapsed');
  assert.equal((await proj()).tracks.length,0);assert.equal(await page.locator('#timeline-empty').isVisible(),true);check('project.new-empty-project-opens-in-GUI');
+ const languageRevision=(await proj()).revision;assert.equal(await page.locator('#language-select').inputValue(),'ko');
+ await page.locator('#language-select').selectOption('en');
+ await page.waitForFunction(()=>document.documentElement.lang==='en'&&document.querySelector('#projects-button').textContent==='Open project'&&document.querySelector('#recording-panel > summary').textContent==='Recording');
+ assert.match(await page.locator('#render-button').textContent(),/Export WAV mix/);assert.equal(await page.locator('#audio-record').textContent(),'● Record audio');
+ await page.reload();await page.waitForFunction(()=>document.querySelector('#language-select')?.value==='en'&&document.querySelector('#projects-button')?.textContent==='Open project'&&!document.querySelector('#projects-button').disabled);
+ assert.equal((await proj()).revision,languageRevision);
+ await page.locator('#language-select').selectOption('ko');await page.waitForFunction(()=>document.documentElement.lang==='ko'&&document.querySelector('#projects-button').textContent==='프로젝트 열기'&&document.querySelector('#recording-panel > summary').textContent==='녹음');
+ check('project.GUI-language-switch-persists-without-project-edit');
 
  // 2. MIDI track + notes
  let p=await act(()=>page.locator('#empty-add').click());

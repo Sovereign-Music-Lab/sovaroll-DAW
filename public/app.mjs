@@ -35,6 +35,7 @@ let midiExportDraft=null,midiExportDownloading=false;
 let midiTrackExportSupported=false;
 import {setupMetronome} from './metronome.mjs';
 import {setupRecording} from './recording-ui.mjs';
+import {setupI18n,applyLanguage} from './i18n.mjs';
 import {navigateNoteSelection,selectNotePitch,selectNoteMenu} from './note-keyboard-selection.mjs';
 import {compileEditorSnap,resolveSnapGrid} from '/media/snap-grid.mjs';
 import {setupSnapGridSettings} from './snap-grid-settings.mjs';
@@ -511,7 +512,7 @@ function updateButtons() {
   documentUI?.update();
 }
 function renderUI(forceInspector = false) {
-  $('main-workspace').hidden=!project;$('workspace-empty').hidden=Boolean(project);
+  queueMicrotask(applyLanguage);  $('main-workspace').hidden=!project;$('workspace-empty').hidden=Boolean(project);
   $('workspace-status').textContent=`열린 프로젝트 ${workspaceState?.documents?.length??(project?1:0)}개 · ${project?'활성: '+project.name:'활성 없음'}`;
   if (!project) {
     document.title='활성 프로젝트 없음 — newdaw';$('project-name').value='활성 프로젝트 없음';
@@ -1983,6 +1984,7 @@ async function loadSessionUI(){
  catch(error){notice(`이력·백업 화면을 불러오지 못했습니다: ${error.message}`,true);}
  finally{sessionUILoading=false;}
 }
+setupI18n({onChange:()=>renderUI(true)});
 initialize();
 
 async function loadResolutionUI(){

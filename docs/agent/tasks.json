@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T02:08:30.679Z",
+  "updatedAt": "2026-11-09T02:22:11.932Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1178,6 +1178,36 @@
       "startedAt": "2026-11-09T02:04:41.913Z",
       "evidence": "New gui-recording-assistance-smoke E2E PASS, 4 steps: input selection, nonzero baseline, count-in 4 oscillators, backing 4.2s, monitor path, stereo WAV, metronome scheduling; -6dB gain ratio 0.5011878275. Existing recording workflow/protection PASS 4/6. agent:verify VERIFY PASS. Fake-device/Web Audio only; hardware verification not claimed. Requirements/validation/map updated.",
       "doneAt": "2026-11-09T02:08:30.678Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "ux",
+      "id": "T-040",
+      "title": "Bilingual UI: Korean/English primary workspace and persisted language choice",
+      "size": "M",
+      "goal": "Add a persisted Korean/English language switch for the primary SovaRoll workspace without changing control IDs or behavior. Korean remains the default; translate the top-level transport, arrangement and recording controls used in the first-delivery flow.",
+      "files": [
+        "public/index.html",
+        "public/app.mjs",
+        "public/styles.css",
+        "scripts/gui-first-delivery-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "A discoverable language control switches primary workspace labels between Korean and English and persists across reload without changing project state.",
+        "Existing Korean E2E selectors and behavior remain unchanged; a new browser check verifies English labels and persistence.",
+        "Both language documentation editions record the actual supported scope; no full-UI translation claim.",
+        "npm run agent:e2e and npm run agent:verify pass."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T02:11:29.967Z",
+      "evidence": "Persisted Korean/English selector added for primary transport/arrangement/recording workspace; IDs and Korean default preserved. E2E PASS 40 steps including English labels, reload persistence, unchanged revision and Korean return. agent:verify:full PASS 172 files; test:native PASS 97. Manuals updated in both languages with advanced-dialog limits; no full bilingual claim.",
+      "doneAt": "2026-11-09T02:22:11.931Z"
     }
   ]
 }

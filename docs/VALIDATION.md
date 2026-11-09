@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-039 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-040 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -61,6 +61,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-037 adds `midi.GUI-tools-quantize`: a known off-grid note at tick 25 is quantized to 0 using the selection's 1/16 grid, note count is unchanged, and Undo restores tick 25. The default E2E passed 39 steps and final `npm run agent:verify` passed. FD-14 now has first-delivery coverage for quantize, transpose and velocity.
 - T-038 adds `scripts/gui-auto-backup-recovery-smoke.mjs`: 4 steps pass for GUI track creation, GUI backup/listing, independent CLI `recover-backup` and opening the recovered project through the GUI with the original track/clip. Original project bytes stay unchanged and all files use a temporary folder. The default 39-step E2E and final `npm run agent:verify` passed. FD-04 evidence now covers this supported recovery path.
 - T-039 adds `scripts/gui-recording-assistance-smoke.mjs`: 4 steps pass for input selection, non-zero baseline PCM, count-in (4 oscillators), backing buffer (4.2 seconds), monitor path, stereo capture and metronome scheduling. Measured -6 dB capture gain ratio is 0.5011878275. Existing recording workflow/protection pass 4/6 steps and final `npm run agent:verify` passed. Fake-device/Web Audio evidence does not replace physical-device checks.
+- T-040 adds a persisted Korean/English selector for the primary transport, arrangement and recording workspace, preserving existing IDs and Korean defaults. The new E2E verifies English labels, reload persistence, unchanged project revision and return to Korean. The default E2E passed 40 steps. Both manuals state that advanced dialogs/details are not fully translated. Full verification passed 172 test files and native tests passed 97; no complete bilingual UI or hardware claim.
 
 ## Problems encountered and resolved
 
@@ -159,3 +160,5 @@ T-037에서는 `midi.GUI-tools-quantize`를 추가해 tick 25의 off-grid 노트
 T-038에서는 자동백업 복구 스모크 4단계가 통과했습니다. GUI 트랙 생성·백업·목록 확인, 독립된 CLI `recover-backup`, 복구 프로젝트를 GUI로 열어 원래 트랙·클립을 확인했습니다. 원본 프로젝트 바이트는 변하지 않고 모든 파일은 임시 폴 낸에 있습니다. 기본 E2E 39단계와 최종 verify가 통과했으며 FD-04의 지원 경로를 기록했습니다.
 
 T-039에서는 녹음 보조 스모크 4단계가 통과했습니다. 입력 선택·비무음 PCM·4개 카운트인 oscillator·4.2초 반주 buffer·모니터 경로·스테레오 캡처·메트로놈 예약을 확인했고, -6dB 캡처 gain 비율은 0.5011878275였습니다. 기존 녹음 워크플로·보호도 4/6단계로 통과하고 최종 verify도 통과했습니다. 가짜 장치·Web Audio 결과로 실제 장치 검증을 대신하지 않습니다.
+
+T-040에서는 기본 transport·arrangement·녹음 화면에 한국어/영어 선택과 브라우저 저장을 추가했습니다. 기존 ID와 한국어 기본값을 유지하며 영어 문구·새로고침 유지·프로젝트 revision 불변·한국어 복귀를 E2E로 확인했습니다. 기본 E2E 40단계, 전체 제품 172개 파일, native 97개 테스트가 통과했습니다. 두 설명서에 고급 대화상자의 미번역 범위를 명시했으며 완전한 이중 언어 UI를 주장하지 않습니다.
