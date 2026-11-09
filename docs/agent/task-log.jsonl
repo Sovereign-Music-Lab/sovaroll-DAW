@@ -196,3 +196,6 @@
 {"at":"2026-11-09T12:23:24.541Z","id":"T-068","action":"add"}
 {"at":"2026-11-09T12:23:24.739Z","id":"T-068","action":"start"}
 {"at":"2026-11-09T12:36:40.444Z","id":"T-068","action":"done","evidence":"score-layout unit 7 PASS; gui-score-editor-smoke 7 PASS; default first-delivery E2E 40 PASS; gui-session-i18n 4 PASS; gui-note-arrow PASS; agent:verify VERIFY PASS (175 files); i18n-coverage 2186 segments 0 missing; screenshot inspected for clefs, key, accidentals, ties, rests","verify":"PASS"}
+{"at":"2026-11-09T12:49:07.399Z","id":"T-069","action":"add"}
+{"at":"2026-11-09T12:49:07.573Z","id":"T-069","action":"start"}
+{"at":"2026-11-09T12:54:00.980Z","id":"T-069","action":"done","evidence":"musicxml-export unit 4 PASS (bar-fill timeline per voice); gui-musicxml-export-smoke 3 PASS; gui-score-editor-smoke 7 PASS; first-delivery E2E 40 PASS; agent:verify VERIFY PASS (after guard fix); xmllint --noout well-formed; i18n-coverage 0 missing; not XSD-validated or opened in notation software","verify":"PASS"}

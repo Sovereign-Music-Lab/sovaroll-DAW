@@ -129,7 +129,7 @@ let selectedClipIds = new Set();
 let selectedNote = null;
 let selectedNoteIds = new Set();
 let recordingUI,metronomeUI;
-let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,nativeAudioUI,audioUnitsUI,midiMergeUI,midiModifiersUI,controllerLanesUI,scoreViewUI,scoreViewSupported=false,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
+let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,nativeAudioUI,audioUnitsUI,midiMergeUI,midiModifiersUI,controllerLanesUI,scoreViewUI,scoreViewSupported=false,musicXmlSupported=false,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
 let busy = false;
 let connected = false;
 let pxPerBeat = Number($('zoom').value);
@@ -269,7 +269,7 @@ function applySnapshot(snapshot, {force = false} = {}) {
   if(snapshot?.capabilities)$('move-clips-track').hidden=snapshot.capabilities.clipGroupTrackMove!==true;
   if(snapshot?.capabilities)$('move-clips-cursor').hidden=snapshot.capabilities.clipGroupMove!==true;
   if(snapshot?.capabilities){clipGroupMuteSupported=snapshot.capabilities.clipGroupMute===true;$('mute-selected-clips').hidden=!clipGroupMuteSupported;}
-  if(snapshot?.capabilities)scoreViewSupported=snapshot.capabilities.scoreView===true;
+  if(snapshot?.capabilities){scoreViewSupported=snapshot.capabilities.scoreView===true;musicXmlSupported=snapshot.capabilities.musicXmlExport===true;}
   if(snapshot?.capabilities)$('repeat-selected-clips').hidden=snapshot.capabilities.clipGroupRepeat!==true;
   if(snapshot?.capabilities)$('locator-operation-field').hidden=snapshot.capabilities.locatorRangeEditing!==true;
   if(snapshot?.capabilities)for(const id of ['locators-from-clips','cycle-from-clips'])$(id).hidden=snapshot.capabilities.locatorsFromClips!==true;
@@ -1987,7 +1987,7 @@ setupChaseSettings({onChange:()=>stopPreview(false),notify:notice});
 midiMergeUI=setupMidiMerge({getContext:()=>({project,selectedTrack,selectedClip,busy,connected,documentId:documentState?.id}),runCommand,selectClip,notify:notice});
 midiModifiersUI=setupMidiModifiers({getContext:()=>({project,selectedTrack,selectedTrackIds,selectedClip,busy,connected,documentId:documentState?.id}),runCommand,notify:notice});
 controllerLanesUI = setupControllerLanes({getContext:()=>({project,selectedClip,selectedNote,selectedNoteIds,pxPerBeat,pianoGeometry:project?geometry().piano:null,projectCursorTick:project?secondsToTick(transportSeconds):0,snapTicks:project?Math.max(1,Math.round(Number($('snap').value)*project.ppq)):240,transportActive:Boolean(audioSource||previewPreparing||activeJob||nativeMidiUI?.active),busy,connected,documentId:documentState?.id}),runCommand,notify:notice,setSelectedNoteIds:ids=>{selectedNoteIds=new Set(ids);selectedNote=ids.at(-1)??null;refreshNoteSelection();},onLayout:height=>document.documentElement.style.setProperty('--controller-extra-height',`${height}px`)});
-scoreViewUI = setupScoreView({getContext:()=>({enabled:scoreViewSupported,project,clip:currentClip(),view:project&&currentClip()?.type==='midi'?geometry().piano:null,selectedNoteIds,busy,connected}),selectNote:selectNoteForPointer,addNote:(tick,pitch)=>addNoteAt(tick,pitch),runCommand,notify:notice});
+scoreViewUI = setupScoreView({getContext:()=>({enabled:scoreViewSupported,musicXml:musicXmlSupported,documentId:documentState?.id,project,clip:currentClip(),view:project&&currentClip()?.type==='midi'?geometry().piano:null,selectedNoteIds,busy,connected}),selectNote:selectNoteForPointer,addNote:(tick,pitch)=>addNoteAt(tick,pitch),runCommand,notify:notice,download});
 midiEventsUI = setupMidiEventsUI({getContext:()=>({project,selectedClip,busy,connected,documentId:documentState?.id}),runCommand,notify:notice});
 editingUI = setupEditingUI({request:jsonFetch,getContext:()=>({project,documentId:documentState?.id,selectedTrack,selectedTrackIds,selectedClip,selectedClipIds,selectedNote,selectedNoteIds,busy,connected,recordingActive:!!recordingUI?.active||!!browserMidiRecordingUI?.active,legatoOptionsSupported,midiStepCursorNavigationSupported,midiStepCursorClickSupported,midiNoteInputEditSupported,transportSeconds,cursorTick:project?Math.max(0,Math.round(secondsToTick(transportSeconds))):0}),runCommand,notify:notice,selectTracks:ids=>{selectTrack(ids[0]);selectedTrackIds=new Set(ids);syncTrackClipSelection();renderUI(true);},selectTrack,selectClip,revealClip,revealClips,download,restoreAsset,selectNotes:ids=>{selectedNoteIds=new Set(ids);selectedNote=ids.at(-1)??null;refreshNoteSelection();},onStepMidiChange:updateButtons,onStepCursorChange:cursor=>{stepInputCursor=cursor;renderStepInputCursor();}});
 async function loadSessionUI(){

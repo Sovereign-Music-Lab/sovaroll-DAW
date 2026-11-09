@@ -140,6 +140,8 @@ npm run cli -- export-bundle sessions/project-backup.zip
 
 The GUI offers mix/MIDI/bundle downloads. The CLI also supports selected tracks, locator ranges, output sample formats/rates, deterministic dither and stem variants; inspect [CLI reference](CLI.md) and live `--help` for exact combinations. Existing export paths are not overwritten without `--force`. Choose new filenames when comparing revisions.
 
+For notation programs, `npm run cli -- export-musicxml sessions/score.musicxml` writes MusicXML 4.0 with one grand-staff part per MIDI track (`--track-id` to choose, `--key-fifths -7..7` for the key). In the score view, **MusicXML ↗** exports the selected part's track with the displayed key. Notes, ties, chords, rests, key, meter, tempo and velocity (as dynamics) are written; overlapping rhythms become extra voices; muted clips are skipped. Instruments, controllers, pedal, beams and tuplets are not included. The file is checked for XML well-formedness, not yet against the MusicXML schema or in each notation program.
+
 MIDI carries musical events, not the mixed audio, all plugin sounds or every mixer decision. Retain a project bundle plus a mix and MIDI when handing work to another workstation. Export warnings explain information that a target format cannot preserve.
 
 Current limits include a **600-second render window including its tail**, bounded memory, and file/bundle size limits. Read the live capabilities/help when choosing export settings; splitting an export into ranges may be necessary. A technical export success is not a listening review.
