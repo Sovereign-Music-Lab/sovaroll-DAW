@@ -1,6 +1,6 @@
 # 개발 노트 — Sovereign DAW / SovaRoll
 
-[English](DEVELOPMENT.en.md) · [철학](../PHILOSOPHY.ko.md) · [검증 기록](VALIDATION.md)
+[English](DEVELOPMENT.en.md) · [철학](../PHILOSOPHY.ko.md) · [기능 인벤터리](FEATURE_INVENTORY.ko.md) · [검증 기록](VALIDATION.md)
 
 ## 개발 방향과 공개 범위
 

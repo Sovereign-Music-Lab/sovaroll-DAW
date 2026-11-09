@@ -115,7 +115,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | file | lines | max line | exports |
 |---|---:|---:|---|
 | audio-statistics-worker.mjs | 5 | 120 |  |
-| audio-units.mjs | 66 | 300 | createAudioUnits |
+| audio-units.mjs | 96 | 300 | createAudioUnits |
 | auto-backup.mjs | 204 | 276 | backupBaseName, validateBackupRegistry, listBackups, readBackup, createAutoBackup |
 | chase-settings.mjs | 127 | 523 | defaultChaseSettings, getChaseSettings, updateChaseSettings, withChaseDefaults |
 | cli.mjs | 640 | 1833 | main |
@@ -139,7 +139,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | render-worker.mjs | 59 | 337 | renderSnapshotData |
 | reset-settings.mjs | 120 | 523 | defaultResetOptions, resolveResetOptions, defaultResetSettings, getResetSettings, updateResetSettings |
 | revert-media.mjs | 387 | 390 | registerCreatedMedia, captureMediaOwnership, planRevertMedia, applyRevertMediaPlan, listRevertMediaTrash, restoreRevertMediaTrash |
-| server.mjs | 983 | 3580 | CAPABILITIES, startServer |
+| server.mjs | 1005 | 3580 | CAPABILITIES, startServer |
 | session-store.mjs | 212 | 207 | MAX_JOURNAL_BYTES, DEFAULT_SESSION_SETTINGS, canonicalProjectHash, validateSessionSettings, assertSidecarLocation, readSidecar, writeSidecar, quarantineSidecar, loadSessionState, commitSessionState, updateSessionSettings |
 | split-settings.mjs | 132 | 523 | defaultSplitSettings, getSplitSettings, updateSplitSettings, withSplitDefaults |
 | stem-directory.mjs | 26 | 277 | renderStemDirectory |
@@ -157,7 +157,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 |---|---:|---:|---|
 | app.mjs | 2303 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
-| audio-units.mjs | 27 | 866 | setupAudioUnits |
+| audio-units.mjs | 67 | 1955 | setupAudioUnits |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
 | controller-settings.mjs | 102 | 346 | controllerProfile, subscribeControllerSettings, refreshControllerSettings, fillControllerMenu, openControllerSettings |
@@ -200,7 +200,9 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | build-native-audio.mjs | 16 | 249 |  |
 | build-native-midi.mjs | 16 | 248 |  |
 | check.mjs | 9 | 208 |  |
-| gui-audio-units-smoke.mjs | 31 | 380 |  |
+| feature-inventory.mjs | 47 | 311 | buildFeatureInventory |
+| gui-audio-unit-preview-smoke.mjs | 49 | 711 |  |
+| gui-audio-units-smoke.mjs | 82 | 735 |  |
 | gui-auto-backup-recovery-smoke.mjs | 64 | 213 |  |
 | gui-chase-settings-smoke.mjs | 46 | 1165 |  |
 | gui-controller-bend-smoke.mjs | 59 | 1166 |  |

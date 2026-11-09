@@ -1,6 +1,6 @@
 # Development notes — Sovereign DAW / SovaRoll
 
-[한국어](DEVELOPMENT.ko.md) · [Philosophy](../PHILOSOPHY.en.md) · [Validation](VALIDATION.md)
+[한국어](DEVELOPMENT.ko.md) · [Philosophy](../PHILOSOPHY.en.md) · [Feature inventory](FEATURE_INVENTORY.en.md) · [Validation](VALIDATION.md)
 
 ## Direction and release boundary
 

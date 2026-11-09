@@ -17,6 +17,7 @@
     "agent:verify:full": "node scripts/agent/verify.mjs --full",
     "agent:e2e": "node scripts/agent/e2e.mjs",
     "agent:smoke-sweep": "node scripts/agent/smoke-sweep.mjs",
+    "agent:features": "node scripts/feature-inventory.mjs",
     "agent:guard": "node scripts/agent/guard.mjs",
     "agent:checkpoint": "node scripts/agent/checkpoint.mjs",
     "agent:find": "node scripts/agent/find.mjs",
