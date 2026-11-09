@@ -71,6 +71,7 @@ Media & time math: WAV/AIFF/MIDI codecs, offline renderer, tempo/time conversion
 | midi.mjs | 285 | 690 | parseMidi, writeMidi, writeMidiDetailed |
 | mix-output.mjs | 16 | 305 | prepareMixOutput |
 | musical-time.mjs | 126 | 125 | compileMusicalTime |
+| musicxml.mjs | 176 | 350 | writeMusicXml |
 | note-audition.mjs | 25 | 576 | planNoteAudition |
 | note-paint.mjs | 54 | 419 | compileNotePaint, planNotePaint |
 | note-shapes.mjs | 28 | 246 | planNoteShape |
@@ -119,8 +120,8 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | audio-units.mjs | 110 | 300 | createAudioUnits |
 | auto-backup.mjs | 204 | 276 | backupBaseName, validateBackupRegistry, listBackups, readBackup, createAutoBackup |
 | chase-settings.mjs | 127 | 523 | defaultChaseSettings, getChaseSettings, updateChaseSettings, withChaseDefaults |
-| cli-guide.mjs | 251 | 277 | GUIDE_TOPICS, guideTopicIds, renderGuide, renderGuideMarkdown |
-| cli.mjs | 642 | 1833 | main |
+| cli-guide.mjs | 252 | 277 | GUIDE_TOPICS, guideTopicIds, renderGuide, renderGuideMarkdown |
+| cli.mjs | 651 | 1862 | main |
 | controller-settings.mjs | 168 | 380 | defaultControllerSettings, getControllerSettings, updateControllerSettings, withControllerDefaults |
 | demo.mjs | 44 | 277 | createDemoProject |
 | document-session.mjs | 140 | 687 | createDocumentSession |
@@ -141,7 +142,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | render-worker.mjs | 59 | 337 | renderSnapshotData |
 | reset-settings.mjs | 120 | 523 | defaultResetOptions, resolveResetOptions, defaultResetSettings, getResetSettings, updateResetSettings |
 | revert-media.mjs | 387 | 390 | registerCreatedMedia, captureMediaOwnership, planRevertMedia, applyRevertMediaPlan, listRevertMediaTrash, restoreRevertMediaTrash |
-| server.mjs | 1034 | 3595 | CAPABILITIES, startServer |
+| server.mjs | 1045 | 3615 | CAPABILITIES, startServer |
 | session-store.mjs | 212 | 207 | MAX_JOURNAL_BYTES, DEFAULT_SESSION_SETTINGS, canonicalProjectHash, validateSessionSettings, assertSidecarLocation, readSidecar, writeSidecar, quarantineSidecar, loadSessionState, commitSessionState, updateSessionSettings |
 | split-settings.mjs | 132 | 523 | defaultSplitSettings, getSplitSettings, updateSplitSettings, withSplitDefaults |
 | stem-directory.mjs | 26 | 277 | renderStemDirectory |
@@ -165,7 +166,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | controller-settings.mjs | 102 | 346 | controllerProfile, subscribeControllerSettings, refreshControllerSettings, fillControllerMenu, openControllerSettings |
 | document.mjs | 76 | 782 | setupDocumentUI |
 | editing.mjs | 444 | 1406 | setupEditingUI, planTrackMix, planTrackStep, planTrackDrop, planMidiPartCommands |
-| i18n-dictionary.mjs | 2201 | 3135 | KO_EN, KO_EN_NUMERIC |
+| i18n-dictionary.mjs | 2203 | 3135 | KO_EN, KO_EN_NUMERIC |
 | i18n.mjs | 179 | 902 | translateString, currentLanguage, applyLanguage, setupI18n |
 | inspector-time.mjs | 102 | 473 | setupInspectorTime |
 | metronome.mjs | 25 | 461 | setupMetronome |
@@ -186,7 +187,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | recording-ui.mjs | 15 | 2028 | setupRecording |
 | reset-settings.mjs | 16 | 1090 | resetLabels, readResetProfile, setupResetSettings |
 | resolution.mjs | 105 | 892 | setupResolutionUI |
-| score-view.mjs | 264 | 250 | setupScoreView |
+| score-view.mjs | 284 | 250 | setupScoreView |
 | session.mjs | 89 | 968 | setupSessionUI |
 | snap-grid-settings.mjs | 18 | 931 | setupSnapGridSettings |
 | tap-tempo-ui.mjs | 21 | 904 | setupTapTempo |
@@ -235,6 +236,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-midi-modifiers-smoke.mjs | 54 | 1165 |  |
 | gui-midi-playback-smoke.mjs | 86 | 831 |  |
 | gui-musical-time-smoke.mjs | 45 | 877 |  |
+| gui-musicxml-export-smoke.mjs | 93 | 189 |  |
 | gui-native-audio-smoke.mjs | 37 | 595 |  |
 | gui-native-midi-smoke.mjs | 48 | 848 |  |
 | gui-new-project-delivery-smoke.mjs | 78 | 211 |  |

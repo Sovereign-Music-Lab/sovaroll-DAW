@@ -220,6 +220,8 @@ npm run cli -- offline-render-stems PROJECT.json stems.zip
 npm run cli -- offline-render PROJECT.json mix.wav
 # 편집 가능한 MIDI (--track-id, --midi-no-* 옵션 등)
 npm run cli -- export-midi out.mid [--midi-format 0|1] [--midi-ppq 480] [--locators]
+# 악보 프로그램용 MusicXML (MIDI 트랙)
+npm run cli -- export-musicxml score.musicxml [--key-fifths -1] [--track-id ID]
 # 프로젝트 JSON만 (오디오 미포함)
 npm run cli -- export-project out.json
 # 프로젝트와 검증된 미디어 ZIP (64 MiB까지)

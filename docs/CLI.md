@@ -148,6 +148,7 @@ Usage: node src/cli.mjs <action> [arguments] [options]
   offline-render-stems-dir INPUT.json NEW_DIR  Write one WAV at a time; no aggregate ZIP cap
   offline-render-stems INPUT.json OUTPUT.zip  Read-only stem batch without server
   offline-render INPUT.json OUTPUT.wav   Headless read-only render without running server
+  export-musicxml OUT.musicxml  Export MIDI tracks as MusicXML score; repeat --track-id ID; --key-fifths -7..7
   export-midi OUTPUT.mid      Export MIDI; --midi-format 0|1; --midi-ppq 24..960; repeat --track-id ID; --locators [--midi-no-chase]
   export-project OUTPUT.json  Export project JSON; assets are relative references, not bundled
   export-bundle OUTPUT.zip    Collect a frozen live-session snapshot and verified assets (64 MiB)

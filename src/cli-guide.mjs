@@ -140,6 +140,7 @@ export const GUIDE_TOPICS = [
       [`${C} offline-render-stems PROJECT.json stems.zip`, 'Server-less stem ZIP', '서버 없이 스템 ZIP'],
       [`${C} offline-render PROJECT.json mix.wav`, 'Server-less read-only render', '서버 없는 읽기 전용 렌더'],
       [`${C} export-midi out.mid [--midi-format 0|1] [--midi-ppq 480] [--locators]`, 'Editable MIDI (also --track-id, --midi-no-patch/-no-volume-pan/-no-modifiers/-no-markers/-no-delay)', '편집 가능한 MIDI (--track-id, --midi-no-* 옵션 등)'],
+      [`${C} export-musicxml score.musicxml [--key-fifths -1] [--track-id ID]`, 'MusicXML score of MIDI tracks for notation programs', '악보 프로그램용 MusicXML (MIDI 트랙)'],
       [`${C} export-project out.json`, 'Project JSON only; audio is NOT included', '프로젝트 JSON만 (오디오 미포함)'],
       [`${C} export-bundle backup.zip`, 'Project + verified media ZIP (up to 64 MiB)', '프로젝트와 검증된 미디어 ZIP (64 MiB까지)']
     ]

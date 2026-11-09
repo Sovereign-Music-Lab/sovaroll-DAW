@@ -220,6 +220,8 @@ npm run cli -- offline-render-stems PROJECT.json stems.zip
 npm run cli -- offline-render PROJECT.json mix.wav
 # Editable MIDI (also --track-id, --midi-no-patch/-no-volume-pan/-no-modifiers/-no-markers/-no-delay)
 npm run cli -- export-midi out.mid [--midi-format 0|1] [--midi-ppq 480] [--locators]
+# MusicXML score of MIDI tracks for notation programs
+npm run cli -- export-musicxml score.musicxml [--key-fifths -1] [--track-id ID]
 # Project JSON only; audio is NOT included
 npm run cli -- export-project out.json
 # Project + verified media ZIP (up to 64 MiB)

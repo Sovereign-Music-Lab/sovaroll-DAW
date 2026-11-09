@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T12:36:40.444Z",
+  "updatedAt": "2026-11-09T12:54:00.980Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2245,6 +2245,51 @@
       "startedAt": "2026-11-09T12:23:24.738Z",
       "evidence": "score-layout unit 7 PASS; gui-score-editor-smoke 7 PASS; default first-delivery E2E 40 PASS; gui-session-i18n 4 PASS; gui-note-arrow PASS; agent:verify VERIFY PASS (175 files); i18n-coverage 2186 segments 0 missing; screenshot inspected for clefs, key, accidentals, ties, rests",
       "doneAt": "2026-11-09T12:36:40.443Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "export",
+      "id": "T-069",
+      "title": "MusicXML export of MIDI tracks",
+      "size": "M",
+      "dependsOn": [
+        "T-068"
+      ],
+      "goal": "Export MIDI tracks as MusicXML 4.0 grand-staff parts from the score view, the CLI and the HTTP API, using the same spelling, ties and accidentals as the score view.",
+      "context": [
+        "src/media/musicxml.mjs reuses score-layout.mjs; overlapping rhythms on one staff become extra voices.",
+        "Read-only export; muted clips are skipped and reported.",
+        "Not represented: audio, instruments, controllers, pedal, mixer, beams, tuplets."
+      ],
+      "files": [
+        "src/media/musicxml.mjs",
+        "src/server.mjs",
+        "src/cli.mjs",
+        "src/cli-guide.mjs",
+        "public/score-view.mjs",
+        "public/app.mjs",
+        "public/index.html",
+        "public/i18n-dictionary.mjs",
+        "tests/musicxml-export.test.mjs",
+        "scripts/gui-musicxml-export-smoke.mjs"
+      ],
+      "acceptance": [
+        "Every measure of every voice fills exactly one bar (unit test timeline walk).",
+        "Spelling, key, meter, ties, chords, rests, tempo changes and velocity dynamics are written.",
+        "Score toolbar downloads the selected track with the displayed key; CLI exports all or selected tracks.",
+        "Invalid key, unknown/audio track, unknown parameter and stale revision are rejected without project edits.",
+        "Output is well-formed XML (xmllint)."
+      ],
+      "verify": [
+        "node --test tests/musicxml-export.test.mjs",
+        "npm run agent:e2e -- scripts/gui-musicxml-export-smoke.mjs",
+        "xmllint --noout .test-output/musicxml-sample.musicxml",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T12:49:07.573Z",
+      "evidence": "musicxml-export unit 4 PASS (bar-fill timeline per voice); gui-musicxml-export-smoke 3 PASS; gui-score-editor-smoke 7 PASS; first-delivery E2E 40 PASS; agent:verify VERIFY PASS (after guard fix); xmllint --noout well-formed; i18n-coverage 0 missing; not XSD-validated or opened in notation software",
+      "doneAt": "2026-11-09T12:54:00.980Z"
     }
   ]
 }

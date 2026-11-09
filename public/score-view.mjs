@@ -25,7 +25,7 @@ const ERROR_TEXT = {
   SCORE_KEY_INVALID: '조표 값이 올바르지 않습니다.',
 };
 
-export function setupScoreView({ getContext, selectNote, addNote, runCommand, notify }) {
+export function setupScoreView({ getContext, selectNote, addNote, runCommand, notify, download }) {
   const $ = (id) => document.getElementById(id);
   const host = $('score-scroll');
   const svg = $('score-svg');
@@ -38,6 +38,8 @@ export function setupScoreView({ getContext, selectNote, addNote, runCommand, no
   if (!Number.isInteger(fifths) || fifths < -7 || fifths > 7) fifths = 0;
   let left = 0;
   let enabled = false;
+  let exporting = false;
+  const exportButton = $('score-export-musicxml');
 
   keySelect.innerHTML = Object.keys(KEY_NAMES).map(Number).sort((a, b) => a - b)
     .map((f) => `<option value="${f}">${esc(KEY_NAMES[f])} 장조 · ${f > 0 ? `♯${f}` : f < 0 ? `♭${-f}` : '조표 없음'}</option>`).join('');
@@ -181,6 +183,8 @@ export function setupScoreView({ getContext, selectNote, addNote, runCommand, no
     pianoButton.setAttribute('aria-pressed', String(!active));
     scoreButton.setAttribute('aria-pressed', String(active));
     $('score-key-label').hidden = !active;
+    exportButton.hidden = !(active && context.musicXml === true);
+    exportButton.disabled = exporting || context.busy || !context.connected || context.clip?.type !== 'midi';
     editor?.classList.toggle('score-mode', active);
     const title = $('editor-title');
     if (title) title.textContent = active ? 'Score' : 'Piano roll';
@@ -211,6 +215,22 @@ export function setupScoreView({ getContext, selectNote, addNote, runCommand, no
     fifths = value;
     writeStored(KEY_KEY, String(fifths));
     update();
+  });
+
+  exportButton.addEventListener('click', async () => {
+    const context = getContext();
+    const clip = context.clip;
+    if (exporting || context.busy || !context.connected || clip?.type !== 'midi') return;
+    const track = context.project.tracks.find((t) => t.id === clip.trackId);
+    const params = new URLSearchParams({ trackId: clip.trackId, fifths: String(fifths), expectedRevision: String(context.project.revision) });
+    exporting = true;
+    update();
+    try {
+      if (await download(`/api/export/musicxml?${params}`, `${context.project.name} - ${track?.name ?? 'MIDI'}.musicxml`, { documentId: context.documentId })) notify('MusicXML 악보 파일을 내보냈습니다.');
+    } finally {
+      exporting = false;
+      update();
+    }
   });
 
   host.addEventListener('pointerdown', (event) => {

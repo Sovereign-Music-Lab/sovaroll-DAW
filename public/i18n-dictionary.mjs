@@ -2192,6 +2192,8 @@ export const KO_EN = {
  "{0}, {1}박, 벨로시티 {2}": "{0}, beat {1}, velocity {2}",
  "악보 위치가 MIDI 음높이 0–127 범위를 벗어났습니다.": "The staff position is outside MIDI pitch 0–127.",
  "조표 값이 올바르지 않습니다.": "The key signature value is invalid.",
+ "MusicXML 악보 파일을 내보냈습니다.": "Exported the MusicXML score file.",
+ "이 트랙을 현재 조표로 MusicXML 악보 파일로 내보내기": "Export this track as a MusicXML score with the current key",
 };
 
 // Used instead of KO_EN when every runtime value of the key is a plain number.
