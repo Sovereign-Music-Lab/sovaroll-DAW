@@ -79,6 +79,15 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
     return result;
    }finally{await cleanup();}
   },
+  async renderMidi({notes,durationFrames,sampleRate,channels,sourceStartSample,revision,documentId}){
+   await cleanup();directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-audio-unit-midi-'));const outputPath=path.join(directory,'instrument.wav');
+   try{
+    const event=await send('renderMidi',{outputPath,sampleRate,channels,durationFrames,notes,offline:true},event=>event.event==='renderedMidi');
+    if(!event.outputPath)throw problem('AUDIO_UNIT_OUTPUT_MISSING','Audio Unit instrument returned no WAV output');
+    const outputBytes=await fs.readFile(event.outputPath),result={...event,outputUrl:'/api/audio-units/output',...(Number.isSafeInteger(sourceStartSample)&&sourceStartSample>=0?{sourceStartSample}:{})};
+    processedOutput={bytes:outputBytes,renderJobId:null,revision,documentId,metadata:{...result}};state={...state,lastRender:result,status:'rendered-midi',error:null};publish();return result;
+   }finally{await cleanup();}
+  },
   output(){return processedOutput;},
   async release(){if(!child){state={...state,instantiated:false,playing:false,parameters:[],status:'released',error:null};publish();return {event:'released',instantiated:false};}const event=await send('release',{},event=>event.event==='released');return event;},
   async reset(){

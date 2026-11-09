@@ -13,12 +13,12 @@ The following counts are different structural dimensions. **Do not add them toge
 | Observed dimension | Count | Meaning and boundary |
 |---|---:|---|
 | Engine commands | 144 | Unique command entries parsed from `src/core/schema.mjs` |
-| Literal API route strings | 90 | Unique `/api/` strings in `src/server.mjs`; not a complete HTTP route taxonomy |
+| Literal API route strings | 91 | Unique `/api/` strings in `src/server.mjs`; not a complete HTTP route taxonomy |
 | Native helper commands | 16 | Commands across the MIDI, audio and Audio Unit Swift helpers |
-| Literal UI IDs | 861 | Per-file IDs in the HTML/public modules; includes duplicates across files and IDs that are not features |
+| Literal UI IDs | 862 | Per-file IDs in the HTML/public modules; includes duplicates across files and IDs that are not features |
 | Declared product tests | 1,518 | Test declarations in 174 product test files; loops and runtime conditions can change execution count |
 | Declared native tests | 109 | Current native test declarations |
-| GUI check IDs | 755 | Literal check IDs in GUI scripts; some scripts have conditional or environment-limited paths |
+| GUI check IDs | 758 | Literal check IDs in GUI scripts; some scripts have conditional or environment-limited paths |
 | Product acceptance IDs | 30 | Stable FD-01–FD-30 identifiers, retained by the public guard |
 
 ## Current capability scope
@@ -32,7 +32,7 @@ The following counts are different structural dimensions. **Do not add them toge
 | Native MIDI | macOS routing, timing, Chase and reset lifecycle tested with virtual endpoints | No cross-platform backend claim |
 | Native audio | Optional job-based AVAudioEngine preview | No low-latency engine or synchronized native-MIDI/audio transport claim |
 | Audio Unit effects | Explicit discovery/instantiation, numeric parameters, selected scope, offline WAV/import and preview controls | Tested with available system components; no general third-party compatibility claim |
-| Audio Unit instruments | Native offline scheduled-note rendering with a fresh instance per render | No GUI instrument assignment or realtime instrument MIDI hosting yet |
+| Audio Unit instruments | Selected MIDI clips render through a fresh native instrument instance into editable audio clips with Undo | No realtime instrument MIDI hosting or broad third-party compatibility claim |
 | Languages/accessibility | Primary workspace Korean/English switching | Advanced dialogs and complete accessibility are unfinished |
 | Autonomous composition integration | Future/optional architecture | The DAW operates independently; no complete autonomous feedback-loop claim |
 

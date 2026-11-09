@@ -13,12 +13,12 @@
 | 관측 항목 | 수 | 의미와 경계 |
 |---|---:|---|
 | 엔진 명령 | 144 | `src/core/schema.mjs`의 고유 명령 항목 |
-| API 경로 문자열 | 90 | `src/server.mjs`의 고유 `/api/` 문자열; 완전한 HTTP 경로 분류가 아님 |
+| API 경로 문자열 | 91 | `src/server.mjs`의 고유 `/api/` 문자열; 완전한 HTTP 경로 분류가 아님 |
 | native helper 명령 | 16 | MIDI·오디오·Audio Unit Swift helper의 명령 |
-| UI ID | 861 | HTML/public 모듈의 파일별 ID; 파일 간 중복과 기능이 아닌 ID 포함 |
+| UI ID | 862 | HTML/public 모듈의 파일별 ID; 파일 간 중복과 기능이 아닌 ID 포함 |
 | 제품 테스트 선언 | 1,518 | 174개 제품 테스트 파일의 선언; 반복문과 실행 조건에 따라 실행 수는 달라질 수 있음 |
 | native 테스트 선언 | 109 | 현재 native 테스트 선언 |
-| GUI 검사 ID | 755 | GUI 스크립트의 리터럴 검사 ID; 조건부·환경 제한 경로 포함 |
+| GUI 검사 ID | 758 | GUI 스크립트의 리터럴 검사 ID; 조건부·환경 제한 경로 포함 |
 | 제품 수용 ID | 30 | 공개 guard가 보존하는 FD-01–FD-30 |
 
 ## 현재 기능 범위
@@ -32,7 +32,7 @@
 | native MIDI | 가상 endpoint로 macOS 라우팅·타이밍·Chase·Reset 검사 | 다른 플랫폼 backend는 주장하지 않음 |
 | native 오디오 | 선택적 job 기반 AVAudioEngine 미리 듣기 | 저지연 엔진·native MIDI/오디오 동기 전송은 아님 |
 | Audio Unit effect | 명시적 검색·인스턴스화, 숫자 파라미터, 선택 범위, 오프라인 WAV·가져오기·미리 듣기 | 사용 가능한 시스템 구성요소 검사; 외부 플러그인 호환성은 미검증 |
-| Audio Unit 악기 | 매번 fresh instance를 사용하는 native 오프라인 노트 렌더 | GUI 악기 할당·실시간 악기 MIDI 호스팅은 아직 없음 |
+| Audio Unit 악기 | 선택 MIDI 클립을 fresh native 악기 instance로 렌더해 Undo 가능한 오디오 클립으로 가져옴 | 실시간 악기 MIDI 호스팅·광범위 외부 플러그인 호환성은 미검증 |
 | 언어·접근성 | 주 작업 공간 한국어/영어 전환 | 고급 대화상자와 완전한 접근성은 미완성 |
 | 자율형 작곡 연동 | 선택적 미래 아키텍처 | DAW는 독립 실행; 완전한 자율형 피드백 루프는 주장하지 않음 |
 

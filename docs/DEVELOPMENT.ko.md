@@ -58,7 +58,7 @@
 
 ## 남아 있는 작업
 
-Audio Unit probe는 처리본 다운로드, Undo 가능한 편집 클립 가져오기, 명시적 미리 듣기와 렌더마다 fresh instance를 사용하는 native 오프라인 악기 MIDI 렌더를 지원합니다. 완전한 실시간 플러그인·악기 호스팅과 GUI 악기 할당은 향후 작업입니다. 기존 GUI 스모크 64개는 native 작업 이전에 모두 통과했습니다. 실제 장치 결과는 [수동 체크리스트](agent/MANUAL_CHECKS.md)로 기록하고 근거는 [VALIDATION.md](VALIDATION.md)에 있습니다.
+Audio Unit probe는 처리본 다운로드, Undo 가능한 편집 클립 가져오기, 명시적 미리 듣기와 렌더마다 fresh instance를 사용하는 native 오프라인 악기 MIDI 렌더를 지원합니다. 완전한 실시간 플러그인·악기 호스팅은 향후 작업입니다. T-060은 대화상자 버튼 행 overflow를 수정하고 선택 MIDI의 fresh-instance 악기 WAV 렌더·편집 클립 가져오기를 연결했습니다. 기존 GUI 스모크 64개는 native 작업 이전에 모두 통과했습니다. 실제 장치 결과는 [수동 체크리스트](agent/MANUAL_CHECKS.md)로 기록하고 근거는 [VALIDATION.md](VALIDATION.md)에 있습니다.
 
 장기적으로 저지연 네이티브 오디오, 폭넓은 플러그인·악기, 악보, 심화 믹싱, 전체 이중 언어 UI, 접근성, 다양한 플랫폼·실제 장치 검증과 선택적 자율형 작곡 통합을 발전시킵니다.
 

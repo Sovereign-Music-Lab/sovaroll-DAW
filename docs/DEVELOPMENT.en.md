@@ -58,7 +58,7 @@ See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQU
 
 ## Open work
 
-The Audio Unit probe supports downloadable output, editable clip import, explicit preview controls and native offline instrument MIDI rendering through a fresh instance per render. Full real-time plugin/instrument hosting and GUI instrument assignment remain future work. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
+The Audio Unit probe supports downloadable output, editable clip import, explicit preview controls and native offline instrument MIDI rendering through a fresh instance per render. Full real-time plugin/instrument hosting remains future work. T-060 connects selected MIDI clips to fresh-instance instrument WAV output and editable clip import after fixing the modal's overflowing button row. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

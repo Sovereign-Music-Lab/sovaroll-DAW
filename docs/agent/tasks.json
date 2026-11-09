@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T08:00:16.528Z",
+  "updatedAt": "2026-11-09T08:59:36.281Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1888,6 +1888,48 @@
       "startedAt": "2026-11-09T07:54:54.628Z",
       "evidence": "npm run agent:features generated .test-output/feature-inventory.json with source arrays: 144 engine commands, 90 API route strings, 16 native helper commands, 861 per-file UI IDs, 1,518 declared product tests, 109 native tests, 755 GUI checks and 30 FD IDs. No 2500-item catalogue exists; report status not-verified-no-source-catalogue. Targeted feature inventory test PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. Bilingual inventory and navigation added; no summed feature claim.",
       "doneAt": "2026-11-09T08:00:16.524Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-060",
+      "title": "Render selected MIDI clips through Audio Unit instruments into editable clips",
+      "size": "L",
+      "dependsOn": [
+        "T-059"
+      ],
+      "goal": "Connect fresh-instance native instrument rendering to selected MIDI clips, a guarded server route, processed WAV output and editable clip import with Undo.",
+      "context": [
+        "T-058 native renderMidi validates bounded frame-based notes and creates a fresh instrument per render.",
+        "The GUI has component type metadata and existing processed-output import at sourceStartSample.",
+        "Convert selected MIDI ticks through the current tempo map; no realtime instrument or default-playback change."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-unit-instrument-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "A guarded server route accepts bounded note/frame data only for an active aumu instance and returns server-owned decoded WAV without browser paths.",
+        "The GUI renders selected MIDI clips using current tempo and selected/locator range, preserves revision/default playback and reports clear empty/non-MIDI errors.",
+        "Actual system-instrument browser evidence verifies non-silent decoded WAV, deterministic output, import at the original range start with asset identity and one Undo.",
+        "Existing Audio Unit/native/product suites and bilingual documentation pass without realtime hosting or compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-instrument-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T08:44:36.643Z",
+      "blockedReason": "Selected a real aumu component and audioUnitMidiOffline capability=true, but the actual #audio-units-instantiate click timed out three times: button was visible/enabled/stable while dialog#audio-units-dialog intercepted pointer events. This is a modal layout/hit-testing blocker before instrument rendering, not a native MIDI failure. Following the three-failure rule restored T-060 server/public/new-smoke changes from checkpoint 20261109T080048-hwlq. Restored offline Audio Unit GUI passed 14 steps and native suite passed 109/109. Needs a focused dialog geometry/pointer hit-test fix before reconnecting render-midi.",
+      "evidence": "Resolved modal hit-test: measured button outside 500px dialog, then wider scrollable wrapped layout made elementFromPoint target the actual button. Actual instrument GUI E2E PASS 3 steps: empty selection, scoped one-note non-silent deterministic 48,001-frame WAV, stale/invalid/path guards, sourceStartSample 24000 import with asset hash and one Undo. Offline GUI 14, preview 3, default E2E 40 PASS. Native 109/109. Full/final verification PASS 174 files. Inventory 91 API, 862 UI, 758 GUI.",
+      "doneAt": "2026-11-09T08:59:36.281Z"
     }
   ]
 }
