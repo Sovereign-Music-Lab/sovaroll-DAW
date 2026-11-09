@@ -192,6 +192,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
+| build-native-audio.mjs | 16 | 249 |  |
 | build-native-midi.mjs | 16 | 248 |  |
 | check.mjs | 9 | 208 |  |
 | gui-auto-backup-recovery-smoke.mjs | 64 | 213 |  |

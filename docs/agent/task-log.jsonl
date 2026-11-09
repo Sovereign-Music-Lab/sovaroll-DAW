@@ -106,3 +106,7 @@
 {"at":"2026-11-09T02:11:29.734Z","id":"T-040","action":"add"}
 {"at":"2026-11-09T02:11:29.968Z","id":"T-040","action":"start"}
 {"at":"2026-11-09T02:22:11.932Z","id":"T-040","action":"done","evidence":"Persisted Korean/English selector added for primary transport/arrangement/recording workspace; IDs and Korean default preserved. E2E PASS 40 steps including English labels, reload persistence, unchanged revision and Korean return. agent:verify:full PASS 172 files; test:native PASS 97. Manuals updated in both languages with advanced-dialog limits; no full bilingual claim.","verify":"PASS"}
+{"at":"2026-11-09T02:22:49.293Z","id":"T-041","action":"add"}
+{"at":"2026-11-09T02:22:49.516Z","id":"T-041","action":"start"}
+{"at":"2026-11-09T02:29:35.645Z","id":"T-042","action":"add"}
+{"at":"2026-11-09T02:30:59.008Z","id":"T-041","action":"done","evidence":"Separate AVAudioEngine helper validates local PCM16 WAV and supports play/status/stop with explicit output permission. Offline mono/stereo renders preserve source PCM SHA-256. Targeted native tests 2 PASS; npm run test:native 99 PASS; agent:verify:full 172 files PASS. GUI/native-MIDI integration intentionally not implemented; T-042 added. Bilingual development notes updated; no listening or low-latency claim.","verify":"PASS"}

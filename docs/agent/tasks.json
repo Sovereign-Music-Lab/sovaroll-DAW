@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T02:22:11.932Z",
+  "updatedAt": "2026-11-09T02:30:59.008Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1208,6 +1208,66 @@
       "startedAt": "2026-11-09T02:11:29.967Z",
       "evidence": "Persisted Korean/English selector added for primary transport/arrangement/recording workspace; IDs and Korean default preserved. E2E PASS 40 steps including English labels, reload persistence, unchanged revision and Korean return. agent:verify:full PASS 172 files; test:native PASS 97. Manuals updated in both languages with advanced-dialog limits; no full bilingual claim.",
       "doneAt": "2026-11-09T02:22:11.931Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "native-audio",
+      "id": "T-041",
+      "title": "Native audio foundation: validated WAV preview backend with offline tests",
+      "size": "M",
+      "goal": "Implement a separate macOS AVAudioEngine preview foundation for existing PCM16 WAV renders: explicit validated play/stop/status lifecycle and deterministic offline tests, without changing current GUI or native MIDI behavior.",
+      "files": [
+        "native/macos/audio-bridge.swift",
+        "native/tests/audio-bridge.test.mjs",
+        "scripts/build-native-audio.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "A separate native audio helper accepts only validated local PCM16 WAV input and exposes explicit play/stop/status without implicit device selection or changes to the existing MIDI helper.",
+        "Native tests cover WAV validation, invalid-input rejection and deterministic offline rendering/lifecycle without claiming listening or low-latency hardware quality.",
+        "The new backend is clearly marked not yet integrated with GUI playback; existing native and full product suites pass.",
+        "Both development-note languages record actual scope and next integration work."
+      ],
+      "verify": [
+        "node --test native/tests/audio-bridge.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T02:22:49.515Z",
+      "evidence": "Separate AVAudioEngine helper validates local PCM16 WAV and supports play/status/stop with explicit output permission. Offline mono/stereo renders preserve source PCM SHA-256. Targeted native tests 2 PASS; npm run test:native 99 PASS; agent:verify:full 172 files PASS. GUI/native-MIDI integration intentionally not implemented; T-042 added. Bilingual development notes updated; no listening or low-latency claim.",
+      "doneAt": "2026-11-09T02:30:59.007Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "native-audio",
+      "id": "T-042",
+      "title": "Integrate optional native audio preview with GUI transport",
+      "size": "L",
+      "dependsOn": [
+        "T-041"
+      ],
+      "goal": "Connect the validated native audio helper to an explicit opt-in preview path, preserving the existing built-in preview and native MIDI behavior.",
+      "files": [
+        "native/macos/audio-bridge.swift",
+        "native/macos/client.mjs",
+        "src/server.mjs",
+        "public/app.mjs",
+        "native/tests/audio-bridge.test.mjs"
+      ],
+      "acceptance": [
+        "An explicit opt-in native audio preview mode routes an existing rendered WAV through the helper with Play/Stop/status and structured Korean errors; the default built-in preview remains unchanged.",
+        "Concurrent edits, document changes and Stop cancel or stop the correct native job without stale output; no physical-device quality claim.",
+        "Add server/helper integration tests and browser coverage using offline or mocked native paths where hardware is unavailable.",
+        "Document GUI integration scope and run targeted tests, agent:e2e, native tests and agent:verify:full."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ]
     }
   ]
 }
