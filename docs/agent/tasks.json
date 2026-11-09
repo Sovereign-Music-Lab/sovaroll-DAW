@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T09:40:13.426Z",
+  "updatedAt": "2026-11-09T09:53:52.472Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2003,6 +2003,45 @@
       "startedAt": "2026-11-09T09:32:45.538Z",
       "evidence": "Targeted native tests 8/8 PASS including real-time instrument MIDI completion, outputGain=0 actual engine path, permission/range/note validation, duplicate-start rejection, Stop with held-note cleanup, release and offline recovery. npm run test:native: 110/110 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. No server/GUI playback, transport synchronization, latency or listening-quality claim.",
       "doneAt": "2026-11-09T09:40:13.426Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-063",
+      "title": "Server and GUI real-time Audio Unit instrument playback",
+      "size": "L",
+      "dependsOn": [
+        "T-062"
+      ],
+      "goal": "Connect real-time native instrument MIDI playback to selected clips through guarded server routes and explicit output-gain GUI controls.",
+      "context": [
+        "T-062 native playMidi owns note cleanup and supports outputGain=0 lifecycle evidence.",
+        "Reuse instrumentInput for selected MIDI/locator conversion and the existing preview Stop/project-edit cleanup.",
+        "Default transport and project revision remain unchanged."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-unit-instrument-playback-smoke.mjs"
+      ],
+      "acceptance": [
+        "Guarded play-midi accepts bounded selected-note data only with explicit output permission and outputGain 0..1; wrong/stale requests preserve active playback.",
+        "GUI exposes instrument Play/Stop and gain, reports instrumentPlaying and completes project-edit cleanup without changing default transport or revision.",
+        "Actual system-instrument browser checks run with outputGain=0 and verify play/stop/edit lifecycle; existing Audio Unit/native/full suites pass.",
+        "Documentation distinguishes this from native-MIDI synchronization and measured low latency."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-instrument-playback-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:40:48.239Z",
+      "evidence": "Actual system-instrument GUI E2E PASS 3 steps with outputGain=0: real-time Play, invalid-gain/stale/wrong-job preservation, Stop and project-edit cleanup with default transport/revision unchanged. Offline GUI 14, offline instrument 3, i18n 3 and default E2E 40 PASS. npm run test:native 110/110. Full and final verification PASS 174 product files; auxiliary FD-22 relation removed to keep acceptance IDs unique. No synchronization or low-latency claim.",
+      "doneAt": "2026-11-09T09:53:52.472Z"
     }
   ]
 }

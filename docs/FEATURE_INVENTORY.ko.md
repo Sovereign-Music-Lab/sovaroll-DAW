@@ -13,12 +13,12 @@
 | 관측 항목 | 수 | 의미와 경계 |
 |---|---:|---|
 | 엔진 명령 | 144 | `src/core/schema.mjs`의 고유 명령 항목 |
-| API 경로 문자열 | 91 | `src/server.mjs`의 고유 `/api/` 문자열; 완전한 HTTP 경로 분류가 아님 |
+| API 경로 문자열 | 92 | `src/server.mjs`의 고유 `/api/` 문자열; 완전한 HTTP 경로 분류가 아님 |
 | native helper 명령 | 17 | MIDI·오디오·Audio Unit Swift helper의 명령 |
-| UI ID | 862 | HTML/public 모듈의 파일별 ID; 파일 간 중복과 기능이 아닌 ID 포함 |
+| UI ID | 865 | HTML/public 모듈의 파일별 ID; 파일 간 중복과 기능이 아닌 ID 포함 |
 | 제품 테스트 선언 | 1,518 | 174개 제품 테스트 파일의 선언; 반복문과 실행 조건에 따라 실행 수는 달라질 수 있음 |
 | native 테스트 선언 | 110 | 현재 native 테스트 선언 |
-| GUI 검사 ID | 761 | GUI 스크립트의 리터럴 검사 ID; 조건부·환경 제한 경로 포함 |
+| GUI 검사 ID | 764 | GUI 스크립트의 리터럴 검사 ID; 조건부·환경 제한 경로 포함 |
 | 제품 수용 ID | 30 | 공개 guard가 보존하는 FD-01–FD-30 |
 
 ## 현재 기능 범위

@@ -7,7 +7,7 @@ const problem=(code,message)=>Object.assign(new Error(message),{code,status:code
 /** Explicit offline Audio Unit helper owner. No plugin code runs before instantiate. */
 export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','newdaw-audio-units'),onChange=()=>{}}={}){
  let child=null,input='',events=[],waiters=[],directory=null,previewDirectory=null,queue=Promise.resolve(),closed=false;
- let state={status:'idle',selected:null,instantiated:false,playing:false,previewJobId:null,previewRenderJobId:null,availableCount:0,parameters:[],lastRender:null,error:null},processedOutput=null;
+ let state={status:'idle',selected:null,instantiated:false,playing:false,instrumentPlaying:false,previewJobId:null,previewRenderJobId:null,availableCount:0,parameters:[],lastRender:null,error:null},processedOutput=null;
  const snapshot=()=>({supported:process.platform==='darwin',integrated:true,offline:true,hasOutput:processedOutput!==null,...structuredClone(state)});
  const publish=()=>onChange(snapshot());
  function next(predicate,timeout=15000){
@@ -21,8 +21,8 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
   if(event.event==='instantiated'){state={...state,selected:event.component.id,instantiated:true,parameters:[],status:'instantiated',error:null};}
   if(event.event==='parameters')state={...state,parameters:event.parameters??[],status:'parameters',error:null};
   if(event.event==='parameterSet')state={...state,parameters:(state.parameters??[]).map(parameter=>parameter.keyPath===event.parameter.keyPath?event.parameter:parameter),status:'parameter-set',error:null};
-  if(event.event==='playing')state={...state,playing:true,previewJobId:event.jobId,status:'playing',error:null};
-  if(['completed','stopped'].includes(event.event)&&event.jobId&&event.jobId===state.previewJobId){state={...state,playing:false,previewJobId:event.jobId,status:event.status,error:null};void cleanupPreview();}
+  if(event.event==='playing')state={...state,playing:true,instrumentPlaying:event.instrument===true,previewJobId:event.jobId,status:'playing',error:null};
+  if(['completed','stopped'].includes(event.event)&&event.jobId&&event.jobId===state.previewJobId){state={...state,playing:false,instrumentPlaying:false,previewJobId:event.jobId,status:event.status,error:null};void cleanupPreview();}
   if(event.event==='rendered'){state={...state,lastRender:event,status:'rendered',error:null};}
   if(event.event==='released'){state={...state,instantiated:false,parameters:[],status:'released',error:null};}
   publish();events.push(event);
@@ -63,6 +63,11 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
     state={...state,previewRenderJobId:renderJobId,previewRevision:revision,previewDocumentId:documentId};publish();return {...event,renderJobId,revision,documentId};
    }catch(error){await cleanupPreview();throw error;}
   },
+  async playMidi({notes,durationFrames,sampleRate,allowDefaultOutput,outputGain,revision,documentId}){
+   if(state.playing)throw problem('AUDIO_UNIT_PLAYING','Stop the current Audio Unit preview first');
+   const event=await send('playMidi',{sampleRate,durationFrames,notes,allowDefaultOutput,outputGain},event=>event.event==='playing');
+   state={...state,previewRenderJobId:null,previewRevision:revision,previewDocumentId:documentId};publish();return event;
+  },
   async stop(jobId){
    if(!state.playing)return snapshot();if(jobId!==state.previewJobId)throw problem('AUDIO_UNIT_PREVIEW_CONFLICT','Audio Unit preview changed; fetch its current job ID before Stop');
    return send('stop',{},event=>event.event==='stopped');
@@ -89,11 +94,11 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
    }finally{await cleanup();}
   },
   output(){return processedOutput;},
-  async release(){if(!child){state={...state,instantiated:false,playing:false,parameters:[],status:'released',error:null};publish();return {event:'released',instantiated:false};}const event=await send('release',{},event=>event.event==='released');return event;},
+  async release(){if(!child){state={...state,instantiated:false,playing:false,instrumentPlaying:false,parameters:[],status:'released',error:null};publish();return {event:'released',instantiated:false};}const event=await send('release',{},event=>event.event==='released');return event;},
   async reset(){
    if(!child&&state.status==='idle'&&!state.selected&&!state.lastRender&&!state.error&&!directory&&!previewDirectory)return;
    if(state.instantiated)await send('release',{},event=>event.event==='released');
-   state={status:'idle',selected:null,instantiated:false,playing:false,previewJobId:null,previewRenderJobId:null,availableCount:0,parameters:[],lastRender:null,error:null};processedOutput=null;publish();await Promise.all([cleanup(),cleanupPreview()]);
+   state={status:'idle',selected:null,instantiated:false,playing:false,instrumentPlaying:false,previewJobId:null,previewRenderJobId:null,availableCount:0,parameters:[],lastRender:null,error:null};processedOutput=null;publish();await Promise.all([cleanup(),cleanupPreview()]);
   },
   async close(){
    if(closed)return;closed=true;if(state.instantiated)await send('release',{},event=>event.event==='released').catch(()=>{});

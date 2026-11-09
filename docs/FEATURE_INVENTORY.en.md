@@ -13,12 +13,12 @@ The following counts are different structural dimensions. **Do not add them toge
 | Observed dimension | Count | Meaning and boundary |
 |---|---:|---|
 | Engine commands | 144 | Unique command entries parsed from `src/core/schema.mjs` |
-| Literal API route strings | 91 | Unique `/api/` strings in `src/server.mjs`; not a complete HTTP route taxonomy |
+| Literal API route strings | 92 | Unique `/api/` strings in `src/server.mjs`; not a complete HTTP route taxonomy |
 | Native helper commands | 17 | Commands across the MIDI, audio and Audio Unit Swift helpers |
-| Literal UI IDs | 862 | Per-file IDs in the HTML/public modules; includes duplicates across files and IDs that are not features |
+| Literal UI IDs | 865 | Per-file IDs in the HTML/public modules; includes duplicates across files and IDs that are not features |
 | Declared product tests | 1,518 | Test declarations in 174 product test files; loops and runtime conditions can change execution count |
 | Declared native tests | 110 | Current native test declarations |
-| GUI check IDs | 761 | Literal check IDs in GUI scripts; some scripts have conditional or environment-limited paths |
+| GUI check IDs | 764 | Literal check IDs in GUI scripts; some scripts have conditional or environment-limited paths |
 | Product acceptance IDs | 30 | Stable FD-01–FD-30 identifiers, retained by the public guard |
 
 ## Current capability scope

@@ -176,3 +176,6 @@
 {"at":"2026-11-09T09:32:45.477Z","id":"T-062","action":"add"}
 {"at":"2026-11-09T09:32:45.538Z","id":"T-062","action":"start"}
 {"at":"2026-11-09T09:40:13.426Z","id":"T-062","action":"done","evidence":"Targeted native tests 8/8 PASS including real-time instrument MIDI completion, outputGain=0 actual engine path, permission/range/note validation, duplicate-start rejection, Stop with held-note cleanup, release and offline recovery. npm run test:native: 110/110 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. No server/GUI playback, transport synchronization, latency or listening-quality claim.","verify":"PASS"}
+{"at":"2026-11-09T09:40:48.183Z","id":"T-063","action":"add"}
+{"at":"2026-11-09T09:40:48.239Z","id":"T-063","action":"start"}
+{"at":"2026-11-09T09:53:52.472Z","id":"T-063","action":"done","evidence":"Actual system-instrument GUI E2E PASS 3 steps with outputGain=0: real-time Play, invalid-gain/stale/wrong-job preservation, Stop and project-edit cleanup with default transport/revision unchanged. Offline GUI 14, offline instrument 3, i18n 3 and default E2E 40 PASS. npm run test:native 110/110. Full and final verification PASS 174 product files; auxiliary FD-22 relation removed to keep acceptance IDs unique. No synchronization or low-latency claim.","verify":"PASS"}
