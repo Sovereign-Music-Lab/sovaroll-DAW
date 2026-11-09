@@ -86,6 +86,7 @@ Media & time math: WAV/AIFF/MIDI codecs, offline renderer, tempo/time conversion
 | render.mjs | 286 | 853 | projectDurationSeconds, renderProject |
 | repeat-midi-loop.mjs | 19 | 300 | planRepeatMidiLoop |
 | ruler-intervals.mjs | 62 | 192 | compileRulerIntervals |
+| score-layout.mjs | 269 | 202 | STEP_NAMES, STAFF, SPLIT_PITCH, FLAGS, keyAlterations, keySignaturePositions, spellPitch, pitchFromDiatonic, staffForPitch, pitchAtStaffPosition, moveDiatonic, ledgerPositions … (+4) |
 | snap-grid.mjs | 59 | 443 | SNAP_GRID_FIELDS, snapGridSchema, snapGridPatchSchema, resolveSnapGrid, patchSnapGrid, compileEditorSnap |
 | stem-plan.mjs | 44 | 813 | MAX_STEM_ZIP_BYTES, planStemExport, stemManifest |
 | step-settings.mjs | 6 | 318 | stepSettingFields, stepSettingsSchema, resolveStepSettings |
@@ -115,17 +116,18 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | file | lines | max line | exports |
 |---|---:|---:|---|
 | audio-statistics-worker.mjs | 5 | 120 |  |
-| audio-units.mjs | 96 | 300 | createAudioUnits |
+| audio-units.mjs | 110 | 300 | createAudioUnits |
 | auto-backup.mjs | 204 | 276 | backupBaseName, validateBackupRegistry, listBackups, readBackup, createAutoBackup |
 | chase-settings.mjs | 127 | 523 | defaultChaseSettings, getChaseSettings, updateChaseSettings, withChaseDefaults |
-| cli.mjs | 640 | 1833 | main |
+| cli-guide.mjs | 251 | 277 | GUIDE_TOPICS, guideTopicIds, renderGuide, renderGuideMarkdown |
+| cli.mjs | 642 | 1833 | main |
 | controller-settings.mjs | 168 | 380 | defaultControllerSettings, getControllerSettings, updateControllerSettings, withControllerDefaults |
 | demo.mjs | 44 | 277 | createDemoProject |
 | document-session.mjs | 140 | 687 | createDocumentSession |
 | folder-browser.mjs | 33 | 212 | browseProjectFolders |
 | media-resolution.mjs | 140 | 302 | createMediaResolver |
 | media-search.mjs | 242 | 312 | MEDIA_SEARCH_LIMITS, createMediaSearch, readMediaCandidate |
-| native-audio.mjs | 79 | 316 | createNativeAudio |
+| native-audio.mjs | 80 | 375 | createNativeAudio |
 | native-midi-settings.mjs | 128 | 503 | defaultNativeMidiSettings, defaultNativeMidiProject, getNativeMidiSettings, updateNativeMidiSettings |
 | native-transport.mjs | 103 | 353 | createNativeTransport |
 | note-audition-jobs.mjs | 27 | 264 | createNoteAuditionJobs |
@@ -139,7 +141,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | render-worker.mjs | 59 | 337 | renderSnapshotData |
 | reset-settings.mjs | 120 | 523 | defaultResetOptions, resolveResetOptions, defaultResetSettings, getResetSettings, updateResetSettings |
 | revert-media.mjs | 387 | 390 | registerCreatedMedia, captureMediaOwnership, planRevertMedia, applyRevertMediaPlan, listRevertMediaTrash, restoreRevertMediaTrash |
-| server.mjs | 1005 | 3580 | CAPABILITIES, startServer |
+| server.mjs | 1034 | 3595 | CAPABILITIES, startServer |
 | session-store.mjs | 212 | 207 | MAX_JOURNAL_BYTES, DEFAULT_SESSION_SETTINGS, canonicalProjectHash, validateSessionSettings, assertSidecarLocation, readSidecar, writeSidecar, quarantineSidecar, loadSessionState, commitSessionState, updateSessionSettings |
 | split-settings.mjs | 132 | 523 | defaultSplitSettings, getSplitSettings, updateSplitSettings, withSplitDefaults |
 | stem-directory.mjs | 26 | 277 | renderStemDirectory |
@@ -155,15 +157,16 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
-| app.mjs | 2303 | 7381 |  |
+| app.mjs | 2308 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
-| audio-units.mjs | 67 | 1955 | setupAudioUnits |
+| audio-units.mjs | 98 | 2293 | setupAudioUnits |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
 | controller-settings.mjs | 102 | 346 | controllerProfile, subscribeControllerSettings, refreshControllerSettings, fillControllerMenu, openControllerSettings |
 | document.mjs | 76 | 782 | setupDocumentUI |
 | editing.mjs | 444 | 1406 | setupEditingUI, planTrackMix, planTrackStep, planTrackDrop, planMidiPartCommands |
-| i18n.mjs | 71 | 368 | applyLanguage, setupI18n |
+| i18n-dictionary.mjs | 2201 | 3135 | KO_EN, KO_EN_NUMERIC |
+| i18n.mjs | 179 | 902 | translateString, currentLanguage, applyLanguage, setupI18n |
 | inspector-time.mjs | 102 | 473 | setupInspectorTime |
 | metronome.mjs | 25 | 461 | setupMetronome |
 | microphone-recorder.mjs | 27 | 1772 | recordingBlockWindow, createMicrophoneRecorder |
@@ -183,7 +186,8 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | recording-ui.mjs | 15 | 2028 | setupRecording |
 | reset-settings.mjs | 16 | 1090 | resetLabels, readResetProfile, setupResetSettings |
 | resolution.mjs | 105 | 892 | setupResolutionUI |
-| session.mjs | 84 | 774 | setupSessionUI |
+| score-view.mjs | 264 | 250 | setupScoreView |
+| session.mjs | 89 | 968 | setupSessionUI |
 | snap-grid-settings.mjs | 18 | 931 | setupSnapGridSettings |
 | tap-tempo-ui.mjs | 21 | 904 | setupTapTempo |
 | time-display-settings.mjs | 32 | 1866 | setupTimeDisplaySettings |
@@ -201,7 +205,10 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | build-native-midi.mjs | 16 | 248 |  |
 | check.mjs | 9 | 208 |  |
 | feature-inventory.mjs | 47 | 311 | buildFeatureInventory |
+| gui-audio-unit-instrument-playback-smoke.mjs | 31 | 651 |  |
+| gui-audio-unit-instrument-smoke.mjs | 38 | 660 |  |
 | gui-audio-unit-preview-smoke.mjs | 49 | 711 |  |
+| gui-audio-units-i18n-smoke.mjs | 27 | 591 |  |
 | gui-audio-units-smoke.mjs | 82 | 735 |  |
 | gui-auto-backup-recovery-smoke.mjs | 64 | 213 |  |
 | gui-chase-settings-smoke.mjs | 46 | 1165 |  |
@@ -261,6 +268,8 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-reset-smoke.mjs | 54 | 894 |  |
 | gui-resolution-smoke.mjs | 91 | 1394 |  |
 | gui-ruler-intervals-smoke.mjs | 40 | 991 |  |
+| gui-score-editor-smoke.mjs | 156 | 160 |  |
+| gui-session-i18n-smoke.mjs | 26 | 747 |  |
 | gui-session-smoke.mjs | 53 | 1391 |  |
 | gui-smoke.mjs | 40 | 312 |  |
 | gui-snap-grid-smoke.mjs | 42 | 825 |  |
@@ -271,6 +280,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-time-display-smoke.mjs | 44 | 698 |  |
 | gui-timing-smoke.mjs | 51 | 1036 |  |
 | gui-workspace-smoke.mjs | 211 | 1415 |  |
+| i18n-coverage.mjs | 119 | 128 | segmentsOf, stringLiterals, collectKoreanSegments |
 
 ## scripts/agent/
 

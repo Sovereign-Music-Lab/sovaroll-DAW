@@ -89,5 +89,6 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | — | 서버/GUI 선택 MIDI의 실시간 악기 재생·출력 게인·wrong/stale 거부·프로젝트 편집 정리 | verified (실제 악기 outputGain=0; native MIDI 동기화·지연 측정 제외) | `scripts/gui-audio-unit-instrument-playback-smoke.mjs` 3단계, T-063 검증 기록 |
 | — | 이력·자동백업 컨트롤, 작업 이름·경계·저장 상태·목록의 한국어/영어 전환과 유지 | verified (명령 ID·시각·경고 원본 유지, revision 불변) | `scripts/gui-session-i18n-smoke.mjs` 4단계, T-066 검증 기록 |
 | — | 전체 화면(대화상자·동적 문구·툴팁 포함) 한국어/영어 전환, 한국어 복원과 유지 | verified (프로젝트 데이터 이름은 번역하지 않음, 원어민 감수 전) | `node scripts/i18n-coverage.mjs` 누락 0, 대화상자 38개 브라우저 확인, `scripts/gui-session-i18n-smoke.mjs` 4단계, T-067 검증 기록 |
+| FD-07, FD-13 | MIDI 파트 악보(큰보표) 보기·오선 클릭 노트 입력·선택 공유·Delete·Alt+위/아래 음계 이동, 표시 전용 조표와 보기 유지 | verified (시간 비례 간격, 보표당 리듬 층 하나, 빔·잇단음표·MusicXML 제외) | `tests/score-layout.test.mjs` 7개, `scripts/gui-score-editor-smoke.mjs` 7단계, T-068 |
 | — | native MIDI·오디오 공통 host-time 예약 시작 primitive; 오디오 예약 취소·실제 시작·완료 | verified (서버 coordinator·샘플 정확도·저지연 주장 제외) | native MIDI/audio scheduled-start 검사, native 112/112, T-064 |
 | — | 완료 WAV job과 native MIDI의 서버 공통 미래 목표·실패 rollback·공통 Stop | verified (가상 MIDI·무음 실제 오디오; 샘플 정확도·청음·저지연 제외) | `Native HTTP: synchronized audioJobId shares one target and rolls back failed MIDI starts`, native 113/113, T-065 |

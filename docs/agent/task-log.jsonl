@@ -193,3 +193,6 @@
 {"at":"2026-11-09T11:53:56.513Z","id":"T-067","action":"add"}
 {"at":"2026-11-09T11:53:56.570Z","id":"T-067","action":"start"}
 {"at":"2026-11-09T11:57:10.275Z","id":"T-067","action":"done","evidence":"i18n-coverage 2175 segments 0 missing; Playwright probe: no Korean in English mode in workspace and 38 dialogs except bilingual language label, Korean restore and reload persistence observed; gui-session-i18n-smoke 4 PASS; default E2E PASS; agent:verify VERIFY PASS (174 files) after docs edits","verify":"PASS"}
+{"at":"2026-11-09T12:23:24.541Z","id":"T-068","action":"add"}
+{"at":"2026-11-09T12:23:24.739Z","id":"T-068","action":"start"}
+{"at":"2026-11-09T12:36:40.444Z","id":"T-068","action":"done","evidence":"score-layout unit 7 PASS; gui-score-editor-smoke 7 PASS; default first-delivery E2E 40 PASS; gui-session-i18n 4 PASS; gui-note-arrow PASS; agent:verify VERIFY PASS (175 files); i18n-coverage 2186 segments 0 missing; screenshot inspected for clefs, key, accidentals, ties, rests","verify":"PASS"}

@@ -80,6 +80,8 @@ Clip tools support moving, splitting, repeating and clipboard operations. Folder
 
 Controller lanes retain editable values and curves. MIDI export samples supported curves into MIDI events; project JSON preserves their editable representation. MIDI modifiers can affect playback/export while preserving source notes; Freeze deliberately commits supported transformations. Review the scope and undo behavior before freezing or merging.
 
+The **Score** button next to the editor title shows the same MIDI part on a grand staff (treble from middle C up, bass below). Click an empty staff position to add that scale note at the snapped position; click a note to select it (the piano roll shares the selection); Delete removes it; Alt+Up/Down moves selected notes one scale step and Shift+Alt+Up/Down one octave. The key menu only changes spelling and never edits MIDI. Spacing follows time like the piano roll; there is one rhythm layer per staff, no beams or tuplets, and lengths that no written value represents exactly get a dashed notehead. **Piano roll** switches back; the browser remembers the choice.
+
 The built-in oscillator is a preview instrument. MIDI messages can be preserved for export even if that oscillator does not reproduce their original instrument sound, pressure or SysEx behavior.
 
 ## 6. Audio import, edit and record

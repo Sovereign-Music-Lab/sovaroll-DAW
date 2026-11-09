@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T11:57:10.275Z",
+  "updatedAt": "2026-11-09T12:36:40.444Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2198,6 +2198,53 @@
       "startedAt": "2026-11-09T11:53:56.569Z",
       "evidence": "i18n-coverage 2175 segments 0 missing; Playwright probe: no Korean in English mode in workspace and 38 dialogs except bilingual language label, Korean restore and reload persistence observed; gui-session-i18n-smoke 4 PASS; default E2E PASS; agent:verify VERIFY PASS (174 files) after docs edits",
       "doneAt": "2026-11-09T11:57:10.275Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "gui",
+      "id": "T-068",
+      "title": "Score view and note entry for MIDI clips",
+      "size": "L",
+      "dependsOn": [
+        "T-067"
+      ],
+      "goal": "The MIDI editor can switch between piano roll and a grand-staff score view of the same clip, and notes can be added, selected, deleted and moved diatonically from the score through the shared command engine.",
+      "context": [
+        "Layout math is a pure module (src/media/score-layout.mjs) so tests do not need a browser.",
+        "Score uses time-proportional spacing aligned with the piano-roll geometry; it is a view of the MIDI, not a separate document.",
+        "Key signature is a per-viewer display preference; it never changes MIDI data.",
+        "Known limits: one voice per staff, no beams or tuplets, split point fixed at middle C."
+      ],
+      "files": [
+        "src/media/score-layout.mjs",
+        "public/score-view.mjs",
+        "public/app.mjs",
+        "public/index.html",
+        "public/styles.css",
+        "public/i18n-dictionary.mjs",
+        "src/server.mjs",
+        "tests/score-layout.test.mjs",
+        "scripts/gui-score-editor-smoke.mjs"
+      ],
+      "acceptance": [
+        "Pitch spelling, staff placement, ledger lines, accidentals per bar, tied duration decomposition across barlines and rests are covered by unit tests.",
+        "The editor toggle shows the score of the selected MIDI clip and restores the piano roll; the choice persists across reload.",
+        "Clicking an empty staff position adds a note with the clicked diatonic pitch at the snapped tick; one Undo removes it.",
+        "Clicking a score note selects the same note in the piano roll; Delete removes it; Alt+Up/Down moves selected notes one scale step.",
+        "Key signature changes spelling only; project revision is unchanged.",
+        "Korean and English text has dictionary coverage; existing E2E passes unchanged."
+      ],
+      "verify": [
+        "node --test tests/score-layout.test.mjs",
+        "node scripts/i18n-coverage.mjs",
+        "npm run agent:e2e -- scripts/gui-score-editor-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T12:23:24.738Z",
+      "evidence": "score-layout unit 7 PASS; gui-score-editor-smoke 7 PASS; default first-delivery E2E 40 PASS; gui-session-i18n 4 PASS; gui-note-arrow PASS; agent:verify VERIFY PASS (175 files); i18n-coverage 2186 segments 0 missing; screenshot inspected for clefs, key, accidentals, ties, rests",
+      "doneAt": "2026-11-09T12:36:40.443Z"
     }
   ]
 }
