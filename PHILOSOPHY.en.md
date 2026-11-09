@@ -45,7 +45,7 @@ The GUI and CLI therefore share one command engine. A person can work visually w
 
 Tools should run on the musician's own computer, preserve local files, and support useful exchange formats. Using the DAW should not depend on a model subscription or another project's continued operation. Source access, readable documentation, backups, and reproducible checks are all part of ownership in practice.
 
-We want access to technology to grow into the ability to understand, maintain, and adapt it. **Tech for all** means lowering barriers to both use and technical independence. English and Korean documentation are part of that work. Complete bilingual interface coverage remains a development goal.
+We want access to technology to grow into the ability to understand, maintain, and adapt it. **Tech for all** means lowering barriers to both use and technical independence. English and Korean documentation are part of that work. The interface, including dialogs, now switches between Korean and English; accessibility work remains a development goal.
 
 ## Knowledge and judgment deserve care
 

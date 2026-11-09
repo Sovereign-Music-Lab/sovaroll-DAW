@@ -33,7 +33,7 @@ The following counts are different structural dimensions. **Do not add them toge
 | Native audio | Optional job-based AVAudioEngine preview plus cancellable host-time scheduled starts | Coordinated future-start scheduling is tested with rollback/shared Stop; sample accuracy and low-latency quality are not claimed |
 | Audio Unit effects | Explicit discovery/instantiation, numeric parameters, selected scope, offline WAV/import and preview controls | Tested with available system components; no general third-party compatibility claim |
 | Audio Unit instruments | Selected MIDI clips render through a fresh native instrument instance into editable audio clips with Undo; native real-time MIDI playback has lifecycle coverage with zero output gain | No realtime instrument MIDI hosting or broad third-party compatibility claim |
-| Languages/accessibility | Primary workspace Korean/English switching | Advanced dialogs and complete accessibility are unfinished |
+| Languages/accessibility | Whole-interface Korean/English switching, including dialogs, via a 2,179-entry dictionary and DOM translator; `scripts/i18n-coverage.mjs` reports untranslated source strings | Complete accessibility is unfinished; translations are not reviewed by a native editor |
 | Autonomous composition integration | Future/optional architecture | The DAW operates independently; no complete autonomous feedback-loop claim |
 
 The detailed evidence remains in [VALIDATION.md](VALIDATION.md), and acceptance boundaries are in [agent/REQUIREMENTS.md](agent/REQUIREMENTS.md). `tests/feature-inventory.test.mjs` verifies report structure, unique source identifiers, all 30 acceptance IDs and the explicit unverified status of the 2,500-feature claim.

@@ -1,4 +1,6 @@
-// Persisted primary-workspace language. Advanced dialogs retain their existing scope.
+// Persisted workspace language. Selector rules cover primary controls; the dictionary
+// translator covers every other Korean text node and attribute, including dynamic text.
+import {KO_EN,KO_EN_NUMERIC} from './i18n-dictionary.mjs';
 const STORAGE_KEY='sovaroll.language.v1';
 let language='ko';
 const originals=new WeakMap(),attributeOriginals=new WeakMap();
@@ -49,6 +51,106 @@ function applyDynamic(){
  const connection=document.querySelector('#connection-status');
  if(connection)connection.textContent=language==='en'?connection.textContent.replace(/동기화됨/g,'Synchronized').replace(/서버 연결 중/g,'Connecting to server'):connection.textContent.replace(/Synchronized/g,'동기화됨').replace(/Connecting to server/g,'서버 연결 중');
 }
+const HANGUL=/[가-힣]/,TRANSLATED_ATTRIBUTES=['title','aria-label','placeholder','alt'];
+const textRecords=new WeakMap(),attributeRecords=new WeakMap();
+let patterns=null,observer=null,translating=false;
+function compilePatterns(){
+ patterns=[];
+ for(const key of Object.keys(KO_EN).filter(key=>/\{\d+\}/.test(key)).sort((a,b)=>b.length-a.length)){
+  const order=[],parts=key.split(/(\{\d+\})/);
+  const source=greedy=>parts.map(part=>{const slot=/^\{(\d+)\}$/.exec(part);if(slot)return greedy?'([\\s\\S]+)':'([\\s\\S]+?)';return part.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('');
+  for(const part of parts){const slot=/^\{(\d+)\}$/.exec(part);if(slot)order.push(Number(slot[1]));}
+  try{patterns.push({regexes:[new RegExp(`^${source(false)}$`),new RegExp(`^${source(true)}$`)],order,english:KO_EN[key],numeric:KO_EN_NUMERIC[key]});}catch{}
+ }
+}
+function translatePhrase(text){
+ if(Object.hasOwn(KO_EN,text))return KO_EN[text];
+ if(!patterns)compilePatterns();
+ // Lazy and greedy splits can divide runtime values differently; prefer the split
+ // whose Korean values all translate, otherwise keep the first match.
+ let fallback=null;
+ for(const {regexes,order,english:text_en,numeric}of patterns)for(const regex of regexes){
+  const match=regex.exec(text);if(!match)continue;
+  const values=[];order.forEach((slot,index)=>{values[slot]=match[index+1];});
+  const english=numeric&&values.every(value=>value===undefined||/^\d+$/.test(value))?numeric:text_en;
+  const translated=values.map(value=>value===undefined||!HANGUL.test(value)?value:translateString(value));
+  const complete=translated.every(value=>value!==null);
+  const result=english.replace(/\{(\d+)\}/g,(_,slot)=>{const index=Number(slot);return (complete?translated[index]:translateValue(values[index]??''))??'';});
+  if(complete)return result;
+  fallback??=result;
+ }
+ return fallback;
+}
+function translateValue(value){return HANGUL.test(value)?translateString(value)??value:value;}
+// Exact phrase, then template patterns, then separator- and sentence-level pieces.
+export function translateString(text){
+ const lead=/^\s*/.exec(text)[0],trail=/\s*$/.exec(text)[0],core=text.trim().replace(/\s+/g,' ');
+ if(!core||!HANGUL.test(core))return null;
+ let result=translatePhrase(core);
+ if(result===null)for(const separator of [' · ',' — ',' / ',' | ']){
+  if(!core.includes(separator))continue;
+  const pieces=core.split(separator).map(piece=>HANGUL.test(piece)?translatePhrase(piece.trim()):piece);
+  if(pieces.every(piece=>piece!==null)){result=pieces.join(separator);break;}
+ }
+ if(result===null){
+  const sentences=core.split(/(?<=[.!?。…)])\s+/);
+  if(sentences.length>1){const pieces=sentences.map(piece=>HANGUL.test(piece)?translatePhrase(piece)??translateString(piece):piece);if(pieces.every(piece=>piece!==null))result=pieces.join(' ');}
+ }
+ return result===null?null:lead+result+trail;
+}
+function translateTextNode(node){
+ const record=textRecords.get(node);
+ if(record&&node.nodeValue===record.en)return;
+ if(!HANGUL.test(node.nodeValue)){textRecords.delete(node);return;}
+ const parent=node.parentElement;if(parent&&(parent.closest('script,style,textarea,[contenteditable="true"],[data-i18n-skip]')))return;
+ const english=translateString(node.nodeValue);if(english===null)return;
+ textRecords.set(node,{ko:node.nodeValue,en:english});node.nodeValue=english;
+}
+function translateAttributes(element){
+ for(const attribute of TRANSLATED_ATTRIBUTES){
+  const value=element.getAttribute(attribute);if(value===null)continue;
+  const records=attributeRecords.get(element)??{};
+  if(records[attribute]&&value===records[attribute].en)continue;
+  if(!HANGUL.test(value))continue;
+  const english=translateString(value);if(english===null)continue;
+  records[attribute]={ko:value,en:english};attributeRecords.set(element,records);element.setAttribute(attribute,english);
+ }
+}
+function translateTree(root){
+ if(root.nodeType===Node.TEXT_NODE){translateTextNode(root);return;}
+ if(root.nodeType!==Node.ELEMENT_NODE&&root.nodeType!==Node.DOCUMENT_NODE)return;
+ if(root.nodeType===Node.ELEMENT_NODE)translateAttributes(root);
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
+ for(let node=walker.nextNode();node;node=walker.nextNode())node.nodeType===Node.TEXT_NODE?translateTextNode(node):translateAttributes(node);
+}
+function restoreTree(root){
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
+ for(let node=walker.nextNode();node;node=walker.nextNode()){
+  if(node.nodeType===Node.TEXT_NODE){const record=textRecords.get(node);if(record){if(node.nodeValue===record.en)node.nodeValue=record.ko;textRecords.delete(node);}continue;}
+  const records=attributeRecords.get(node);if(!records)continue;
+  for(const [attribute,record]of Object.entries(records))if(node.getAttribute(attribute)===record.en)node.setAttribute(attribute,record.ko);
+  attributeRecords.delete(node);
+ }
+}
+function observeDocument(){
+ if(observer||typeof MutationObserver==='undefined')return;
+ observer=new MutationObserver(mutations=>{
+  if(language!=='en'||translating)return;translating=true;
+  try{for(const mutation of mutations){
+   if(mutation.type==='characterData')translateTextNode(mutation.target);
+   else if(mutation.type==='attributes')translateAttributes(mutation.target);
+   else for(const node of mutation.addedNodes)translateTree(node);
+  }}finally{translating=false;}
+ });
+ observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:TRANSLATED_ATTRIBUTES});
+}
+// Native dialogs cannot be observed, so translate their messages at the call.
+for(const name of ['alert','confirm','prompt']){
+ if(typeof window==='undefined'||typeof window[name]!=='function')continue;
+ const original=window[name].bind(window);
+ window[name]=(message,...rest)=>original(language==='en'&&typeof message==='string'?translateString(message)??message:message,...rest);
+}
+export function currentLanguage(){return language;}
 export function applyLanguage(next=language){
  language=next==='en'?'en':'ko';document.documentElement.lang=language;
  for(const [selector,english,mode]of textRules)setText(document.querySelector(selector),english,mode);
@@ -60,6 +162,9 @@ export function applyLanguage(next=language){
   element.setAttribute(attribute,language==='en'?english:record[key]);
  }
  applyDynamic();
+ translating=true;
+ try{if(language==='en'){translateTree(document.documentElement);document.title=translateString(document.title)??document.title;}else restoreTree(document.documentElement);}catch(error){console.error('i18n',error);}finally{translating=false;}
+ observeDocument();
  const select=document.querySelector('#language-select');if(select&&select.value!==language)select.value=language;
 }
 export function setupI18n({onChange=()=>{}}={}){

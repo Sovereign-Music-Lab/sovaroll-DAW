@@ -98,12 +98,14 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 
 No existing product assertions were deleted or weakened to resolve these issues. Product behavior was preserved; release edits primarily concern branding, descriptive metadata, documentation and portable developer tooling.
 
+- T-067 translates the whole interface in English mode. `public/i18n-dictionary.mjs` holds 2,179 Korean→English entries (plus one number-only variant); a MutationObserver translator in `public/i18n.mjs` covers text nodes and title/aria-label/placeholder, including dynamic text, and restores Korean on switch-back. `node scripts/i18n-coverage.mjs` reported 2,175 source segments and 0 missing. A Playwright probe on a demo project found no Korean in English mode in the main workspace or in all 38 dialogs (force-opened) except the intentional `Language / 언어` label; Korean restoration and reload persistence were observed. Session i18n E2E passed 4 steps and default E2E passed. Translations were written in this session and are not native-editor reviewed; runtime messages concatenated from pieces may still miss.
+
 ## Unverified and unfinished
 
 - Physical microphone/speaker listening, device latency and subjective music quality were not evaluated by these checks.
 - Gemma 4 26B / MLX on M5 Pro 24 GB is the requested next coding environment, not a completed inference benchmark. Its exact artifact, quantization, tool support and context capacity remain to be measured.
 - Automated acceptance does not finish all tasks. T-001–T-013 retain their existing states, including the unresolved T-010 snap decision.
-- Full bilingual UI, low-latency native audio, external plugin hosting and the complete autonomous composition feedback loop are future development.
+- Native-speaker review of English UI text, low-latency native audio, external plugin hosting and the complete autonomous composition feedback loop are future development.
 
 ## 한국어
 
@@ -240,3 +242,5 @@ T-064는 AVAudioEngine이 host-time 예약 뒤 `playing`에 남아 처음 blocke
 T-065에서는 서버 coordinator를 추가했습니다. 선택적 `audioJobId`로 완료된 무음 WAV와 native MIDI를 하나의 제한된 미래 목표에 배치하고, 시계를 읽기 전에 두 helper를 먼저 엽니다. 가상 MIDI·실제 native 오디오로 공통 Stop과 MIDI 실패 시 오디오 rollback을 검증했습니다. 첫 실행에서 helper 시작 시간이 500ms 목표를 지나는 문제를 preopen으로 해결하고 목표 메타데이터를 문자열로 통일했습니다. native 113개와 제품 174개 파일이 통과했습니다. 샘플 정확도·저지연·사람 청음은 주장하지 않습니다.
 
 T-066에서는 편집 이력·자동백업 대화상자의 작업 이름, 경계·저장 상태, 백업 컨트롤과 목록·빈 상태를 번역했습니다. 브라우저 검사 4단계로 영어, 한국어 복원과 새로고침 유지를 프로젝트·설정 변경 없이 확인했습니다. 기본 E2E 40단계, Audio Unit i18n 3단계, 전체 제품 174개 파일이 통과했습니다. 명령 ID·시각·경고는 원본이며 전체 앱 번역은 주장하지 않습니다. GUI 인벤터리는 765개입니다.
+
+T-067에서는 영어 모드에서 화면 전체를 번역합니다. `public/i18n-dictionary.mjs`에 한국어→영어 2,179개 항목(숫자 전용 변형 1개 별도)을 두고, `public/i18n.mjs`의 MutationObserver 번역기가 동적 문구를 포함한 텍스트와 title/aria-label/placeholder를 번역하며 한국어로 돌아가면 원문을 복원합니다. `node scripts/i18n-coverage.mjs`는 소스 구간 2,175개, 누락 0개를 보고했습니다. 데모 프로젝트에서 Playwright로 확인한 결과 영어 모드의 메인 화면과 강제로 연 대화상자 38개 모두 의도된 `Language / 언어` 라벨 외에는 한국어가 없었고, 한국어 복원과 새로고침 유지를 확인했습니다. 세션 i18n E2E 4단계와 기본 E2E가 통과했습니다. 번역은 이번 세션에서 작성했으며 원어민 감수는 거치지 않았고, 조각을 이어 만든 일부 실행 중 메시지는 누락될 수 있습니다.

@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T10:59:54.253Z",
+  "updatedAt": "2026-11-09T11:53:56.570Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2156,6 +2156,46 @@
       "startedAt": "2026-11-09T10:52:26.591Z",
       "evidence": "New session i18n E2E PASS 4 steps: English history actions/boundary/persistence, reload persistence/Korean restore, English backup controls/status/empty list and persistence, no revision/settings edits. Default E2E 40 and Audio Unit i18n 3 PASS. Full verification PASS 174 product files and final agent:verify PASS. Inventory 765 GUI checks. No complete app-wide translation or human UX claim.",
       "doneAt": "2026-11-09T10:59:54.253Z"
+    },
+    {
+      "status": "doing",
+      "priority": 2,
+      "area": "i18n",
+      "id": "T-067",
+      "title": "Translate the whole interface with a Korean-English dictionary",
+      "size": "L",
+      "dependsOn": [
+        "T-066"
+      ],
+      "goal": "English mode translates every Korean text node and title/aria-label/placeholder in the GUI, including dynamic text and all dialogs, and restores Korean on switch-back.",
+      "context": [
+        "Selector rules in public/i18n.mjs stay for primary controls; a MutationObserver translator covers the rest.",
+        "Project data (track/clip/file names) is never translated.",
+        "scripts/i18n-coverage.mjs lists Korean UI source strings without an English entry."
+      ],
+      "files": [
+        "public/i18n.mjs",
+        "public/i18n-dictionary.mjs",
+        "scripts/i18n-coverage.mjs",
+        "src/server.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md",
+        "docs/FEATURE_INVENTORY.en.md",
+        "docs/FEATURE_INVENTORY.ko.md"
+      ],
+      "acceptance": [
+        "i18n-coverage reports 0 missing source strings.",
+        "In English mode the demo workspace and all dialogs show no Korean except the bilingual language label.",
+        "Switching back to Korean restores the original text; the choice persists across reload.",
+        "Existing language and first-delivery E2E pass unchanged."
+      ],
+      "verify": [
+        "node scripts/i18n-coverage.mjs",
+        "npm run agent:e2e -- scripts/gui-session-i18n-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T11:53:56.569Z"
     }
   ]
 }

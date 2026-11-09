@@ -33,7 +33,7 @@
 | native 오디오 | 선택적 job 기반 AVAudioEngine 미리 듣기와 취소 가능한 host-time 예약 시작 | rollback·공통 Stop이 있는 미래 시작 조율은 검증했지만 샘플 정확도·저지연 품질은 주장하지 않음 |
 | Audio Unit effect | 명시적 검색·인스턴스화, 숫자 파라미터, 선택 범위, 오프라인 WAV·가져오기·미리 듣기 | 사용 가능한 시스템 구성요소 검사; 외부 플러그인 호환성은 미검증 |
 | Audio Unit 악기 | 선택 MIDI 클립을 fresh native 악기 instance로 렌더해 Undo 가능한 오디오 클립으로 가져오며, native 실시간 MIDI 재생은 출력 게인 0 수명주기 검사를 지원 | 실시간 악기 MIDI 호스팅·광범위 외부 플러그인 호환성은 미검증 |
-| 언어·접근성 | 주 작업 공간 한국어/영어 전환 | 고급 대화상자와 완전한 접근성은 미완성 |
+| 언어·접근성 | 대화상자를 포함한 전체 화면 한국어/영어 전환(사전 2,179개 항목과 DOM 번역기). `scripts/i18n-coverage.mjs`가 미번역 문자열 보고 | 완전한 접근성은 미완성. 번역은 원어민 감수를 거치지 않음 |
 | 자율형 작곡 연동 | 선택적 미래 아키텍처 | DAW는 독립 실행; 완전한 자율형 피드백 루프는 주장하지 않음 |
 
 상세 근거는 [VALIDATION.md](VALIDATION.md), 수용 경계는 [agent/REQUIREMENTS.md](agent/REQUIREMENTS.md)에 있습니다. `tests/feature-inventory.test.mjs`는 보고서 구조, 원본 식별자 uniqueness, 30개 수용 ID와 2,500개 주장의 미검증 상태를 검사합니다.

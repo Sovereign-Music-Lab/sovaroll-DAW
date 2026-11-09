@@ -11,7 +11,7 @@
 
 SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser interface and CLI share the same project, command engine, validation, and undo history. Keep music editable, work on your own computer, and carry MIDI and audio into the production tools you choose.
 
-**Version 0.129.0 is a development release.** Professional-grade production is the goal. Playback currently uses a rendered audio snapshot; low-latency native audio, plugin hosting, a score editor, and complete English/Korean UI coverage are still future work. The current interface is primarily Korean; both user manuals explain the controls.
+**Version 0.129.0 is a development release.** Professional-grade production is the goal. Playback currently uses a rendered audio snapshot; low-latency native audio, plugin hosting and a score editor are still future work. The interface switches between Korean and English (**English / 한국어** in the top bar), including dialogs; both user manuals explain the controls.
 
 ## Contents
 

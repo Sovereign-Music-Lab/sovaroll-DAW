@@ -28,7 +28,7 @@ Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated start
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
-- T-001–T-066 `agent:verify`: VERIFY PASS. Full verification passed 174 test files and native tests passed 113 after T-066; no complete app-wide bilingual UI or low-latency claim.
+- T-001–T-066 `agent:verify`: VERIFY PASS. Full verification passed 174 test files and native tests passed 113 after T-066; no low-latency claim.
 - T-066 history/backup i18n passed 4 steps with reload persistence and no edits; default E2E 40 and Audio Unit i18n 3 passed. Final listening/latency remains human installed-program work.
 - T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
 - T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
@@ -53,11 +53,13 @@ Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated start
 
 - 2026-11-09 (cloud session at the maintainer's request, tests deferred to the maintainer): added offline `guide [TOPIC|all]` CLI action (src/cli-guide.mjs), docs/CLI-GUIDE.en.md/ko.md, and routine-based README renewal. Manually spot-checked status, dry-run, select-clips, time-display, render and export-bundle on a temporary project/port 4399; `agent:verify`/E2E were NOT run.
 
+- T-067 (same cloud session, maintainer asked to finish the program): whole-interface Korean/English via public/i18n-dictionary.mjs (2,179 entries) + DOM translator; i18n-coverage 0 missing; 38 dialogs probed in English with no Korean left; session i18n E2E 4 PASS, default E2E PASS, agent:verify VERIFY PASS. E2E scripts hardcode macOS /private/tmp; on Linux create that directory first.
+
 ## Next task and unresolved decisions
-- T-001–T-066 are done. See FEATURE_INVENTORY; no 2,500-item catalogue exists. Continue remaining advanced-dialog translation and native architecture without claiming human verification.
+- T-001–T-067 are done. See FEATURE_INVENTORY; no 2,500-item catalogue exists. UI translation is complete pending native review; continue native architecture (low-latency audio, plugin hosting) and a score editor without claiming human verification.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
-- No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.
+- No low-latency native audio, external plugin hosting or complete autonomous workflow claim. English UI text is not native-editor reviewed.
 
 ## Navigation
 - [Organization](https://github.com/Sovereign-Music-Lab)
