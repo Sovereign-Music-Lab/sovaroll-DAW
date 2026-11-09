@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T08:59:36.281Z",
+  "updatedAt": "2026-11-09T09:07:32.379Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1930,6 +1930,44 @@
       "blockedReason": "Selected a real aumu component and audioUnitMidiOffline capability=true, but the actual #audio-units-instantiate click timed out three times: button was visible/enabled/stable while dialog#audio-units-dialog intercepted pointer events. This is a modal layout/hit-testing blocker before instrument rendering, not a native MIDI failure. Following the three-failure rule restored T-060 server/public/new-smoke changes from checkpoint 20261109T080048-hwlq. Restored offline Audio Unit GUI passed 14 steps and native suite passed 109/109. Needs a focused dialog geometry/pointer hit-test fix before reconnecting render-midi.",
       "evidence": "Resolved modal hit-test: measured button outside 500px dialog, then wider scrollable wrapped layout made elementFromPoint target the actual button. Actual instrument GUI E2E PASS 3 steps: empty selection, scoped one-note non-silent deterministic 48,001-frame WAV, stale/invalid/path guards, sourceStartSample 24000 import with asset hash and one Undo. Offline GUI 14, preview 3, default E2E 40 PASS. Native 109/109. Full/final verification PASS 174 files. Inventory 91 API, 862 UI, 758 GUI.",
       "doneAt": "2026-11-09T08:59:36.281Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "i18n",
+      "id": "T-061",
+      "title": "Translate the Audio Unit dialog and dynamic workflow status",
+      "size": "M",
+      "dependsOn": [
+        "T-060"
+      ],
+      "goal": "Add Korean/English switching for Audio Unit controls, scope labels, parameter metadata and render/preview status without changing project state.",
+      "context": [
+        "The primary workspace persists language through public/i18n.mjs; Audio Unit controls are created dynamically in public/audio-units.mjs.",
+        "Server/plugin error strings and third-party parameter names remain source data, not translated product claims.",
+        "Use actual system-effect rendering for dynamic status verification."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-i18n-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "Audio Unit labels, scope options, parameter detail and render/import status switch Korean/English on the open dialog and persist across reload.",
+        "Dynamic offline render and parameter status use the selected language; component names, keyPaths and server/plugin errors remain identifiable.",
+        "Language changes do not alter project revision, component instance or processed output; existing Audio Unit/default suites pass.",
+        "Bilingual manuals and validation record exactly which Audio Unit strings are covered."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-i18n-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:00:40.636Z",
+      "evidence": "New Audio Unit i18n GUI E2E PASS 3 steps: Korean controls/metadata, English dynamic offline output/import controls, reload persistence and Korean restore without project revision changes. Offline GUI 14, instrument GUI 3 and default E2E 40 PASS. npm run agent:verify:full and final agent:verify VERIFY PASS with 174 product files. Component/keyPath/server errors remain source; no complete app translation claim. Inventory 761 GUI checks.",
+      "doneAt": "2026-11-09T09:07:32.379Z"
     }
   ]
 }

@@ -38,7 +38,7 @@ The **프로젝트 열기** (Projects) window also exposes project opening and c
 
 ## 3. Find the main controls
 
-Use **English / 한국어** in the top bar to switch the primary workspace. The choice is stored in this browser and restored after reload; it does not edit project data. Advanced dialogs may still contain untranslated text.
+Use **English / 한국어** in the top bar to switch the primary workspace. The choice is stored in this browser and restored after reload; it does not edit project data. Advanced dialogs may still contain untranslated text. The Audio Unit dialog translates its controls, scope options, parameter metadata and generated render/preview/import status; component names, keyPaths and server/plugin errors remain source data.
 
 | Label | Meaning and use |
 |---|---|

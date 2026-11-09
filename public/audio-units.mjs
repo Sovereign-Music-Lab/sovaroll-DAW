@@ -3,23 +3,33 @@ export function setupAudioUnits({request,getContext,renderCurrentMix,onImported,
  const button=document.createElement('button');button.id='audio-units-open';button.type='button';button.textContent='Audio Units';document.querySelector('.top-actions').prepend(button);
  const dialog=document.createElement('dialog');dialog.id='audio-units-dialog';dialog.innerHTML='<div class="dialog-heading"><h2>Audio Unit · 오프라인 probe</h2><button id="audio-units-close" type="button" aria-label="Audio Unit 닫기">×</button></div><p>선택한 구성요소만 명시적으로 인스턴스화하고 현재 믹스를 오프라인 처리합니다. 기본 재생은 바꾸지 않고, 처리와 다운로드는 프로젝트를 변경하지 않습니다. 가져오기 버튼만 새 클립을 추가합니다. 플러그인 호환성·음질은 별도 검증이 필요합니다.</p><div class="session-toolbar"><button id="audio-units-list" type="button">구성요소 검색</button><button id="audio-units-release" type="button">인스턴스 해제</button></div><select id="audio-units-component" aria-label="Audio Unit 구성요소"></select><label>처리 범위 <select id="audio-units-scope"><option value="all">전체 믹스</option><option value="locators">Locator 구간</option></select></label><label>처리 트랙 <select id="audio-units-tracks"><option value="all">모든 트랙</option><option value="selected">선택 트랙</option></select></label><label>처리 클립 <select id="audio-units-clips"><option value="all">모든 클립</option><option value="selected">선택 클립</option></select></label><div class="dialog-actions"><button id="audio-units-instantiate" type="button">선택 인스턴스화</button><button id="audio-units-render" type="button">현재 믹스 오프라인 처리</button><button id="audio-units-render-midi" type="button" hidden>선택 MIDI를 악기로 렌더</button><button id="audio-units-play" type="button">Audio Unit 미리 듣기</button><button id="audio-units-stop" type="button">미리 듣기 정지</button></div><div class="session-toolbar"><select id="audio-units-parameter" aria-label="Audio Unit 파라미터"></select><input id="audio-units-parameter-value" type="number" step="any" aria-label="Audio Unit 파라미터 값"><button id="audio-units-set-parameter" type="button">파라미터 적용</button><button id="audio-units-reset-parameter" type="button">기본값 복원</button></div><p id="audio-units-parameter-detail"></p><p id="audio-units-status" role="status"></p><p id="audio-units-result" role="status"></p><a id="audio-units-download" hidden>처리 WAV 다운로드</a><button id="audio-units-import" type="button" hidden>처리본을 클립으로 가져오기</button>';document.body.append(dialog);
  const $=id=>dialog.querySelector('#'+id);let supported=false,midiSupported=false,loading=false,components=[],selectedId='',selectedType=0,scope='all',trackScope='all',clipScope='all',state={status:'idle',instantiated:false,parameters:[]};
+ const t=(ko,en)=>document.documentElement.lang==='en'?en:ko;
+ const syncLanguage=()=>{
+  dialog.querySelector('h2').textContent=t('Audio Unit · 오프라인 probe','Audio Unit · Offline probe');dialog.querySelector('p').textContent=t('선택한 구성요소만 명시적으로 인스턴스화하고 현재 믹스를 오프라인 처리합니다. 기본 재생은 바꾸지 않고, 처리와 다운로드는 프로젝트를 변경하지 않습니다. 가져오기 버튼만 새 클립을 추가합니다. 플러그인 호환성·음질은 별도 검증이 필요합니다.','Only the selected component is instantiated explicitly for offline processing. Processing and download do not edit the project or change default playback; only Import adds a clip. Compatibility and sound quality need separate validation.');
+  $('audio-units-close').setAttribute('aria-label',t('Audio Unit 닫기','Close Audio Units'));$('audio-units-list').textContent=t('구성요소 검색','Discover components');$('audio-units-release').textContent=t('인스턴스 해제','Release instance');$('audio-units-component').setAttribute('aria-label',t('Audio Unit 구성요소','Audio Unit component'));
+  for(const [id,ko,en]of [['scope','처리 범위 ','Processing range '],['tracks','처리 트랙 ','Processing tracks '],['clips','처리 클립 ','Processing clips ']])$('audio-units-'+id).parentElement.firstChild.nodeValue=t(ko,en);
+  for(const [id,values]of Object.entries({scope:[['전체 믹스','Whole mix'],['Locator 구간','Locator range']],tracks:[['모든 트랙','All tracks'],['선택 트랙','Selected tracks']],clips:[['모든 클립','All clips'],['선택 클립','Selected clips']]}))for(const [index,pair]of values.entries())$('audio-units-'+id).options[index].textContent=t(pair[0],pair[1]);
+  $('audio-units-instantiate').textContent=t('선택 인스턴스화','Instantiate selection');$('audio-units-render').textContent=t('현재 믹스 오프라인 처리','Render current mix offline');$('audio-units-render-midi').textContent=t('선택 MIDI를 악기로 렌더','Render selected MIDI through instrument');$('audio-units-play').textContent=t('Audio Unit 미리 듣기','Preview through Audio Unit');$('audio-units-stop').textContent=t('미리 듣기 정지','Stop preview');
+  $('audio-units-parameter').setAttribute('aria-label',t('Audio Unit 파라미터','Audio Unit parameter'));$('audio-units-parameter-value').setAttribute('aria-label',t('Audio Unit 파라미터 값','Audio Unit parameter value'));$('audio-units-set-parameter').textContent=t('파라미터 적용','Apply parameter');$('audio-units-reset-parameter').textContent=t('기본값 복원','Restore default');$('audio-units-download').textContent=t('처리 WAV 다운로드','Download processed WAV');$('audio-units-import').textContent=t('처리본을 클립으로 가져오기','Import processed audio as clip');
+ };
  const post=(route,input)=>request(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...input,expectedRevision:getContext().project.revision})});
  const selectedParameter=()=>(state.parameters??[]).find(parameter=>parameter.keyPath===$('audio-units-parameter').value);
- const fillParameter=()=>{const parameter=selectedParameter(),input=$('audio-units-parameter-value');input.value=parameter?String(parameter.value):'';$('audio-units-parameter-detail').textContent=parameter?`기본 ${parameter.defaultValue} · 범위 ${parameter.minValue}…${parameter.maxValue}`:'';};
+ const fillParameter=()=>{const parameter=selectedParameter(),input=$('audio-units-parameter-value');input.value=parameter?String(parameter.value):'';$('audio-units-parameter-detail').textContent=parameter?t('기본','Default')+` ${parameter.defaultValue} · `+t('범위','Range')+` ${parameter.minValue}…${parameter.maxValue}`:'';};
  const syncParameters=()=>{
   const parameters=state.parameters??[],select=$('audio-units-parameter'),signature=JSON.stringify(parameters.map(parameter=>parameter.keyPath));
   if(select.dataset.signature!==signature){const previous=select.value;select.dataset.signature=signature;select.replaceChildren(...parameters.map(parameter=>new Option(`${parameter.name} · ${parameter.keyPath}`,parameter.keyPath)));if(parameters.some(parameter=>parameter.keyPath===previous))select.value=previous;fillParameter();}
-  const parameter=selectedParameter(),input=$('audio-units-parameter-value');if(parameter){input.min=String(parameter.minValue);input.max=String(parameter.maxValue);$('audio-units-parameter-detail').textContent=`기본 ${parameter.defaultValue} · 범위 ${parameter.minValue}…${parameter.maxValue}`;}
+  const parameter=selectedParameter(),input=$('audio-units-parameter-value');if(parameter){input.min=String(parameter.minValue);input.max=String(parameter.maxValue);$('audio-units-parameter-detail').textContent=t('기본','Default')+` ${parameter.defaultValue} · `+t('범위','Range')+` ${parameter.minValue}…${parameter.maxValue}`;}
   select.disabled=loading||!state.instantiated||state.playing||!parameters.length;input.disabled=select.disabled;$('audio-units-set-parameter').disabled=select.disabled;$('audio-units-reset-parameter').disabled=select.disabled;
  };
  const update=()=>{
-  syncParameters();
+  syncLanguage();syncParameters();
   button.disabled=!supported||!getContext().project||getContext().busy||!getContext().connected;
   $('audio-units-component').disabled=loading||!components.length||state.instantiated;$('audio-units-list').disabled=loading||!supported||state.instantiated;$('audio-units-scope').disabled=loading||state.playing;$('audio-units-tracks').disabled=loading||state.playing;$('audio-units-clips').disabled=loading||state.playing;
   $('audio-units-instantiate').disabled=loading||!selectedId||state.instantiated;$('audio-units-render').disabled=loading||!state.instantiated||state.playing;$('audio-units-play').disabled=loading||!state.instantiated||state.playing;$('audio-units-stop').disabled=loading||!state.playing;const midiButton=$('audio-units-render-midi');midiButton.hidden=!midiSupported||selectedType!==1635085685;midiButton.disabled=loading||!state.instantiated||state.playing;$('audio-units-release').disabled=loading||!state.instantiated;
   const download=$('audio-units-download'),output=state.lastRender?.outputUrl;download.hidden=!output;if(output){download.href=output;download.download=`audio-unit-r${state.lastRender?.revision??getContext().project.revision}.wav`;}
   const importButton=$('audio-units-import');importButton.hidden=!output;importButton.disabled=loading||!output||getContext().busy||!getContext().connected;
-  $('audio-units-status').textContent=loading?'처리 중…':`${state.status}${state.instantiated?' · 인스턴스 있음':''}${state.playing?' · 미리 듣기 재생 중':''}${state.error?' · '+state.error:''}`;
+  const statusLabels={idle:['대기','Idle'],ready:['준비','Ready'],selected:['선택됨','Selected'],instantiated:['인스턴스화됨','Instantiated'],parameters:['파라미터 준비','Parameters ready'],'parameter-set':['파라미터 적용됨','Parameter set'],rendered:['렌더 완료','Rendered'],'rendered-midi':['악기 렌더 완료','Instrument rendered'],playing:['재생 중','Playing'],stopped:['정지됨','Stopped'],completed:['완료','Completed'],released:['해제됨','Released'],failed:['실패','Failed']},statusLabel=statusLabels[state.status]?.[document.documentElement.lang==='en'?1:0]??state.status;
+  $('audio-units-status').textContent=loading?t('처리 중…','Processing…'):`${statusLabel}${state.instantiated?t(' · 인스턴스 있음',' · Instance active'):''}${state.playing?t(' · 미리 듣기 재생 중',' · Preview playing'):''}${state.error?' · '+state.error:''}`;
  };
  const accept=value=>{if(value?.capabilities){supported=value.capabilities.audioUnitOfflineProbe===true;midiSupported=value.capabilities.audioUnitMidiOffline===true;}if(value?.audioUnits)state=value.audioUnits;else if(value?.status)state=value;update();};
  async function run(action){loading=true;update();try{return await action();}catch(error){state={...state,error:error.message};notify(`Audio Unit probe: ${error.message}`,true);return null;}finally{loading=false;update();}}
@@ -31,44 +41,44 @@ export function setupAudioUnits({request,getContext,renderCurrentMix,onImported,
  $('audio-units-parameter').onchange=fillParameter;
  $('audio-units-instantiate').onclick=()=>run(async()=>{const result=await post('/api/audio-units/instantiate',{id:selectedId}),listed=await post('/api/audio-units/parameters',{});selectedType=result.component.type;accept({audioUnits:{...state,selected:result.component.id,instantiated:true,parameters:listed.parameters,status:'parameters',error:null}});return result;});
  $('audio-units-set-parameter').onclick=()=>run(async()=>{
-  const keyPath=$('audio-units-parameter').value,raw=$('audio-units-parameter-value').value.trim(),value=Number(raw);if(!keyPath||!raw||!Number.isFinite(value))throw new Error('파라미터 keyPath와 유한한 숫자 값이 필요합니다.');
-  const result=await post('/api/audio-units/parameter',{keyPath,value});state={...state,parameters:(state.parameters??[]).map(parameter=>parameter.keyPath===keyPath?result.parameter:parameter),status:'parameter-set',error:null};$('audio-units-parameter-value').value=String(result.parameter.value);$('audio-units-result').textContent=`파라미터 ${result.parameter.name} = ${result.parameter.value}`;return result;
+  const keyPath=$('audio-units-parameter').value,raw=$('audio-units-parameter-value').value.trim(),value=Number(raw);if(!keyPath||!raw||!Number.isFinite(value))throw new Error(t('파라미터 keyPath와 유한한 숫자 값이 필요합니다.','Provide a parameter keyPath and a finite numeric value.'));
+  const result=await post('/api/audio-units/parameter',{keyPath,value});state={...state,parameters:(state.parameters??[]).map(parameter=>parameter.keyPath===keyPath?result.parameter:parameter),status:'parameter-set',error:null};$('audio-units-parameter-value').value=String(result.parameter.value);$('audio-units-result').textContent=`${t('파라미터','Parameter')} ${result.parameter.name} = ${result.parameter.value}`;return result;
  });
  $('audio-units-reset-parameter').onclick=()=>{const parameter=selectedParameter();if(!parameter)return null;$('audio-units-parameter-value').value=String(parameter.defaultValue);return $('audio-units-set-parameter').onclick();};
  function instrumentInput(){
   const context=getContext(),clips=context.project.clips.filter(clip=>context.selectedClipIds?.includes(clip.id)&&clip.type==='midi');
-  if(!clips.length)throw new Error('Audio Unit 악기 렌더에는 하나 이상의 MIDI 클립 선택이 필요합니다.');
+  if(!clips.length)throw new Error(t('Audio Unit 악기 렌더에는 하나 이상의 MIDI 클립 선택이 필요합니다.','Select at least one MIDI clip for Audio Unit instrument rendering.'));
   const range=scope==='locators'?context.project.locators:{startTick:Math.min(...clips.map(clip=>clip.startTick??0)),endTick:Math.max(...clips.map(clip=>(clip.startTick??0)+clip.lengthTicks))};
-  if(!range)throw new Error('Locator 범위를 먼저 지정하세요.');
+  if(!range)throw new Error(t('Locator 범위를 먼저 지정하세요.','Set a locator range first.'));
   const sampleRate=context.project.sampleRate,startSeconds=context.tickToSeconds(range.startTick),endSeconds=context.tickToSeconds(range.endTick),sourceStartSample=Math.ceil(startSeconds*sampleRate),endSample=Math.ceil(endSeconds*sampleRate),durationFrames=Math.max(2,endSample-sourceStartSample+1),notes=[];
   for(const clip of clips)for(const note of clip.notes??[]){
    const noteStart=(clip.startTick??0)+note.startTick,noteEnd=noteStart+note.durationTicks,startTick=Math.max(range.startTick,noteStart),endTick=Math.min(range.endTick,noteEnd);if(endTick<=startTick)continue;
    const startFrame=Math.ceil(context.tickToSeconds(startTick)*sampleRate)-sourceStartSample,endFrame=Math.ceil(context.tickToSeconds(endTick)*sampleRate)-sourceStartSample;if(endFrame<=startFrame)continue;
    notes.push({pitch:note.pitch,velocity:note.velocity??100,channel:note.channel??0,startFrame,durationFrames:endFrame-startFrame});
   }
-  if(!notes.length)throw new Error('선택 범위에 렌더할 MIDI 노트가 없습니다.');
+  if(!notes.length)throw new Error(t('선택 범위에 렌더할 MIDI 노트가 없습니다.','No MIDI notes are available in the selected range.'));
   return{notes,durationFrames,sampleRate,channels:2,sourceStartSample};
  }
  $('audio-units-render-midi').onclick=()=>run(async()=>{
-  const input=instrumentInput(),result=await post('/api/audio-units/render-midi',input);accept({audioUnits:{...state,lastRender:result,status:'rendered-midi',error:null}});$('audio-units-result').textContent=`악기 렌더 · ${result.noteCount} notes · ${result.frames} frames · ${result.sampleRate} Hz · 출력 ${result.pcmSha256}`;return result;
+  const input=instrumentInput(),result=await post('/api/audio-units/render-midi',input);accept({audioUnits:{...state,lastRender:result,status:'rendered-midi',error:null}});$('audio-units-result').textContent=`${t('악기 렌더','Instrument render')} · ${result.noteCount} notes · ${result.frames} frames · ${result.sampleRate} Hz · ${t('출력','Output')} ${result.pcmSha256}`;return result;
  });
  async function sourceJob(){
   const context=getContext(),trackIds=trackScope==='selected'?[...(context.selectedTrackIds??[])]:[];
-  if(trackScope==='selected'&&!trackIds.length)throw new Error('선택 트랙 처리에는 하나 이상의 트랙 선택이 필요합니다.');
+  if(trackScope==='selected'&&!trackIds.length)throw new Error(t('선택 트랙 처리에는 하나 이상의 트랙 선택이 필요합니다.','Select at least one track for selected-track processing.'));
   const selectedTracks=new Set(trackIds),clipIds=clipScope==='selected'?[...(context.selectedClipIds??[])].filter(id=>context.project.clips.some(clip=>clip.id===id&&(trackScope!=='selected'||selectedTracks.has(clip.trackId)))):[];
-  if(clipScope==='selected'&&!clipIds.length)throw new Error('선택 클립 처리에는 현재 트랙 범위 안의 클립 선택이 필요합니다.');
+  if(clipScope==='selected'&&!clipIds.length)throw new Error(t('선택 클립 처리에는 현재 트랙 범위 안의 클립 선택이 필요합니다.','Select clips inside the current track scope.'));
   return renderCurrentMix({exportRange:scope,tailSeconds:scope==='locators'?0:0.2,...(trackScope==='selected'?{trackIds}:{}),...(clipScope==='selected'?{clipIds}:{})});
  }
- const scopeText=()=>`${trackScope==='selected'?'선택 트랙 · ':''}${clipScope==='selected'?'선택 클립 · ':''}${scope==='locators'?'Locator 구간 · ':''}`;
+ const scopeText=()=>`${trackScope==='selected'?t('선택 트랙 · ','Selected tracks · '):''}${clipScope==='selected'?t('선택 클립 · ','Selected clips · '):''}${scope==='locators'?t('Locator 구간 · ','Locator range · '):''}`;
  $('audio-units-render').onclick=()=>run(async()=>{
   const job=await sourceJob(),result=await post('/api/audio-units/render',{jobId:job.id});
   accept({audioUnits:{...state,lastRender:result,status:'rendered',error:null}});
-  $('audio-units-result').textContent=`완료 · ${scopeText()}${result.frames} frames · ${result.sampleRate} Hz · ${result.channels} ch · 출력 ${result.pcmSha256}`;return result;
+  $('audio-units-result').textContent=`${t('완료','Complete')} · ${scopeText()}${result.frames} frames · ${result.sampleRate} Hz · ${result.channels} ch · ${t('출력','Output')} ${result.pcmSha256}`;return result;
  });
  $('audio-units-play').onclick=()=>run(async()=>{
-  const job=await sourceJob(),result=await post('/api/audio-units/play',{jobId:job.id,allowDefaultOutput:true});accept({audioUnits:{...state,playing:true,previewJobId:result.jobId,previewRenderJobId:job.id,status:'playing',error:null}});$('audio-units-result').textContent=`미리 듣기 · ${scopeText()}${result.jobId}`;return result;
+  const job=await sourceJob(),result=await post('/api/audio-units/play',{jobId:job.id,allowDefaultOutput:true});accept({audioUnits:{...state,playing:true,previewJobId:result.jobId,previewRenderJobId:job.id,status:'playing',error:null}});$('audio-units-result').textContent=`${t('미리 듣기','Preview')} · ${scopeText()}${result.jobId}`;return result;
  });
- $('audio-units-stop').onclick=()=>run(async()=>{const jobId=state.previewJobId;if(!jobId)return null;const result=await post('/api/audio-units/stop',{jobId});state={...state,playing:false,status:'stopped',error:null};$('audio-units-result').textContent=`미리 듣기 정지 · ${jobId}`;return result;});
+ $('audio-units-stop').onclick=()=>run(async()=>{const jobId=state.previewJobId;if(!jobId)return null;const result=await post('/api/audio-units/stop',{jobId});state={...state,playing:false,status:'stopped',error:null};$('audio-units-result').textContent=`${t('미리 듣기 정지','Preview stopped')} · ${jobId}`;return result;});
  $('audio-units-release').onclick=()=>run(async()=>{await post('/api/audio-units/release',{});state={...state,instantiated:false,parameters:[],status:'released'};return true;});
  $('audio-units-import').onclick=()=>run(async()=>{
   const output=state.lastRender?.outputUrl;if(!output)return null;
@@ -76,7 +86,7 @@ export function setupAudioUnits({request,getContext,renderCurrentMix,onImported,
   const bytes=await response.arrayBuffer(),context=getContext(),atSample=Number.isSafeInteger(state.lastRender?.sourceStartSample)?state.lastRender.sourceStartSample:Math.max(0,Math.round((context.cursorSeconds??0)*context.project.sampleRate));
   const params=new URLSearchParams({name:'Audio Unit processed.wav',expectedRevision:String(context.project.revision),atSample:String(atSample),audioUnitOutput:'1'});
   const imported=await request(`/api/import/wav?${params}`,{method:'POST',headers:{'Content-Type':'audio/wav'},body:bytes});
-  await onImported();$('audio-units-result').textContent+=` · 클립 추가 REV ${imported.projectRevision}`;return imported;
+  await onImported();$('audio-units-result').textContent+=` · ${t('클립 추가','Clip added')} REV ${imported.projectRevision}`;return imported;
  });
  button.onclick=()=>{dialog.showModal();};$('audio-units-close').onclick=()=>dialog.close();dialog.addEventListener('cancel',()=>dialog.close());
  return{update,snapshot:accept,event:accept,get active(){return state.instantiated;}};
