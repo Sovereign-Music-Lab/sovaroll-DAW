@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-035 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-013, T-015, T-017–T-035 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -54,6 +54,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-033 reproduced the same initial timeout in `gui-split-settings-race-smoke.mjs` and opens the menu before every clip-tools action, including preference save/reopen and conflict coverage. All 8 targeted steps and final `npm run agent:verify` passed.
 - T-034 reproduced the same closed-menu timeout in `gui-split-settings-smoke.mjs` and opens the direct summary before every action. All 6 targeted steps and final `npm run agent:verify` passed without product changes.
 - T-035 reproduced workspace render timeouts after 6 and 20 checks. Both the normal render and delayed-render gate now submit `#mix-export-submit`, preserving media and stale-render assertions. All 21 targeted steps and final `npm run agent:verify` passed without product changes.
+- T-013 added bilingual `docs/agent/MANUAL_CHECKS.md` with six numbered real-device steps, expected results and empty observation columns. FD-16/21/22 link to it. Structural checks and `npm run agent:guard` passed. This documents work for a human; no microphone, speaker, listening or latency verification is claimed.
 
 ## Problems encountered and resolved
 
@@ -138,3 +139,5 @@ T-033에서는 split 설정 race 스모크의 초기 timeout을 재현하고 설
 T-034에서는 split 설정 스모크의 같은 닫힌 메뉴 timeout을 재현하고 모든 작업 전에 직접 summary를 열었습니다. 대상 E2E 6단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.
 
 T-035에서는 workspace의 일반 렌더와 지연 렌더 gate timeout을 재현했습니다. 두 경로 모두 `#mix-export-submit`을 제출하고 미디어·stale render 검증을 유지했습니다. 대상 E2E 21단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.
+
+T-013에서는 실제 장치용 `docs/agent/MANUAL_CHECKS.md`를 이중 언어로 추가하고, 예상 결과와 빈 관찰 칸이 있는 6개 절차를 준비했습니다. FD-16/21/22가 문서에 연결되고 구조 검사와 guard가 통과했습니다. 사람이 수행할 문서이며 마이크·스피커·청음·지연 검증을 주장하지 않습니다.

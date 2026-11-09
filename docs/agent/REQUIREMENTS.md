@@ -37,18 +37,18 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | ID | 요건 | 수용 기준 | 상태 | 근거 |
 |---|---|---|---|---|
 | FD-15 | WAV 가져오기(커서 위치) | 가져오기 창 → 커서 위치에 새 오디오 트랙·클립 | verified | E2E: `audio.GUI-WAV-import-at-cursor` |
-| FD-16 | 마이크 녹음 | 녹음→정지 → 커서 위치 클립 한 번의 커밋 | verified (가짜 마이크) / 실제 장치 청음·지연은 manual | E2E: `audio.GUI-fake-microphone-recording-to-cursor-clip`, gui-recording-* |
+| FD-16 | 마이크 녹음 | 녹음→정지 → 커서 위치 클립 한 번의 커밋 | verified (가짜 마이크) / 실제 장치 청음·지연은 manual | E2E: `audio.GUI-fake-microphone-recording-to-cursor-clip`, gui-recording-*, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
 | FD-17 | 클립 이동 | Inspector 시작 초 | verified | E2E: `audio.GUI-clip-move` |
 | FD-18 | 클립 분할 | 커서 위치, 길이 합 보존 | verified | E2E: `audio.GUI-clip-split-at-cursor` |
 | FD-19 | 클립 길이(trim) | Inspector 길이 프레임 | verified | E2E: `audio.GUI-clip-trim-length` |
 | FD-20 | 페이드·클립 뮤트·극성·노멀라이즈 | Inspector 입력 → 렌더 결과에 반영 | 페이드 인·클립 뮤트·극성·노멀라이즈 verified / 페이드 아웃 implemented (E2E 없음) | E2E: `audio.GUI-fade-in-changes-render`, `audio.GUI-clip-mute-silences-render`, `audio.GUI-clip-polarity-inverts-render`, `audio.GUI-normalize-sets-clip-gain`, docs/DEVELOPMENT.ko.md |
-| FD-21 | 녹음 보조(입력 선택·게인·모니터·카운트인·메트로놈·기존 트랙 들으며 녹음) | GUI 동작 + 녹음 결과 | implemented (E2E 없음), 실제 장치 manual | public/recording-ui.mjs, metronome.mjs |
+| FD-21 | 녹음 보조(입력 선택·게인·모니터·카운트인·메트로놈·기존 트랙 들으며 녹음) | GUI 동작 + 녹음 결과 | implemented (E2E 없음), 실제 장치 manual | public/recording-ui.mjs, metronome.mjs, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
 
 ### D. 재생·믹싱
 
 | ID | 요건 | 수용 기준 | 상태 | 근거 |
 |---|---|---|---|---|
-| FD-22 | MIDI+오디오 재생 | Play → 재생 중·위치 진행, Stop → 정지 | verified (150초 GUI probe 포함, 상태·진행만, 청음은 manual) | E2E: `playback.GUI-MIDI-and-audio-play-advance-stop`, `.test-output/long-project-gui.json` |
+| FD-22 | MIDI+오디오 재생 | Play → 재생 중·위치 진행, Stop → 정지 | verified (150초 GUI probe 포함, 상태·진행만, 청음은 manual) | E2E: `playback.GUI-MIDI-and-audio-play-advance-stop`, `.test-output/long-project-gui.json`, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
 | FD-23 | 탐색 | 눈금자 클릭으로 커서 이동 | verified | E2E: `playback.GUI-seek-by-ruler` |
 | FD-24 | 믹서 | 트랙 mute/solo/gain/pan, master gain | verified | E2E: `mixer.GUI-mute-solo-gain-pan-master` |
 | FD-25 | Cycle(구간 반복) 재생 | Locator 구간 반복 | verified (전송 위치만, 청음은 manual) | E2E: `playback.GUI-cycle-loops-locator-range` |

@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T00:08:38.683Z",
+  "updatedAt": "2026-11-09T00:11:50.124Z",
   "tasks": [
     {
       "id": "T-001",
@@ -401,7 +401,7 @@
         "FD-21",
         "FD-22"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Write docs/agent/MANUAL_CHECKS.md: a short checklist a human follows with a real mic/headphones (record, overdub with backing, count-in, metronome, monitor latency, listen to mix export).",
       "context": [
         "Agents cannot listen. This file lets the human record results; agents must not mark these items verified."
@@ -415,7 +415,10 @@
       ],
       "verify": [
         "npm run agent:guard"
-      ]
+      ],
+      "startedAt": "2026-11-09T00:09:59.613Z",
+      "evidence": "Created docs/agent/MANUAL_CHECKS.md with six numbered bilingual real-device procedures, expected results and empty observed-result columns. Structural assertion PASS; FD-16/21/22 link the checklist. npm run agent:guard PASS; npm run agent:verify VERIFY PASS. Documentation only: no real microphone, speaker, listening or latency result claimed.",
+      "doneAt": "2026-11-09T00:11:50.123Z"
     },
     {
       "id": "T-014",
