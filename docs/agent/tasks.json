@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T10:51:29.982Z",
+  "updatedAt": "2026-11-09T10:59:54.253Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2118,6 +2118,44 @@
       "startedAt": "2026-11-09T10:42:06.545Z",
       "evidence": "Native server sync test PASS: completed silent WAV and virtual native MIDI share identical targetUptimeNs/startedUptimeNs/audio startAtUptimeNs; shared Stop stops both and MIDI destination failure rolls audio back with sync-midi-failed. Helpers preopen before clock target; metadata strings consistent. npm run test:native 113/113. Full/final verification PASS 174 product files. No sample-accuracy, low-latency or human listening claim.",
       "doneAt": "2026-11-09T10:51:29.982Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "i18n",
+      "id": "T-066",
+      "title": "Translate edit-history and automatic-backup dialogs",
+      "size": "M",
+      "dependsOn": [
+        "T-065"
+      ],
+      "goal": "Add Korean/English switching and reload persistence for history boundaries, action labels, persistence state and automatic-backup controls/status.",
+      "context": [
+        "public/index.html owns static dialog text and public/session.mjs generates history/backup status.",
+        "Command/action IDs, timestamps, revision numbers and server warnings remain identifiable source data.",
+        "Final installed-program UX verification remains a human session."
+      ],
+      "files": [
+        "public/i18n.mjs",
+        "public/session.mjs",
+        "scripts/gui-session-i18n-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "History/backup static controls and generated status switch language without changing project revision or settings.",
+        "History action labels, boundary/persistence and backup list/empty state use the selected language; source warnings and IDs remain readable.",
+        "Browser checks cover open dialogs, English/Korean switching and reload persistence; existing Audio Unit/default suites and full verification pass.",
+        "Manuals and inventory identify this scope without claiming complete app-wide translation."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-session-i18n-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:52:26.591Z",
+      "evidence": "New session i18n E2E PASS 4 steps: English history actions/boundary/persistence, reload persistence/Korean restore, English backup controls/status/empty list and persistence, no revision/settings edits. Default E2E 40 and Audio Unit i18n 3 PASS. Full verification PASS 174 product files and final agent:verify PASS. Inventory 765 GUI checks. No complete app-wide translation or human UX claim.",
+      "doneAt": "2026-11-09T10:59:54.253Z"
     }
   ]
 }
