@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T06:04:07.609Z",
+  "updatedAt": "2026-11-09T06:09:56.111Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1706,6 +1706,40 @@
       "startedAt": "2026-11-09T05:58:20.358Z",
       "evidence": "Targeted GUI E2E PASS: 13 steps including active-instance component/list/instantiate locking, explicit release, cleared parameters, server state agreement and same-component reinstantiation; all prior parameter/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No realtime hosting or listening claim.",
       "doneAt": "2026-11-09T06:04:07.608Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-055",
+      "title": "Restore Audio Unit parameter defaults from the offline GUI",
+      "size": "S",
+      "dependsOn": [
+        "T-054"
+      ],
+      "goal": "Add an explicit per-parameter default restoration action using the captured initial value and existing guarded setter.",
+      "context": [
+        "T-051 captures initial values as defaultValue for each parameter.",
+        "T-052 has a validated server/GUI exact-keyPath setter; no new native or server command is needed.",
+        "Default restoration affects the offline instance, not project Undo history."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "A reset action is available only for an active selected parameter and uses its reported defaultValue through the existing guarded setter.",
+        "GUI readback returns to the initial value and a subsequent render matches the baseline PCM hash in the observed system effect.",
+        "Existing parameter validation, scopes, import/Undo and all regression suites pass; documentation states no project-history or realtime automation behavior."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:04:31.603Z",
+      "evidence": "Targeted GUI E2E PASS: 14 steps including audioUnits.GUI-parameter-default-restores-baseline-render; selected parameter readback returned to captured defaultValue and the next render matched the exact baseline PCM hash with unchanged project revision. All lifecycle/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Offline-instance reset only; no project-history or realtime automation claim.",
+      "doneAt": "2026-11-09T06:09:56.110Z"
     }
   ]
 }

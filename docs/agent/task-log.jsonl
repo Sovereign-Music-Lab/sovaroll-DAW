@@ -148,3 +148,6 @@
 {"at":"2026-11-09T05:58:20.265Z","id":"T-054","action":"add"}
 {"at":"2026-11-09T05:58:20.358Z","id":"T-054","action":"start"}
 {"at":"2026-11-09T06:04:07.609Z","id":"T-054","action":"done","evidence":"Targeted GUI E2E PASS: 13 steps including active-instance component/list/instantiate locking, explicit release, cleared parameters, server state agreement and same-component reinstantiation; all prior parameter/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No realtime hosting or listening claim.","verify":"PASS"}
+{"at":"2026-11-09T06:04:31.516Z","id":"T-055","action":"add"}
+{"at":"2026-11-09T06:04:31.603Z","id":"T-055","action":"start"}
+{"at":"2026-11-09T06:09:56.111Z","id":"T-055","action":"done","evidence":"Targeted GUI E2E PASS: 14 steps including audioUnits.GUI-parameter-default-restores-baseline-render; selected parameter readback returned to captured defaultValue and the next render matched the exact baseline PCM hash with unchanged project revision. All lifecycle/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Offline-instance reset only; no project-history or realtime automation claim.","verify":"PASS"}
