@@ -115,10 +115,10 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
   });
   const nativeAudio=createNativeAudio({offline:nativeAudioOffline,...(nativeAudioHelperPath?{helperPath:nativeAudioHelperPath}:{}),onChange:state=>{if(closed)return;for(const response of clients)response.write(`event: native-audio\ndata: ${JSON.stringify(state)}\n\n`);}});
   const audioUnits=createAudioUnits({...(audioUnitsHelperPath?{helperPath:audioUnitsHelperPath}:{}),onChange:state=>{if(closed)return;for(const response of clients)response.write(`event: audio-units\ndata: ${JSON.stringify(state)}\n\n`);}});
-  async function stopNativeResources(reason){await Promise.all([nativeTransport.stopAll(reason),nativeAudio.stopAll(reason)]);await audioUnits.reset();}
+  async function stopNativeResources(reason,{resetAudioUnits=true}={}){await Promise.all([nativeTransport.stopAll(reason),nativeAudio.stopAll(reason)]);if(resetAudioUnits)await audioUnits.reset();}
   const nativeSettings=async()=>{const profile=await getNativeMidiSettings(nativeSettingsPath);assertRequestDocument();if(!engine)throw problem('NO_ACTIVE_DOCUMENT','Activate a project first',409);return {...profile,projectId:engine.project.id,projectRevision:engine.project.revision,config:profile.settings.projects[engine.project.id]??defaultNativeMidiProject()};};
   const nativeRevision=value=>{ensureRevision(value);if(!engine||value!==engine.project.revision)throw problem('REVISION_CONFLICT','Project changed; refresh before native MIDI operation',409);};
-  const commandInQueue=async(envelope,{internal=false}={})=>{
+  const commandInQueue=async(envelope,{internal=false,preserveAudioUnits=false}={})=>{
     if(closed)throw problem('SESSION_CLOSING','Session is closing',503);
     if(!envelope||typeof envelope!=='object'||Array.isArray(envelope)) throw problem('INVALID_ENVELOPE','Expected a command object');
     ensureRevision(envelope.expectedRevision);
@@ -137,7 +137,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       catch(error) { throw problem('SAVE_FAILED',`Edit rolled back because project could not be saved: ${error.message}`,500); }
       // Queries and render workers can only observe durably committed state.
-      await stopNativeResources('project-edited');
+      await stopNativeResources('project-edited',{resetAudioUnits:!preserveAudioUnits});
       engine=candidate;
       emit();
     }
@@ -781,7 +781,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
           }
           if(!commands.length)throw problem('EMPTY_MIDI','MIDI contains no importable notes or stored events',422);
         }
-        const response=await commandInQueue({command:'batch',arguments:{commands},expectedRevision},{internal:true});
+        const response=await commandInQueue({command:'batch',arguments:{commands},expectedRevision},{internal:true,preserveAudioUnits:route.endsWith('/wav')&&url.searchParams.get('audioUnitOutput')==='1'});
         return {...response,warnings,...(midiImportReport?{midiImportReport}:{})};
         });
         const conflict=imported.errors?.some(error=>/REVISION|CONFLICT/.test(error.code));

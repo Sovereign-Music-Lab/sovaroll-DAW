@@ -52,13 +52,13 @@ These notes describe this repository's behavior and testable decisions. They mak
 | Mixing/export | Track/master controls, EQ/effects, mix/stems, MIDI and project bundles | External plugin/instrument hosting and advanced mastering are unfinished |
 | Native MIDI | Optional macOS bridge, routing, cancellation, reset/chase policies | MIDI output only; no synchronized native audio or cross-platform native backend claim |
 | Native audio foundation | Optional native preview routes a completed WAV through the AVAudioEngine helper; offline rendering preserves mono/stereo PCM and GUI Stop controls the current job | Explicit opt-in only; built-in preview remains default; no native-MIDI synchronization, listening or low-latency quality claim |
-| Audio Unit discovery | On-demand server/GUI discovery, exact-ID selection, explicit instantiation, deterministic offline PCM processing and downloadable processed WAV | No automatic loading or default playback change; T-048 adds editable clip import; compatibility, listening and low-latency quality remain unverified |
+| Audio Unit discovery | On-demand server/GUI discovery, exact-ID selection, explicit instantiation, deterministic offline PCM processing, processed WAV download and editable clip import at the cursor with Undo | No automatic loading or default playback change; only Audio Unit self-import preserves its offline instance/output across that edit; compatibility, listening and low-latency quality remain unverified |
 
 See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQUIREMENTS.md).
 
 ## Open work
 
-The continuation queue includes downloadable offline Audio Unit output. T-048 adds editable clip import next; full plugin hosting remains future work. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
+The offline Audio Unit probe now supports downloadable output and editable clip import with Undo. Full real-time plugin/instrument hosting remains future work. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

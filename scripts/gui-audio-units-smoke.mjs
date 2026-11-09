@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {execFile} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {promisify} from 'node:util';
 import {startServer} from '../src/server.mjs';
 import {decodeWav} from '../src/media/wav.mjs';
@@ -28,6 +29,16 @@ try{
  assert.equal(await page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))),revision);
  assert.deepEqual(pageErrors,[]);check('audioUnits.GUI-offline-render-preserves-project-and-default-playback');
  const downloadEvent=page.waitForEvent('download');await page.locator('#audio-units-download').click();const download=await downloadEvent,output=path.join(dir,'processed.wav');await download.saveAs(output);
- const wav=decodeWav(await fs.readFile(output));assert.ok(wav.frames>0);assert.equal(wav.sampleRate,48000);assert.equal(wav.channels.length,2);check('audioUnits.GUI-processed-WAV-download');
+ const outputBytes=await fs.readFile(output),wav=decodeWav(outputBytes),outputSha256=createHash('sha256').update(outputBytes).digest('hex');assert.ok(wav.frames>0);assert.equal(wav.sampleRate,48000);assert.equal(wav.channels.length,2);check('audioUnits.GUI-processed-WAV-download');
+ await page.locator('#audio-units-close').click();
+ const ruler=await page.locator('#timeline-ruler').boundingBox(),zoom=Number(await page.locator('#zoom').inputValue());
+ await page.mouse.click(ruler.x+7680/960*zoom+0.01,ruler.y+5);await page.waitForFunction(()=>document.querySelector('#position-time').textContent==='00:04.000');
+ await page.locator('#audio-units-open').click();
+ const beforeImport=await(await fetch(session.url+'/api/state')).json(),beforeIds=new Set(beforeImport.project.clips.map(clip=>clip.id));
+ await page.locator('#audio-units-import').click();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>rev,beforeImport.project.revision);
+ const imported=await(await fetch(session.url+'/api/state')).json(),added=imported.project.clips.filter(clip=>!beforeIds.has(clip.id));assert.equal(added.length,1);assert.equal(added[0].type,'audio');assert.equal(added[0].name,'Audio Unit processed.wav');assert.equal(added[0].startSample,4*imported.project.sampleRate);assert.equal(added[0].lengthFrames,wav.frames);assert.equal(imported.project.assets.find(asset=>asset.id===added[0].assetId)?.sha256,outputSha256);assert.equal(imported.audioUnits.lastRender.pcmSha256,beforeImport.audioUnits.lastRender.pcmSha256);assert.equal(imported.audioUnits.lastRender.outputUrl,beforeImport.audioUnits.lastRender.outputUrl);
+ const importRevision=imported.project.revision;
+ await page.locator('#audio-units-close').click();await page.locator('#undo').click();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>rev,importRevision);
+ const undone=await(await fetch(session.url+'/api/state')).json();assert.deepEqual(undone.project.clips,beforeImport.project.clips);assert.deepEqual(undone.project.tracks,beforeImport.project.tracks);assert.deepEqual(undone.project.assets,beforeImport.project.assets);check('audioUnits.GUI-import-processed-clip-and-Undo');
  console.log(JSON.stringify({status:'passed',tests:tests.length}));
 }finally{await browser.close();await session.close();await fs.rm(dir,{recursive:true,force:true});}

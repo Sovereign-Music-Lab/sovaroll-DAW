@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:03:41.270Z",
+  "updatedAt": "2026-11-09T05:17:36.478Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1437,7 +1437,7 @@
       "doneAt": "2026-11-09T05:03:41.269Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-048",
@@ -1462,7 +1462,10 @@
         "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
         "npm run test:native",
         "npm run agent:verify:full"
-      ]
+      ],
+      "startedAt": "2026-11-09T05:04:11.873Z",
+      "evidence": "Targeted GUI E2E PASS: 4 steps including audioUnits.GUI-import-processed-clip-and-Undo; ruler cursor 4s, exactly one processed audio clip at 4*sampleRate with decoded frame count and WAV SHA-256, preserved Audio Unit output metadata, and one Undo restored prior clips/tracks/assets. Default E2E PASS: 40 steps. npm run test:native: 106/106 passed. npm run agent:verify:full and final npm run agent:verify: VERIFY PASS, guard/syntax and 172 product test files. Audio Unit self-import alone preserves offline instance/output; no listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:17:36.477Z"
     }
   ]
 }

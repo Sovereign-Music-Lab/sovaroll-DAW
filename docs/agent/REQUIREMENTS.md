@@ -68,3 +68,9 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 - 핵심 흐름(FD-01~03, 05~13, 15~19, 22~25, 26~30)은 **자동 검증 통과** 상태입니다. FD-20은 페이드 인·클립 뮤트·극성·노멀라이즈도 검증했습니다 (E2E 39단계, 2026-11-09).
 - 남은 것: 실제 장치 청음·지연 확인(manual, 사람이 해야 함). 현재 E2E 보강 과제는 완료했습니다.
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.
+
+### 후속 Audio Unit 오프라인 처리 범위
+
+| 관련 ID | 추가 범위 | 상태 | 근거 |
+|---|---|---|---|
+| FD-13, FD-15 | 서버가 소유한 Audio Unit 처리 WAV를 커서 위치의 새 오디오 트랙·클립으로 가져오고 한 번의 Undo로 원래 트랙·클립·에셋 상태를 복원 | verified (macOS 오프라인 probe; 플러그인 호환성·청음 제외) | `scripts/gui-audio-units-smoke.mjs`: `audioUnits.GUI-import-processed-clip-and-Undo`, T-048 검증 기록 |
