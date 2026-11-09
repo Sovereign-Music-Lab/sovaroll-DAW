@@ -3,7 +3,7 @@
 Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated starts work and history/backup dialogs now switch Korean/English. Final listening remains human work.
 
 ## Identity
-- Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
+- Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current branch sovaroll-continuation, pushed to origin through commit 6d901ff.
 - Version: 0.129.0. Node.js 22+, no npm runtime dependencies.
 - Goal: a professional-grade independent open-source DAW; current release remains in development.
 
@@ -41,7 +41,7 @@ Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated start
 - T-008 existing recording protection/workflow smokes passed unchanged: 6 and 4 steps. Physical microphone/device listening remains unverified.
 - T-005 added a separate 4-step new-project/first-save/restart E2E; it passed along with the default 32-step E2E. Its project writes are confined to a temporary folder and the original project bytes remain unchanged.
 - T-002 initially exposed a silent default fake-microphone fixture; a deterministic tone WAV now supplies fake capture. Recorded-region RMS fell from 0.0975930279 to 0 after mute, and the polarity sample changed from -0.1178283691 to +0.1178283691.
-- The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions; no remote push was authorized.
+- The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions. The maintainer explicitly pushed this branch on 2026-11-09; future pushes still require authorization.
 - Fresh-tree startup passed. T-015 deterministically reproduced the intermittent mixer-pan timeout as an SSE/POST test synchronization race; the helper now waits for real busy release and the current 37-step flow passes with unchanged assertions/timeouts.
 - E2E wrapper now creates its output directory for a fresh checkout; native test command builds its bridge first.
 - Gemma coding and hardware audio latency/quality have not been verified.
