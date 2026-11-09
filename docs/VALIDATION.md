@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-064 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-065 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -86,6 +86,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-062 adds native real-time Audio Unit instrument playback with bounded notes, explicit output permission, outputGain 0..1, duplicate-start rejection, completion and held-note cleanup on Stop/release/quit. Actual default-output tests use outputGain=0 and verify short completion, longer Stop and offline-render recovery. Targeted native tests passed 8, full native suite passed 110 and full verification passed 174 files. No synchronized transport, latency measurement, listening-quality or server/GUI instrument-playback claim.
 - T-063 connects real-time instrument playback to selected MIDI clips through revision-guarded server routes and GUI Play/Stop/output-gain controls. The actual system-instrument browser test used outputGain=0 and passed 3 steps for Play, wrong/stale/gain guards, Stop and project-edit cleanup without changing default transport or revision. Offline GUI passed 14, offline instrument GUI 3, i18n GUI 3, default E2E 40, native 110 and full verification 174 files. Inventory now records 92 API strings, 865 UI IDs and 764 GUI checks.
 - T-064 initially blocked because AVAudioEngine stayed `playing` after host-time scheduling attempts. On maintainer continuation, audio now starts a prepared buffer with a cancellable DispatchTime target and records actual start; completion and pre-start Stop cancellation passed with silent PCM. CoreMIDI also honors its explicit target, with observed offsets 201,041 ns and 100,291,791 ns. Native suite passed 112 and full verification passed 174 files. These are scheduling primitives, not a synchronized server coordinator, sample-accuracy or low-latency claim. Final installed-program listening/latency verification remains a human session.
+- T-065 adds the server coordinator. Optional `audioJobId` uses completed silent WAV and native MIDI at one bounded future target, preopening both helpers before reading the clock. Shared Stop and MIDI-failure audio rollback passed with a virtual MIDI destination and actual native audio. The first run exposed helper startup passing the 500 ms target; preopening fixed it. Target metadata uses strings consistently. Native suite passed 113 and full verification passed 174 files. No sample-accuracy, low-latency or human listening claim.
 
 ## Problems encountered and resolved
 
@@ -234,3 +235,5 @@ T-062에서는 native Audio Unit 악기 실시간 재생에 bounded 노트, 명�
 T-063에서는 선택 MIDI의 실시간 악기 재생을 revision-guarded 서버 경로와 GUI Play/Stop·출력 게인에 연결했습니다. 실제 시스템 악기 브라우저 검사는 outputGain=0으로 Play, wrong/stale/gain 거부, Stop과 프로젝트 편집 정리 3단계를 통과하며 기본 전송·revision을 유지했습니다. 오프라인 GUI 14단계, 오프라인 악기 GUI 3단계, i18n GUI 3단계, 기본 E2E 40단계, native 110개, 제품 174개 파일이 통과했습니다. 인벤터리는 API 92개·UI ID 865개·GUI 검사 764개입니다.
 
 T-064는 AVAudioEngine이 host-time 예약 뒤 `playing`에 남아 처음 blocked였습니다. 유지자의 계속 요청 후 준비된 버퍼를 취소 가능한 DispatchTime 목표로 시작하고 실제 시작을 기록하도록 수정했습니다. 무음 PCM 완료와 목표 전 Stop 취소가 통과했습니다. CoreMIDI도 명시적 목표를 사용하며 관측 오프셋은 201,041ns와 100,291,791ns입니다. native 112개와 전체 제품 174개 파일이 통과했습니다. 이는 예약 primitive이며 서버 coordinator·샘플 정확도·저지연 주장은 아닙니다. 설치 프로그램의 최종 청음·지연 검증은 사람과 함께 진행합니다.
+
+T-065에서는 서버 coordinator를 추가했습니다. 선택적 `audioJobId`로 완료된 무음 WAV와 native MIDI를 하나의 제한된 미래 목표에 배치하고, 시계를 읽기 전에 두 helper를 먼저 엽니다. 가상 MIDI·실제 native 오디오로 공통 Stop과 MIDI 실패 시 오디오 rollback을 검증했습니다. 첫 실행에서 helper 시작 시간이 500ms 목표를 지나는 문제를 preopen으로 해결하고 목표 메타데이터를 문자열로 통일했습니다. native 113개와 제품 174개 파일이 통과했습니다. 샘플 정확도·저지연·사람 청음은 주장하지 않습니다.

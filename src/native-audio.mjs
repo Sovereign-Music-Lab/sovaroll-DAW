@@ -10,7 +10,7 @@ export function createNativeAudio({helperPath=path.join(ROOT,'.native-build','ne
  let child=null,ready=null,input='',events=[],waiters=[],directory=null,current=null,generation=0,closed=false;
  const failure=(code,message)=>problem(code,message,code==='OUTPUT_REQUIRED'?422:409);
  const publish=()=>onChange(snapshot());
- function snapshot(){return {supported:process.platform==='darwin',integrated:true,offline,status:current?.status??'idle',jobId:current?.jobId??null,renderJobId:current?.renderJobId??null,revision:current?.revision??null,documentId:current?.documentId??null,reason:current?.reason??null,error:current?.error??null};}
+ function snapshot(){return {supported:process.platform==='darwin',integrated:true,offline,status:current?.status??'idle',jobId:current?.jobId??null,renderJobId:current?.renderJobId??null,revision:current?.revision??null,documentId:current?.documentId??null,reason:current?.reason??null,startAtUptimeNs:current?.startAtUptimeNs?.toString()??null,error:current?.error??null};}
  function resolveWaiters(event){
   if(current&&event.event==='playing'&&!current.helperId)current.helperId=event.jobId;
   if(current&&current.helperId&&event.jobId===current.helperId&&['completed','stopped'].includes(event.event)){
@@ -54,14 +54,15 @@ export function createNativeAudio({helperPath=path.join(ROOT,'.native-build','ne
  async function stopAll(reason='stop'){return current?stop(current.jobId,{reason}):snapshot();}
  return {
   snapshot,
-  async play({bytes,renderJobId,revision,documentId}){
+  async clock(){await open();child.stdin.write(JSON.stringify({command:'clock.now'})+'\n');return next(event=>event.event==='clock'||event.event==='error');},
+  async play({bytes,renderJobId,revision,documentId,startAtUptimeNs=null}){
    if(closed)throw failure('NATIVE_AUDIO_CLOSED','Native audio owner is closed');
    if(current&&['playing','stopping'].includes(current.status))throw failure('NATIVE_AUDIO_PLAYING','Stop existing native audio playback first');
    await cleanup();directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-native-preview-'));
    const file=path.join(directory,'preview.wav');await fs.writeFile(file,Buffer.from(bytes));
-   const jobId=randomUUID();current={jobId,renderJobId,revision,documentId,status:'playing',error:null};
+   const jobId=randomUUID();current={jobId,renderJobId,revision,documentId,status:'playing',startAtUptimeNs,error:null};
    try{
-    await open();child.stdin.write(JSON.stringify({command:'play',path:file,offline,allowDefaultOutput:!offline})+'\n');
+    await open();child.stdin.write(JSON.stringify({command:'play',path:file,offline,allowDefaultOutput:!offline,...(startAtUptimeNs!==null?{startAtUptimeNs}:{})})+'\n');
     const event=await next(event=>event.event==='playing'||event.event==='error');
     if(event.event==='error')throw failure(event.code,event.message);
     current.helperId=event.jobId;publish();return snapshot();

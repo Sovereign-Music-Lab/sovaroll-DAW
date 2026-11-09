@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T10:40:55.191Z",
+  "updatedAt": "2026-11-09T10:51:29.982Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2081,6 +2081,43 @@
       "blockedReason": "CoreMIDI explicit target worked (observed offsets 305500ns and 100320916ns), but AVAudioEngine scheduled audio remained status=playing after target and did not complete across scheduleBuffer(at:) and play(at:) attempts. After three audio failures restored all T-064 files from checkpoint 20261109T095527-xs4j; restored native 110/110 and full product 174 files PASS. Need an audio start/completion scheduling design with observed lifecycle before server synchronization.",
       "evidence": "Resolved scheduled-audio blocker using cancellable DispatchTime start of a prepared buffer. Silent PCM actualStart>=target, completion and pre-start Stop cancellation passed; invalid/offline targets rejected. CoreMIDI explicit target actual offsets 201041ns and 100291791ns. npm run test:native 112/112. npm run agent:verify:full and final agent:verify PASS, 174 product files. Primitives only; no synchronized coordinator or low-latency claim. Final installed listening/latency is deferred to human session.",
       "doneAt": "2026-11-09T10:40:55.191Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "native-audio",
+      "id": "T-065",
+      "title": "Coordinate native MIDI and audio at a shared future start time",
+      "size": "L",
+      "dependsOn": [
+        "T-064"
+      ],
+      "goal": "Add a server coordinator that schedules a completed audio job and native MIDI transport at one future mach-uptime target with atomic failure cleanup and shared Stop.",
+      "context": [
+        "T-064 helpers expose clock and accept startAtUptimeNs; native transport start forwards it.",
+        "Reuse existing /api/native/play settings/fingerprint checks and completed WAV jobs.",
+        "Tests use virtual MIDI and controlled/silent audio; no low-latency or human listening claim."
+      ],
+      "files": [
+        "src/native-transport.mjs",
+        "src/native-audio.mjs",
+        "src/server.mjs",
+        "native/tests/audio-preview.test.mjs",
+        "native/tests/native-server.test.mjs"
+      ],
+      "acceptance": [
+        "An optional audioJobId on native play schedules both resources at a server-computed future target with bounded lead time and existing settings guards.",
+        "Audio-first scheduling rolls back on MIDI failure; MIDI/audio failure never leaves another resource playing; shared Stop and project edits clean both.",
+        "Tests verify identical target fields and lifecycle with virtual MIDI/controlled audio plus real helper evidence from T-064; existing suites pass.",
+        "Documentation distinguishes coordinated scheduling from measured sample accuracy, latency and final human listening."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:42:06.545Z",
+      "evidence": "Native server sync test PASS: completed silent WAV and virtual native MIDI share identical targetUptimeNs/startedUptimeNs/audio startAtUptimeNs; shared Stop stops both and MIDI destination failure rolls audio back with sync-midi-failed. Helpers preopen before clock target; metadata strings consistent. npm run test:native 113/113. Full/final verification PASS 174 product files. No sample-accuracy, low-latency or human listening claim.",
+      "doneAt": "2026-11-09T10:51:29.982Z"
     }
   ]
 }
