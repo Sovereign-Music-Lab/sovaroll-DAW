@@ -121,7 +121,10 @@
 #controller-shape-preview{flex:0 0 100%;height:16px;line-height:16px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 #controller-shape-tools>span{flex:0 0 100%}
 
-/* Primary recording workflow: keep controls outside the arrangement grid. */
+/* One compact recording panel; both device hosts stay outside the arrangement grid. */
+#recording-panel{background:#16251d;border-bottom:1px solid var(--line)}
+#recording-panel>summary{cursor:pointer;padding:8px 22px;color:var(--muted);font-size:11px}
+#recording-panel[open]>summary{color:var(--mint)}
 .recording-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 22px;background:#1c2620;border-bottom:1px solid var(--line);min-height:48px}
 .recording-controls button{padding:7px 12px;border:1px solid #506151;border-radius:5px;background:#26362b;color:var(--text)}
 #audio-record{color:#ffb4ae}#audio-record-stop{color:var(--mint)}.recording-controls meter{width:100px;height:16px}.recording-controls [role=status]{color:var(--muted);font-size:12px}.recording-controls a{color:var(--mint);margin-left:auto}
@@ -210,6 +213,8 @@
 .folder-drag-ghost{position:fixed;z-index:10000;pointer-events:none;padding:6px 10px;background:#3b5747;color:white;border:1px solid var(--mint);border-radius:4px}
 
 .folder-drop-before{box-shadow:inset 0 3px var(--mint)}.folder-drop-after{box-shadow:inset 0 -3px var(--mint)}
+
+#audio-units-dialog{max-width:760px;max-height:calc(100vh - 32px);overflow:auto}#audio-units-dialog .dialog-actions,#audio-units-dialog .session-toolbar{flex-wrap:wrap}
 
 .folder-overview-event,.folder-overview-block{position:absolute;box-sizing:border-box;border:1px solid #93b8a1;border-radius:2px;opacity:.75;overflow:hidden}.folder-overview-block{top:8px;height:28px;background:#52785e}.arrangement-folder-head>button:first-child{flex:1;min-width:0}.arrangement-folder-head>button{padding:3px;font-size:11px}.arrangement-folder-head{gap:2px;padding-right:4px}.arrangement-folder-head [aria-pressed=true]{color:var(--mint);background:#3b5747}.arrangement-folder-head [aria-pressed=mixed]{color:var(--orange)}
 

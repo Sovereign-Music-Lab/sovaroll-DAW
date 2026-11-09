@@ -1,0 +1,26 @@
+// Audio Unit Korean/English controls and dynamic render status. Actual system effect; no listening claim.
+import assert from 'node:assert/strict';
+import {promises as fs} from 'node:fs';
+import path from 'node:path';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {startServer} from '../src/server.mjs';
+const {chromium}=await import(process.env.NEWDAW_PLAYWRIGHT_MODULE||'playwright');
+const root=path.resolve(import.meta.dirname,'..'),exec=promisify(execFile);
+await exec(process.execPath,['scripts/build-native-audio-units.mjs'],{cwd:root,timeout:120000});
+const dir=await fs.realpath(await fs.mkdtemp('/private/tmp/sovaroll-au-i18n-')),session=await startServer({projectPath:path.join(dir,'I18n.newdaw.json'),port:0,demo:false,quiet:true,backupPollMs:600000});
+const browser=await chromium.launch({headless:true,channel:'chrome'}),page=await browser.newPage({viewport:{width:1512,height:1100}}),tests=[],pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
+const check=id=>{tests.push(id);console.log(`PASS ${id}`);};
+const revision=async()=>Number(await page.locator('#revision-label').textContent().then(text=>text.replace(/\D/g,'')));
+const language=async value=>{await page.locator('#language-select').selectOption(value);await page.waitForFunction(expected=>document.documentElement.lang===expected,value);};
+try{
+ await exec(process.execPath,['src/cli.mjs','command','batch',JSON.stringify({commands:[{command:'track.add',arguments:{id:'track',type:'midi',instrument:'sine'}},{command:'clip.add',arguments:{id:'clip',trackId:'track',type:'midi',startTick:0,lengthTicks:3840,notes:[{id:'note',pitch:60,velocity:80,startTick:0,durationTicks:960,channel:0}]}}]}),'--url',session.url],{cwd:root});
+ await page.goto(session.url);await page.waitForFunction(()=>!document.querySelector('#audio-units-open').disabled);await page.locator('#audio-units-open').click();await page.locator('#audio-units-list').click();await page.waitForFunction(()=>document.querySelector('#audio-units-component').options.length>0&&!document.querySelector('#audio-units-instantiate').disabled);
+ await page.locator('#audio-units-component').evaluate(select=>{const option=[...select.options].find(option=>option.dataset.audioUnitType==='1635083896');select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));});await page.locator('#audio-units-instantiate').click();await page.waitForFunction(()=>!document.querySelector('#audio-units-render').disabled);
+ const initialRevision=await revision();assert.match(await page.locator('#audio-units-dialog h2').textContent(),/오프라인 probe/);assert.equal(await page.locator('#audio-units-render').textContent(),'현재 믹스 오프라인 처리');assert.equal(await page.locator('#audio-units-scope option[value="all"]').textContent(),'전체 믹스');assert.match(await page.locator('#audio-units-parameter-detail').textContent(),/^기본 /);check('audioUnits.GUI-Korean-dialog-and-parameter-metadata');
+ await page.locator('#audio-units-close').click();await language('en');await page.locator('#audio-units-open').click();assert.match(await page.locator('#audio-units-dialog h2').textContent(),/Offline probe/);assert.equal(await page.locator('#audio-units-render').textContent(),'Render current mix offline');assert.equal(await page.locator('#audio-units-scope option[value="all"]').textContent(),'Whole mix');assert.match(await page.locator('#audio-units-parameter-detail').textContent(),/^Default /);assert.match(await page.locator('#audio-units-status').textContent(),/Instance active/);
+ await page.locator('#audio-units-render').click();await page.waitForFunction(()=>document.querySelector('#audio-units-result').textContent.startsWith('Complete'),null,{timeout:30000});assert.match(await page.locator('#audio-units-result').textContent(),/Output [a-f0-9]{64}/);assert.equal(await page.locator('#audio-units-download').textContent(),'Download processed WAV');assert.equal(await page.locator('#audio-units-import').textContent(),'Import processed audio as clip');assert.equal(await revision(),initialRevision);check('audioUnits.GUI-English-dynamic-render-and-import-controls');
+ await page.locator('#audio-units-close').click();await page.reload();await page.waitForFunction(()=>document.documentElement.lang==='en'&&!document.querySelector('#audio-units-open').disabled);await page.locator('#audio-units-open').click();assert.match(await page.locator('#audio-units-dialog h2').textContent(),/Offline probe/);assert.equal(await page.locator('#audio-units-import').textContent(),'Import processed audio as clip');
+ await page.locator('#audio-units-close').click();await language('ko');await page.locator('#audio-units-open').click();assert.match(await page.locator('#audio-units-dialog h2').textContent(),/오프라인 probe/);assert.equal(await page.locator('#audio-units-render').textContent(),'현재 믹스 오프라인 처리');assert.equal(await revision(),initialRevision);assert.deepEqual(pageErrors,[]);check('audioUnits.GUI-language-persistence-and-Korean-restore-without-revision-edit');
+ console.log(JSON.stringify({status:'passed',tests:tests.length}));
+}finally{await browser.close();await session.close();await fs.rm(dir,{recursive:true,force:true});}

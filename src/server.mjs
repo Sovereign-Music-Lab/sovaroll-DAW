@@ -21,6 +21,8 @@ import {getTimingSettings,updateTimingSettings} from './timing-settings.mjs';
 import {convertMidiTicks,midiTickFraction} from './media/midi-display-time.mjs';
 import {getResetSettings,updateResetSettings} from './reset-settings.mjs';
 import {createNativeTransport} from './native-transport.mjs';
+import {createNativeAudio} from './native-audio.mjs';
+import {createAudioUnits} from './audio-units.mjs';
 import {getNativeMidiSettings,updateNativeMidiSettings,defaultNativeMidiProject} from './native-midi-settings.mjs';
 import {getChaseSettings,updateChaseSettings,withChaseDefaults} from './chase-settings.mjs';
 import {resolveChaseOptions} from './media/midi-chase.mjs';
@@ -54,7 +56,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const CAPABILITIES = Object.freeze({
   version:'0.128.0',audioOverlapFront:true,markerListView:true,trackFolders:true,midiPartStartResize:true,midiStepCursorNavigation:true,midiStepCursorClick:true,tapTempo:true,tempoTrackMode:true,tempoCursorChange:true,audioTempoFromEvent:true,audioTrackTimeBase:true,midiTrackTimeBase:true,midiLinearAffineCurves:true,defaultTrackTimeBase:true,midiNoteInputEdit:true,audioTimeStretchProcessing:true,audioTimeStretchBatch:true,audioProcessingRestore:true,audioZeroCrossingQuery:true,audioZeroCrossingTrim:true,explicitSplitClipIds:true,audioResizeMovesContents:true,audioSnapPointPaste:true,audioEventSnapPoint:true,clipFillLoop:true,audioClipGlue:true,audioClipGlueFollowing:true,midiClipGlue:true,midiClipGlueFollowing:true,clipSelectionPreview:true,previewEffectBypass:true,audioScrubPreview:true,noteAuditionTrackEffects:true,midiImportSinglePart:true,midiImportLeftLocator:true,midiImportAutoDissolve:true,midiImportInspectorOptions:true,fixedProjectSignature:true,midiImportTimingOptions:true,midiExportOptions:true,midiExportLocators:true,midiExportPpq:true,midiTrackExportSelection:true,projectPanLawModes:['legacy','equalPower','0dB','-3dB','-4.5dB','-6dB'],projectPanLaw:true,midiVelocityLimits:true,midiTransposeScale:true,midiTransposeRange:true,midiDissolveParts:true,midiRepeatLoop:true,midiThinControllers:true,midiRestrictPolyphony:true,midiDeleteControllers:true,sourceArchiveAccess:true,sourceArchivePreservation:true,aifcImport:true,aiffImport:true,audioExportFileFormats:['wav','aiff'],wavDitherModes:['none','tpdf'],projectExportPresets:true,stemSplitExport:true,wavOutputSampleRates:[22050,32000,44100,48000,88200,96000],stemCycleExport:true,stemExport:true,maxStemTracks:128,maxStemZipBytes:134217728,renderTrackSelection:true,midiNoteReverse:true,midiPedalsToLength:true,midiDeleteOverlaps:true,midiStepSettings:true,midiStepGrid:true,midiStepInput:true,midiLegatoOptions:true,midiNoteLength:true,midiNoteSplit:true,midiNoteGlue:true,soloDefeat:true,globalMuteSolo:true,removeEmptyTracks:true,trackRenameClips:true,browserMicrophoneRecording:true,browserMidiInput:true,browserMidiRecording:true,midiTakeCommit:true,midiTakeAutoQuantize:true,midiInputFilter:true,projectMidiInputFilter:true,midiTakeModes:['new','merge','replace'],maxBrowserRecordingSeconds:600,recordingTargetTracks:true,audioClipFades:true,locatorCycle:true,audioNormalize:true,audioStatistics:true,audioDcCorrection:true,audioSilence:true,audioSlip:true,audioCrossfade:true,audioFadeShapes:true,audioVolumeEnvelope:true,audioBulkFades:true,audioTrim:true,projectMarkers:true,clipCopyTo:true,clipNudge:true,splitClipsAtCursor:true,splitClipsRange:true,cutClipsAtCursor:true,midiProjectMarkers:true,audioRangeFades:true,savedSnapGrids:true,pianoElapsedSnap:true,controllerElapsedSnap:true,controllerPaintCommand:true,controllerPaintGui:true,controllerShapeCommand:true,controllerShapeGui:true,noteShapeCommand:true,noteShapeGui:true,notePaintCommand:true,notePaintGui:true,snapQueries:true,formattedTimeCommands:true,linearTimelineGeometry:true, adaptiveTimeRulers:true,projectTimeDisplay:true,timeDisplayReadout:true,controllerDisplayTimeEditing:true,timingGuardedCommands:true,inspectorDisplayTimeEditing:true,displayTimeBatches:true,displayTimeCommands:true,eventDisplayTimeEditing:true,musicalTimeReadout:true,musicalNoteTimeEditing:true,midiTimingPreferences:true,midiDisplayedNoteTime:true,midiReset:true,midiResetPreferences:true,sharedCommands:true,midiEditing:true,clipEditing:true,midiTransforms:true,maxCopiedNotesPerCommand:200000,wavImport:true,midiImport:true,midiExport:true,
   trackPreFilterBypass:true,trackPreEffectPresets:true,trackPreFilters:true,trackPreGainPolarity:true,projectEffectPresets:true,trackEqNoteFrequency:true,trackEffectTransfer:true,trackEqGraph:true,trackEqFilterTypes:true,trackEqAutomaticTail:true,trackFourBandEq:true,automaticEffectTail:true,trackDelayTempoSync:true,trackDelayFilters:true,trackFeedbackDelay:true,clipPasteTrackMapping:true,clipSnapshotPaste:true,clipGroupTrackMove:true,clipGroupMove:true,clipGroupMute:true,clipGroupRepeat:true,locatorRangeEditing:true,locatorsFromClips:true,offlineRender:true,preview:'rendered-snapshot',atomicBatch:true,undo:'persistent',historyBrowser:true,autoBackup:true,autosave:true,
-  audioRecording:false,liveMidiInput:false,externalMidiOutput:process.platform==='darwin',nativeMidiTransport:process.platform==='darwin',nativeMidiRequiresBuild:true,nativeMidiAudioSync:false,plugins:false,
+  audioRecording:false,liveMidiInput:false,externalMidiOutput:process.platform==='darwin',nativeMidiTransport:process.platform==='darwin',nativeMidiRequiresBuild:true,nativeMidiAudioSync:false,nativeMidiAudioScheduledSync:process.platform==='darwin',nativeAudioPreview:process.platform==='darwin',audioUnitOfflineProbe:process.platform==='darwin',audioUnitMidiOffline:process.platform==='darwin',audioUnitMidiRealtime:process.platform==='darwin',plugins:false,
   tempoRamps:false,automation:false,score:false,nativeRealtime:false,
   mediaInventory:true,verifiedAssetDownload:true,projectBundle:true,projectCollection:true,backupRecovery:true,
   assetRestore:true,exactHashAssetRestore:true,quantizeOrigins:true,mediaResolution:true,documentSave:true,saveNewVersion:true,revert:true,projectOpen:true,recentProjects:true,documentIdentityGuard:true,multipleProjects:true,inactiveProjects:true,untitledProjects:true,firstSave:true,draftRecovery:true,projectLocationPreferences:true,folderBrowser:true,midiEvents:true,midiControllerLanes:true,midiControllerPreferences:true,midiModifiers:true,midiModifierFreeze:true,midiModifiersMode:'offline-output',midiMergeLoop:true,midiMergeChaseTypes:true,midiChasePreferences:true,midiLocatePreview:true,midiInstantaneousNotes:true,midiSostenuto:true,midiPartMute:true,midiNoteTails:true,midiControllerExistingValues:true,midiControllerCursorReadout:true,midiControllerCursorScope:'selected-clip-events',midiPolyKeySelection:true,midiControllerSegmentBend:true,midiControllerCurves:['step','ramp','bezier'],midiControllerCurveTickResolution:1,midiNoteControllerMove:true,midiSplitControllers:true,pitchBendGrid:true,midiStatePlayback:true,midiPlaybackControllers:[7,10,11,64,66,120,121,123],midiPitchBend:true,midiPitchBendRange:'RPN-0',midiFormats:[0,1],maxCommandBytes:64*1024*1024,
@@ -84,7 +86,7 @@ async function jsonBody(req,limit=2*1024*1024) {
 function ensureRevision(value) { if(!Number.isSafeInteger(value)||value<0) throw problem('EXPECTED_REVISION_REQUIRED','Provide integer expectedRevision from /api/state'); }
 function containsAssetCommand(command) { return ['asset.add','asset.relink','asset.removeMissing'].includes(command?.command)||(command?.command==='batch'&&Array.isArray(command.arguments?.commands)&&command.arguments.commands.some(containsAssetCommand)); }
 
-export async function startServer({projectPath=path.join(ROOT,'sessions','First-Light.newdaw.json'),port=4317,demo=true,quiet=false,persistProject=saveProject,backupClock=()=>Date.now(),backupPollMs=1000,recentPath,nativeBackendFactory}={}) {
+export async function startServer({projectPath=path.join(ROOT,'sessions','First-Light.newdaw.json'),port=4317,demo=true,quiet=false,persistProject=saveProject,backupClock=()=>Date.now(),backupPollMs=1000,recentPath,nativeBackendFactory,nativeAudioOffline=false,nativeAudioHelperPath,audioUnitsHelperPath}={}) {
   if(!Number.isInteger(backupPollMs)||backupPollMs<10)throw new Error('backupPollMs must be at least 10');
   projectPath=path.resolve(projectPath);
   let directory=path.dirname(projectPath);
@@ -101,7 +103,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
   const backupStatus=()=>({...autoBackup,dirty:engine?canonicalProjectHash(engine.project)!==backupBaselineHash:false});
   const assertRequestDocument=()=>{const request=requestScope.getStore();if(request&&request.documentId!==documentSession?.identity())throw problem('DOCUMENT_CONFLICT','The active document changed. Refresh before applying this request.',409);};
   const runExclusive=(fn)=>{const result=queue.then(()=>{assertRequestDocument();return fn();});queue=result.catch(()=>{});return result;};
-  const snapshot=()=>({nativeTransport:nativeTransport.snapshot(),project:engine?.project??null,history:engine?.history??{canUndo:false,canRedo:false},historyView:engine?.historyView??null,workspace:workspace?.snapshot()??null,session:{id:serverSessionId,settings,persistence,autoBackup:backupStatus(),document:documentSession?.snapshot(),requiresDocumentId:requireDocumentGuard},capabilities:CAPABILITIES,sequence,mediaRevision});
+  const snapshot=()=>({nativeTransport:nativeTransport.snapshot(),nativeAudio:nativeAudio.snapshot(),audioUnits:audioUnits.snapshot(),project:engine?.project??null,history:engine?.history??{canUndo:false,canRedo:false},historyView:engine?.historyView??null,workspace:workspace?.snapshot()??null,session:{id:serverSessionId,settings,persistence,autoBackup:backupStatus(),document:documentSession?.snapshot(),requiresDocumentId:requireDocumentGuard},capabilities:CAPABILITIES,sequence,mediaRevision});
   const emit=()=>{sequence++; const data=`id: ${sequence}\nevent: snapshot\ndata: ${JSON.stringify(snapshot())}\n\n`; for(const response of clients) response.write(data);};
   const nativeTransport=createNativeTransport({...(nativeBackendFactory?{openBackend:nativeBackendFactory}:{}),
     readResetPreferences:async()=>(await getResetSettings(resetSettingsPath)).settings.options,
@@ -111,9 +113,12 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       return !closed&&state.documentId===documentSession?.identity()&&state.projectId===engine?.project.id&&state.revision===engine?.project.revision&&state.profileFingerprint===profile.fingerprint&&state.chaseFingerprint===chase.fingerprint&&state.resetFingerprint===reset.fingerprint&&state.timingFingerprint===timing.fingerprint;
     }
   });
+  const nativeAudio=createNativeAudio({offline:nativeAudioOffline,...(nativeAudioHelperPath?{helperPath:nativeAudioHelperPath}:{}),onChange:state=>{if(closed)return;for(const response of clients)response.write(`event: native-audio\ndata: ${JSON.stringify(state)}\n\n`);}});
+  const audioUnits=createAudioUnits({...(audioUnitsHelperPath?{helperPath:audioUnitsHelperPath}:{}),onChange:state=>{if(closed)return;for(const response of clients)response.write(`event: audio-units\ndata: ${JSON.stringify(state)}\n\n`);}});
+  async function stopNativeResources(reason,{resetAudioUnits=true}={}){await Promise.all([nativeTransport.stopAll(reason),nativeAudio.stopAll(reason)]);if(resetAudioUnits)await audioUnits.reset();}
   const nativeSettings=async()=>{const profile=await getNativeMidiSettings(nativeSettingsPath);assertRequestDocument();if(!engine)throw problem('NO_ACTIVE_DOCUMENT','Activate a project first',409);return {...profile,projectId:engine.project.id,projectRevision:engine.project.revision,config:profile.settings.projects[engine.project.id]??defaultNativeMidiProject()};};
   const nativeRevision=value=>{ensureRevision(value);if(!engine||value!==engine.project.revision)throw problem('REVISION_CONFLICT','Project changed; refresh before native MIDI operation',409);};
-  const commandInQueue=async(envelope,{internal=false}={})=>{
+  const commandInQueue=async(envelope,{internal=false,preserveAudioUnits=false}={})=>{
     if(closed)throw problem('SESSION_CLOSING','Session is closing',503);
     if(!envelope||typeof envelope!=='object'||Array.isArray(envelope)) throw problem('INVALID_ENVELOPE','Expected a command object');
     ensureRevision(envelope.expectedRevision);
@@ -132,7 +137,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       catch(error) { throw problem('SAVE_FAILED',`Edit rolled back because project could not be saved: ${error.message}`,500); }
       // Queries and render workers can only observe durably committed state.
-      await nativeTransport.stopAll('project-edited');
+      await stopNativeResources('project-edited',{resetAudioUnits:!preserveAudioUnits});
       engine=candidate;
       emit();
     }
@@ -184,7 +189,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       return publishFirstSave(context,input.outputPath,{dryRun:Boolean(input.dryRun)});
     },
     commitRevert:async candidate=>{
-      try{const stored=await commitSessionState(projectPath,{currentCheckpoint:engine.checkpoint(),nextCheckpoint:candidate.checkpoint(),settings,persistProject});candidate.restoreCheckpoint(stored.checkpoint);persistence={status:stored.status,warnings:stored.warnings};await nativeTransport.stopAll('project-reverted');engine=candidate;}
+      try{const stored=await commitSessionState(projectPath,{currentCheckpoint:engine.checkpoint(),nextCheckpoint:candidate.checkpoint(),settings,persistProject});candidate.restoreCheckpoint(stored.checkpoint);persistence={status:stored.status,warnings:stored.warnings};await stopNativeResources('project-reverted');engine=candidate;}
       catch(error){throw problem('SAVE_FAILED',`Revert was not committed: ${error.message}`,500);}
     },
     activateVersion:(prepared,adoptMetadata)=>adoptProject(prepared,adoptMetadata),
@@ -192,7 +197,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
   });
   async function adoptProject(prepared,adoptMetadata,{existing=false}={}){
     const warnings=[],oldRelease=releaseLock,adopted=new Engine(prepared.project);adopted.restoreCheckpoint(prepared.checkpoint);
-    await nativeTransport.stopAll('document-changed');
+    await stopNativeResources('document-changed');
     await resolver.close();
     for(const job of jobs.values())if(job.status==='running'){job.status='cancelled';await job.worker.terminate().catch(()=>{});}jobs.clear();
     // Capture everything before switching. There is no await in the adoption
@@ -221,7 +226,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       autoBackup:{lastId:prepared.backups.files[0]?.id??null,lastCreatedAt:prepared.backups.files[0]?.createdAt??null,lastError:null,running:false,nextDueAt:backupClock()+prepared.settings.autoBackup.intervalMinutes*60000}};
   }
   async function stopActiveResources(){
-    await nativeTransport.stopAll('document-changed');
+    await stopNativeResources('document-changed');
     await resolver?.close();
     for(const job of jobs.values())if(job.status==='running'){job.status='cancelled';await job.worker.terminate().catch(()=>{});}
     jobs.clear();
@@ -363,19 +368,19 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         if(req.method==='POST'&&route==='/api/workspace/split-settings')return json(res,200,await updateSplitSettings(splitSettingsPath,await jsonBody(req)));
         if(req.method==='GET'&&route==='/api/workspace/timing-settings')return json(res,200,await getTimingSettings(timingSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/timing-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateTimingSettings(timingSettingsPath,input);if(value.applied)await nativeTransport.stopAll('timing-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateTimingSettings(timingSettingsPath,input);if(value.applied)await stopNativeResources('timing-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: timing-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
         if(req.method==='GET'&&route==='/api/workspace/reset-settings')return json(res,200,await getResetSettings(resetSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/reset-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateResetSettings(resetSettingsPath,input);if(value.applied)await nativeTransport.stopAll('reset-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateResetSettings(resetSettingsPath,input);if(value.applied)await stopNativeResources('reset-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: reset-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
         if(req.method==='GET'&&route==='/api/workspace/chase-settings')return json(res,200,await getChaseSettings(chaseSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/chase-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateChaseSettings(chaseSettingsPath,input);if(value.applied)await nativeTransport.stopAll('chase-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateChaseSettings(chaseSettingsPath,input);if(value.applied)await stopNativeResources('chase-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: chase-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
@@ -398,10 +403,86 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       if(req.method==='GET'&&route==='/api/native/ports')return json(res,200,await nativeTransport.ports());
       if(req.method==='GET'&&route==='/api/native/transport')return json(res,200,await nativeTransport.status());
+      if(req.method==='GET'&&route==='/api/native/audio')return json(res,200,nativeAudio.snapshot());
+      if(req.method==='POST'&&route==='/api/native/audio/play'){
+        const input=await jsonBody(req);
+        if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['jobId','expectedRevision'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_NATIVE_AUDIO_PLAY','Provide render jobId and expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);
+        if(['preparing','playing','stopping','resetting'].includes(nativeTransport.snapshot().status))throw problem('NATIVE_PREVIEW_CONFLICT','Native MIDI mode owns playback; stop it before native audio',409);
+        const job=jobs.get(input.jobId);
+        if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV render for native audio',409);
+        return json(res,200,await nativeAudio.play({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity()}));
+      }
+      if(req.method==='POST'&&route==='/api/native/audio/stop'){
+        const input=await jsonBody(req);if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>k!=='jobId')||typeof input.jobId!=='string')throw problem('INVALID_NATIVE_AUDIO_STOP','Provide only the current native audio jobId',422);
+        assertRequestDocument();return json(res,200,await nativeAudio.stop(input.jobId));
+      }
+      if(req.method==='GET'&&route==='/api/audio-units')return json(res,200,audioUnits.snapshot());
+      if(req.method==='GET'&&route==='/api/audio-units/output'){
+        const output=audioUnits.output();if(!output)throw problem('AUDIO_UNIT_OUTPUT_NOT_READY','No processed WAV is available',409);
+        res.writeHead(200,{'Content-Type':'audio/wav','Content-Disposition':`attachment; filename="audio-unit-r${output.revision}.wav"`});return res.end(output.bytes);
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/list'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','limit'].includes(k))||input.limit!==undefined&&(!Number.isSafeInteger(input.limit)||input.limit<1||input.limit>256))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide expectedRevision and optional limit 1..256',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.list(input.limit));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/select'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','id'].includes(k))||typeof input.id!=='string')throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide component id and expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.select(input.id));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/instantiate'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','id'].includes(k))||typeof input.id!=='string')throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide component id and expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.instantiate(input.id));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/parameters'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>k!=='expectedRevision'))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide only expectedRevision for Audio Unit parameters',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.parameters());
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/parameter'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','keyPath','value'].includes(k))||typeof input.keyPath!=='string'||!input.keyPath||input.keyPath.length>512||typeof input.value!=='number'||!Number.isFinite(input.value))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide expectedRevision, exact parameter keyPath and one finite numeric value',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.setParameter(input.keyPath,input.value));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/render-midi'){
+        const input=await jsonBody(req),fields=['pitch','velocity','channel','startFrame','durationFrames'];
+        if(!input||Object.keys(input).some(k=>!['expectedRevision','notes','durationFrames','sampleRate','channels','sourceStartSample'].includes(k))||!Array.isArray(input.notes)||input.notes.length<1||input.notes.length>1024||!Number.isSafeInteger(input.durationFrames)||!Number.isSafeInteger(input.sampleRate)||![1,2].includes(input.channels)||!Number.isSafeInteger(input.sourceStartSample)||input.sourceStartSample<0)throw problem('INVALID_AUDIO_UNIT_MIDI','Provide bounded notes, format, duration and sourceStartSample',422);
+        assertRequestDocument();if(input.sampleRate!==engine.project.sampleRate||input.durationFrames<2||input.durationFrames>input.sampleRate*600)throw problem('INVALID_AUDIO_UNIT_MIDI','Instrument render must use the project sample rate and 2 frames..600 seconds',422);
+        for(const note of input.notes){if(!note||Object.keys(note).length!==fields.length||fields.some(field=>!Number.isSafeInteger(note[field]))||note.pitch<0||note.pitch>127||note.velocity<1||note.velocity>127||note.channel<0||note.channel>15||note.startFrame<0||note.durationFrames<1||note.startFrame+note.durationFrames>=input.durationFrames)throw problem('INVALID_AUDIO_UNIT_MIDI_NOTE','MIDI note fields must be integers inside the instrument render range',422);}
+        nativeRevision(input.expectedRevision);
+        return json(res,200,await audioUnits.renderMidi({notes:input.notes,durationFrames:input.durationFrames,sampleRate:input.sampleRate,channels:input.channels,sourceStartSample:input.sourceStartSample,revision:engine.project.revision,documentId:documentSession.identity()}));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/play-midi'){
+        const input=await jsonBody(req),fields=['pitch','velocity','channel','startFrame','durationFrames'];
+        if(!input||Object.keys(input).some(k=>!['expectedRevision','notes','durationFrames','sampleRate','channels','sourceStartSample','allowDefaultOutput','outputGain'].includes(k))||!Array.isArray(input.notes)||input.notes.length<1||input.notes.length>1024||!Number.isSafeInteger(input.durationFrames)||!Number.isSafeInteger(input.sampleRate)||input.channels!==2||!Number.isSafeInteger(input.sourceStartSample)||input.sourceStartSample<0||input.allowDefaultOutput!==true||typeof input.outputGain!=='number'||!Number.isFinite(input.outputGain)||input.outputGain<0||input.outputGain>1)throw problem('INVALID_AUDIO_UNIT_MIDI_PLAY','Provide bounded MIDI notes, stereo format, outputGain 0..1 and explicit output permission',422);
+        assertRequestDocument();if(input.sampleRate!==engine.project.sampleRate||input.durationFrames<2||input.durationFrames>input.sampleRate*600)throw problem('INVALID_AUDIO_UNIT_MIDI_PLAY','Instrument playback must use the project sample rate and 2 frames..600 seconds',422);
+        for(const note of input.notes){if(!note||Object.keys(note).length!==fields.length||fields.some(field=>!Number.isSafeInteger(note[field]))||note.pitch<0||note.pitch>127||note.velocity<1||note.velocity>127||note.channel<0||note.channel>15||note.startFrame<0||note.durationFrames<1||note.startFrame+note.durationFrames>=input.durationFrames)throw problem('INVALID_AUDIO_UNIT_MIDI_NOTE','MIDI note fields must be integers inside the instrument playback range',422);}
+        nativeRevision(input.expectedRevision);
+        return json(res,200,await audioUnits.playMidi({notes:input.notes,durationFrames:input.durationFrames,sampleRate:input.sampleRate,allowDefaultOutput:true,outputGain:input.outputGain,revision:engine.project.revision,documentId:documentSession.identity()}));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/play'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','jobId','allowDefaultOutput'].includes(k))||typeof input.jobId!=='string'||input.allowDefaultOutput!==true)throw problem('INVALID_AUDIO_UNIT_PLAY','Provide render jobId, expectedRevision and explicit allowDefaultOutput=true',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);const job=jobs.get(input.jobId);
+        if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV render for Audio Unit preview',409);
+        return json(res,200,await audioUnits.play({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity(),allowDefaultOutput:true}));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/stop'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','jobId'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_AUDIO_UNIT_STOP','Provide expectedRevision and current preview jobId',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.stop(input.jobId));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/render'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','jobId'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_AUDIO_UNIT_RENDER','Provide render jobId and expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);const job=jobs.get(input.jobId);
+        if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV render for the Audio Unit probe',409);
+        const sourceStartSample=job.chaseProfile&&Number.isSafeInteger(job.startTick)&&job.startTick>=0?job.stats?.startFrame:null;
+        return json(res,200,await audioUnits.render({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity(),sourceStartSample}));
+      }
+      if(req.method==='POST'&&route==='/api/audio-units/release'){
+        const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>k!=='expectedRevision'))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide only expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);return json(res,200,await audioUnits.release());
+      }
       if(req.method==='POST'&&route==='/api/native/stop'){
         const input=await jsonBody(req);
         if(!input||Array.isArray(input)||Object.keys(input).some(k=>!['jobId','reason'].includes(k))||typeof input.jobId!=='string'||input.reason!==undefined&&!['stop','locate'].includes(input.reason))throw problem('INVALID_NATIVE_STOP','Provide only the current jobId',422);
-        assertRequestDocument();return json(res,200,await nativeTransport.stop(input.jobId,{reason:input.reason}));
+        assertRequestDocument();const [transport,audio]=await Promise.all([nativeTransport.stop(input.jobId,{reason:input.reason}),nativeAudio.stopAll(input.reason??'stop')]);return json(res,200,{...transport,audio});
       }
       if(!engine&&route.startsWith('/api/')&&!['/api/events','/api/commands','/api/document','/api/document/recent'].includes(route))throw problem('NO_ACTIVE_DOCUMENT','No project is active. Open or activate a project from the workspace.',409);
       if(req.method==='GET'&&route==='/api/native/settings')return json(res,200,await nativeSettings());
@@ -413,14 +494,14 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
           if(input.projectId!==engine.project.id)throw problem('PROJECT_CONFLICT','Native settings belong to another project',409);
           if(!Array.isArray(input.routes)||input.routes.some(r=>!r||engine.project.tracks.find(t=>t.id===r.trackId)?.type!=='midi'))throw problem('NATIVE_ROUTE','Routes must identify existing MIDI tracks',422);
           const {expectedProjectRevision,...patch}=input,value=await updateNativeMidiSettings(nativeSettingsPath,patch);
-          if(value.applied){await nativeTransport.stopAll('native-settings-changed');for(const response of clients)response.write(`event: native-settings\ndata: ${JSON.stringify({revision:value.settings.revision,fingerprint:value.fingerprint})}\n\n`);}
+          if(value.applied){await stopNativeResources('native-settings-changed');for(const response of clients)response.write(`event: native-settings\ndata: ${JSON.stringify({revision:value.settings.revision,fingerprint:value.fingerprint})}\n\n`);}
           return {...value,projectId:engine.project.id,projectRevision:engine.project.revision,config:value.settings.projects[engine.project.id]??defaultNativeMidiProject()};
         });return json(res,200,result);
       }
       if(req.method==='POST'&&['/api/native/play','/api/native/reset'].includes(route)){
         const input=await jsonBody(req);
         const execute=async()=>{
-          if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['expectedRevision','expectedSettingsRevision','expectedSettingsFingerprint','expectedChaseRevision','expectedChaseFingerprint','expectedResetRevision','expectedResetFingerprint','expectedTimingRevision','expectedTimingFingerprint','startTick','endTick'].includes(k)))throw problem('INVALID_NATIVE_PLAY','Unknown native playback option',422);
+          if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['expectedRevision','expectedSettingsRevision','expectedSettingsFingerprint','expectedChaseRevision','expectedChaseFingerprint','expectedResetRevision','expectedResetFingerprint','expectedTimingRevision','expectedTimingFingerprint','startTick','endTick','audioJobId','syncLeadMs'].includes(k)))throw problem('INVALID_NATIVE_PLAY','Unknown native playback option',422);
           const [profile,chaseProfile,resetProfile,timingProfile]=await Promise.all([getNativeMidiSettings(nativeSettingsPath),getChaseSettings(chaseSettingsPath),getResetSettings(resetSettingsPath),getTimingSettings(timingSettingsPath)]);
           assertRequestDocument();nativeRevision(input.expectedRevision);
           if(input.expectedSettingsRevision!==profile.settings.revision||input.expectedSettingsFingerprint!==profile.fingerprint)throw problem('NATIVE_MIDI_SETTINGS_CONFLICT','Native settings changed; reload before playback',409);
@@ -431,6 +512,19 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
             if(input.startTick!==undefined||input.endTick!==undefined)throw problem('INVALID_NATIVE_RESET','Reset does not move the cursor',422);
             return nativeTransport.reset({project:engine.project,documentId:documentSession.identity(),profile,chaseProfile,resetProfile,timingProfile});
           }
+          if(input.audioJobId!==undefined){
+            const leadMs=input.syncLeadMs??500;
+            if(typeof input.audioJobId!=='string'||typeof leadMs!=='number'||!Number.isFinite(leadMs)||leadMs<100||leadMs>2000)throw problem('INVALID_NATIVE_SYNC','Use a completed audioJobId and syncLeadMs 100..2000',422);
+            const job=jobs.get(input.audioJobId);if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV job for synchronized native playback',409);
+            await nativeAudio.clock();
+            const clock=await nativeTransport.clock();assertRequestDocument();nativeRevision(input.expectedRevision);
+            const target=BigInt(clock.uptimeNs)+BigInt(Math.round(leadMs*1000000)),audio=await nativeAudio.play({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity(),startAtUptimeNs:Number(target)});
+            try{
+              const midi=await nativeTransport.start({project:engine.project,documentId:documentSession.identity(),profile,chaseProfile,resetProfile,timingProfile,startTick:input.startTick??0,...(input.endTick!==undefined?{endTick:input.endTick}:{}),startAtUptimeNs:Number(target)});
+              return {...midi,audio,sync:{targetUptimeNs:target.toString(),leadMs,audioJobId:job.id}};
+            }catch(error){await nativeAudio.stopAll('sync-midi-failed');throw error;}
+          }
+          if(input.syncLeadMs!==undefined)throw problem('INVALID_NATIVE_SYNC','syncLeadMs requires audioJobId',422);
           return nativeTransport.start({project:engine.project,documentId:documentSession.identity(),profile,chaseProfile,resetProfile,timingProfile,startTick:input.startTick??0,...(input.endTick!==undefined?{endTick:input.endTick}:{})});
         };return json(res,200,await (route==='/api/native/reset'?execute():runExclusive(execute)));
       }
@@ -735,7 +829,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
           }
           if(!commands.length)throw problem('EMPTY_MIDI','MIDI contains no importable notes or stored events',422);
         }
-        const response=await commandInQueue({command:'batch',arguments:{commands},expectedRevision},{internal:true});
+        const response=await commandInQueue({command:'batch',arguments:{commands},expectedRevision},{internal:true,preserveAudioUnits:route.endsWith('/wav')&&url.searchParams.get('audioUnitOutput')==='1'});
         return {...response,warnings,...(midiImportReport?{midiImportReport}:{})};
         });
         const conflict=imported.errors?.some(error=>/REVISION|CONFLICT/.test(error.code));
@@ -827,7 +921,6 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         for(const key of Object.keys(options))if(!['autoEffectTail','fileFormat','exportPresetId','dither','ditherSeed','stemSplitChannels','outputSampleRate','stemMixdown','cycleMarkerIds','stemBatch','bypassTrackEffects','clipIds','trackIds','channelMode','sampleFormat','expectedRevision','durationSeconds','tailSeconds','startTick','chaseOptions','expectedChaseRevision','expectedChaseFingerprint','expectedTimingRevision','expectedTimingFingerprint','preview'].includes(key))throw problem('INVALID_OPTION',`Unknown render option: ${key}`,422);
         try{options=resolveExportPresetOptions(engine.project,options);}catch(error){throw problem(error.code,error.message,422);}
         try{selectRenderTracks(engine.project,options.trackIds);}catch(error){throw problem(error.code,error.message,422);}
-        if(options.clipIds!==undefined&&options.preview!==true)throw problem('INVALID_RENDER_CLIPS','Clip selection currently requires preview:true',422);
         try{selectRenderClips(engine.project,options.clipIds);}catch(error){throw problem(error.code,error.message,422);}
         if(options.bypassTrackEffects!==undefined&&options.preview!==true)throw problem('INVALID_EFFECT_BYPASS','Effect bypass currently requires preview:true',422);
         try{bypassRenderEffects(engine.project,options.bypassTrackEffects);}catch(error){throw problem(error.code,error.message,422);}
@@ -885,7 +978,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       if(req.method==='GET') {
         if(['/media/tempo-from-audio.mjs','/media/tap-tempo.mjs','/media/step-timing.mjs','/media/step-settings.mjs','/media/track-effects.mjs','/media/track-eq.mjs','/media/track-delay.mjs','/media/midi-input-filter.mjs','/media/note-paint.mjs','/media/note-shapes.mjs','/media/controller-shape-gesture.mjs','/media/controller-shapes.mjs','/media/controller-paint.mjs','/media/controller-time-gesture.mjs','/media/snap-grid.mjs','/media/pointer-time-grid.mjs','/media/exact-tempo.mjs','/media/time-edit-resolver.mjs','/media/ruler-intervals.mjs','/media/editor-geometry.mjs','/media/timeline-projection.mjs','/media/time-display.mjs','/media/timecode.mjs','/media/elapsed-time.mjs','/media/display-time-edit.mjs','/media/musical-time.mjs','/media/midi-display-time.mjs','/media/midi-chase.mjs','/media/controller-bend.mjs','/media/midi-modifiers.mjs','/media/common.mjs','/media/time.mjs','/media/midi-curves.mjs','/media/midi-controllers-query.mjs','/media/controller-readout.mjs'].includes(route)){const content=await fs.readFile(path.join(ROOT,'src',route));res.writeHead(200,{'Content-Type':'text/javascript'});return res.end(content);}
-        const files={'/tap-tempo-ui.mjs':'tap-tempo-ui.mjs','/audio-scrub.mjs':'audio-scrub.mjs','/web-midi-input.mjs':'web-midi-input.mjs','/metronome.mjs':'metronome.mjs','/microphone-recorder.mjs':'microphone-recorder.mjs','/recording-ui.mjs':'recording-ui.mjs','/note-keyboard-selection.mjs':'note-keyboard-selection.mjs','/note-clipboard.mjs':'note-clipboard.mjs','/note-velocity-readout.mjs':'note-velocity-readout.mjs','/note-audition-targets.mjs':'note-audition-targets.mjs','/note-audition.mjs':'note-audition.mjs','/note-audition-browser.mjs':'note-audition-browser.mjs','/snap-grid-settings.mjs':'snap-grid-settings.mjs','/time-display-settings.mjs':'time-display-settings.mjs','/inspector-time.mjs':'inspector-time.mjs','/':'index.html','/index.html':'index.html','/app.mjs':'app.mjs','/editing.mjs':'editing.mjs','/midi-events.mjs':'midi-events.mjs','/controller-lanes.mjs':'controller-lanes.mjs','/musical-time-display.mjs':'musical-time-display.mjs','/timing-settings.mjs':'timing-settings.mjs','/reset-settings.mjs':'reset-settings.mjs','/chase-settings.mjs':'chase-settings.mjs','/native-midi.mjs':'native-midi.mjs','/controller-settings.mjs':'controller-settings.mjs','/midi-modifiers.mjs':'midi-modifiers.mjs','/midi-merge.mjs':'midi-merge.mjs','/session.mjs':'session.mjs','/resolution.mjs':'resolution.mjs','/document.mjs':'document.mjs','/projects.mjs':'projects.mjs','/styles.css':'styles.css'};
+        const files={'/tap-tempo-ui.mjs':'tap-tempo-ui.mjs','/audio-scrub.mjs':'audio-scrub.mjs','/web-midi-input.mjs':'web-midi-input.mjs','/metronome.mjs':'metronome.mjs','/microphone-recorder.mjs':'microphone-recorder.mjs','/recording-ui.mjs':'recording-ui.mjs','/note-keyboard-selection.mjs':'note-keyboard-selection.mjs','/note-clipboard.mjs':'note-clipboard.mjs','/note-velocity-readout.mjs':'note-velocity-readout.mjs','/note-audition-targets.mjs':'note-audition-targets.mjs','/note-audition.mjs':'note-audition.mjs','/note-audition-browser.mjs':'note-audition-browser.mjs','/snap-grid-settings.mjs':'snap-grid-settings.mjs','/time-display-settings.mjs':'time-display-settings.mjs','/inspector-time.mjs':'inspector-time.mjs','/':'index.html','/index.html':'index.html','/app.mjs':'app.mjs','/editing.mjs':'editing.mjs','/midi-events.mjs':'midi-events.mjs','/controller-lanes.mjs':'controller-lanes.mjs','/musical-time-display.mjs':'musical-time-display.mjs','/timing-settings.mjs':'timing-settings.mjs','/reset-settings.mjs':'reset-settings.mjs','/chase-settings.mjs':'chase-settings.mjs','/native-midi.mjs':'native-midi.mjs','/native-audio.mjs':'native-audio.mjs','/audio-units.mjs':'audio-units.mjs','/controller-settings.mjs':'controller-settings.mjs','/midi-modifiers.mjs':'midi-modifiers.mjs','/midi-merge.mjs':'midi-merge.mjs','/session.mjs':'session.mjs','/resolution.mjs':'resolution.mjs','/document.mjs':'document.mjs','/projects.mjs':'projects.mjs','/i18n.mjs':'i18n.mjs','/styles.css':'styles.css'};
         if(files[route]) {const content=await fs.readFile(path.join(ROOT,'public',files[route]));res.writeHead(200,{'Content-Type':route.endsWith('.mjs')?'text/javascript':route.endsWith('.css')?'text/css':'text/html; charset=utf-8'});return res.end(content);}
       }
       throw problem('NOT_FOUND','Unknown route',404);
@@ -912,7 +1005,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       reserveTarget,runExclusive,emit,isClosed:()=>closed,recentPath,draftRegistryPath});
     await workspace.locations();
     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
-  } catch(error) {await nativeTransport.close();await releaseLock();throw error;}
+  } catch(error) {await nativeTransport.close();await nativeAudio.close();await audioUnits.close();await releaseLock();throw error;}
   const heartbeat=setInterval(()=>{for(const response of clients)response.write(': keepalive\n\n');},20000);heartbeat.unref();
   let checkingBackup=false;
   backupTimer=setInterval(()=>{
@@ -931,7 +1024,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
     // mutation queue drains, those connections must not retain the project lock.
     const disconnected=new Promise(resolve=>server.close(resolve));
     for(const response of clients)response.end();
-    await auditionJobs.close();await nativeTransport.close();await resolver?.close();await queue;
+    await auditionJobs.close();await nativeTransport.close();await nativeAudio.close();await audioUnits.close();await resolver?.close();await queue;
     await Promise.all([...jobs.values()].filter(j=>j.status==='running').map(j=>j.worker.terminate()));
     server.closeAllConnections();await disconnected;
     if(workspace)await Promise.all(workspace.contexts().map(c=>c.releaseLock()));else await releaseLock();

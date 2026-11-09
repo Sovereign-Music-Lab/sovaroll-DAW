@@ -115,6 +115,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | file | lines | max line | exports |
 |---|---:|---:|---|
 | audio-statistics-worker.mjs | 5 | 120 |  |
+| audio-units.mjs | 96 | 300 | createAudioUnits |
 | auto-backup.mjs | 204 | 276 | backupBaseName, validateBackupRegistry, listBackups, readBackup, createAutoBackup |
 | chase-settings.mjs | 127 | 523 | defaultChaseSettings, getChaseSettings, updateChaseSettings, withChaseDefaults |
 | cli.mjs | 640 | 1833 | main |
@@ -124,6 +125,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | folder-browser.mjs | 33 | 212 | browseProjectFolders |
 | media-resolution.mjs | 140 | 302 | createMediaResolver |
 | media-search.mjs | 242 | 312 | MEDIA_SEARCH_LIMITS, createMediaSearch, readMediaCandidate |
+| native-audio.mjs | 79 | 316 | createNativeAudio |
 | native-midi-settings.mjs | 128 | 503 | defaultNativeMidiSettings, defaultNativeMidiProject, getNativeMidiSettings, updateNativeMidiSettings |
 | native-transport.mjs | 103 | 353 | createNativeTransport |
 | note-audition-jobs.mjs | 27 | 264 | createNoteAuditionJobs |
@@ -137,7 +139,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | render-worker.mjs | 59 | 337 | renderSnapshotData |
 | reset-settings.mjs | 120 | 523 | defaultResetOptions, resolveResetOptions, defaultResetSettings, getResetSettings, updateResetSettings |
 | revert-media.mjs | 387 | 390 | registerCreatedMedia, captureMediaOwnership, planRevertMedia, applyRevertMediaPlan, listRevertMediaTrash, restoreRevertMediaTrash |
-| server.mjs | 941 | 3580 | CAPABILITIES, startServer |
+| server.mjs | 1005 | 3580 | CAPABILITIES, startServer |
 | session-store.mjs | 212 | 207 | MAX_JOURNAL_BYTES, DEFAULT_SESSION_SETTINGS, canonicalProjectHash, validateSessionSettings, assertSidecarLocation, readSidecar, writeSidecar, quarantineSidecar, loadSessionState, commitSessionState, updateSessionSettings |
 | split-settings.mjs | 132 | 523 | defaultSplitSettings, getSplitSettings, updateSplitSettings, withSplitDefaults |
 | stem-directory.mjs | 26 | 277 | renderStemDirectory |
@@ -153,13 +155,15 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
-| app.mjs | 2291 | 7381 |  |
+| app.mjs | 2303 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
+| audio-units.mjs | 67 | 1955 | setupAudioUnits |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
 | controller-settings.mjs | 102 | 346 | controllerProfile, subscribeControllerSettings, refreshControllerSettings, fillControllerMenu, openControllerSettings |
 | document.mjs | 76 | 782 | setupDocumentUI |
 | editing.mjs | 444 | 1406 | setupEditingUI, planTrackMix, planTrackStep, planTrackDrop, planMidiPartCommands |
+| i18n.mjs | 71 | 368 | applyLanguage, setupI18n |
 | inspector-time.mjs | 102 | 473 | setupInspectorTime |
 | metronome.mjs | 25 | 461 | setupMetronome |
 | microphone-recorder.mjs | 27 | 1772 | recordingBlockWindow, createMicrophoneRecorder |
@@ -167,6 +171,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | midi-merge.mjs | 19 | 2002 | setupMidiMerge |
 | midi-modifiers.mjs | 45 | 939 | setupMidiModifiers |
 | musical-time-display.mjs | 70 | 440 | setupMusicalTimeDisplay |
+| native-audio.mjs | 27 | 506 | setupNativeAudio |
 | native-midi.mjs | 69 | 1091 | setupNativeMidi |
 | note-audition-browser.mjs | 36 | 193 | createBrowserNoteAudition |
 | note-audition-targets.mjs | 11 | 145 | noteAuditionTargets |
@@ -183,7 +188,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | tap-tempo-ui.mjs | 21 | 904 | setupTapTempo |
 | time-display-settings.mjs | 32 | 1866 | setupTimeDisplaySettings |
 | timing-settings.mjs | 18 | 1782 | readTimingProfile, setupTimingSettings |
-| web-midi-input.mjs | 204 | 1982 | setupBrowserMidiInput, setupBrowserMidiRecording, createMidiTakeStore, createMidiMonitorChannel, midiMonitorVoiceHeld, midiMonitorPitch, applyMidiMonitorCC |
+| web-midi-input.mjs | 205 | 1982 | setupBrowserMidiInput, setupBrowserMidiRecording, createMidiTakeStore, createMidiMonitorChannel, midiMonitorVoiceHeld, midiMonitorPitch, applyMidiMonitorCC |
 
 ## scripts/
 
@@ -191,8 +196,14 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
+| build-native-audio-units.mjs | 16 | 248 |  |
+| build-native-audio.mjs | 16 | 249 |  |
 | build-native-midi.mjs | 16 | 248 |  |
 | check.mjs | 9 | 208 |  |
+| feature-inventory.mjs | 47 | 311 | buildFeatureInventory |
+| gui-audio-unit-preview-smoke.mjs | 49 | 711 |  |
+| gui-audio-units-smoke.mjs | 82 | 735 |  |
+| gui-auto-backup-recovery-smoke.mjs | 64 | 213 |  |
 | gui-chase-settings-smoke.mjs | 46 | 1165 |  |
 | gui-controller-bend-smoke.mjs | 59 | 1166 |  |
 | gui-controller-fidelity-smoke.mjs | 85 | 1603 |  |
@@ -202,12 +213,12 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-controller-shapes-smoke.mjs | 62 | 856 |  |
 | gui-controller-snap-smoke.mjs | 46 | 742 |  |
 | gui-controller-time-smoke.mjs | 64 | 1166 |  |
-| gui-document-smoke.mjs | 193 | 1414 |  |
-| gui-drafts-smoke.mjs | 136 | 1393 |  |
-| gui-editing-smoke.mjs | 74 | 1399 |  |
+| gui-document-smoke.mjs | 195 | 1414 |  |
+| gui-drafts-smoke.mjs | 139 | 1393 |  |
+| gui-editing-smoke.mjs | 77 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 165 | 388 |  |
+| gui-first-delivery-smoke.mjs | 342 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |
@@ -217,7 +228,9 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-midi-modifiers-smoke.mjs | 54 | 1165 |  |
 | gui-midi-playback-smoke.mjs | 86 | 831 |  |
 | gui-musical-time-smoke.mjs | 45 | 877 |  |
+| gui-native-audio-smoke.mjs | 37 | 595 |  |
 | gui-native-midi-smoke.mjs | 48 | 848 |  |
+| gui-new-project-delivery-smoke.mjs | 78 | 211 |  |
 | gui-note-arrow-smoke.mjs | 37 | 1211 |  |
 | gui-note-audition-form-smoke.mjs | 54 | 616 |  |
 | gui-note-audition-races-smoke.mjs | 57 | 616 |  |
@@ -241,8 +254,9 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-note-velocity-cursor-smoke.mjs | 42 | 470 |  |
 | gui-paste-time-smoke.mjs | 42 | 621 |  |
 | gui-projects-smoke.mjs | 195 | 1414 |  |
-| gui-recording-protection-smoke.mjs | 40 | 2091 |  |
-| gui-recording-workflow-smoke.mjs | 40 | 1053 |  |
+| gui-recording-assistance-smoke.mjs | 66 | 347 |  |
+| gui-recording-protection-smoke.mjs | 41 | 2159 |  |
+| gui-recording-workflow-smoke.mjs | 41 | 1087 |  |
 | gui-recovery-smoke.mjs | 96 | 1400 |  |
 | gui-reset-smoke.mjs | 54 | 894 |  |
 | gui-resolution-smoke.mjs | 91 | 1394 |  |
@@ -250,10 +264,10 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-session-smoke.mjs | 53 | 1391 |  |
 | gui-smoke.mjs | 40 | 312 |  |
 | gui-snap-grid-smoke.mjs | 42 | 825 |  |
-| gui-split-controller-policy-smoke.mjs | 37 | 2066 |  |
-| gui-split-note-policy-smoke.mjs | 37 | 1781 |  |
-| gui-split-settings-race-smoke.mjs | 37 | 4667 |  |
-| gui-split-settings-smoke.mjs | 37 | 3430 |  |
+| gui-split-controller-policy-smoke.mjs | 38 | 2146 |  |
+| gui-split-note-policy-smoke.mjs | 38 | 1861 |  |
+| gui-split-settings-race-smoke.mjs | 38 | 4907 |  |
+| gui-split-settings-smoke.mjs | 38 | 3630 |  |
 | gui-time-display-smoke.mjs | 44 | 698 |  |
 | gui-timing-smoke.mjs | 51 | 1036 |  |
 | gui-workspace-smoke.mjs | 211 | 1415 |  |
@@ -271,6 +285,7 @@ Agent harness (verify, checkpoint, find, show, guard, e2e, task, map).
 | lib.mjs | 99 | 237 | ROOT, AGENT_DIR, CHECKPOINT_DIR, TRACKED, PROTECTED, sha256, rel, walk, hashTree, diffMaps, readJson, writeJson … (+7) |
 | map.mjs | 44 | 346 |  |
 | show.mjs | 31 | 146 |  |
+| smoke-sweep.mjs | 38 | 184 |  |
 | task.mjs | 60 | 263 |  |
 | verify.mjs | 78 | 298 |  |
 

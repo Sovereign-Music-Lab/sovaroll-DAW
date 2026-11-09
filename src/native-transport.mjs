@@ -40,7 +40,7 @@ export function createNativeTransport({openBackend=openCoreMidi,onChange=()=>{},
   if(state.status==='stopping')state={...state,status:'stopped',reason};
   publish();return snapshot();
  }
- async function start({project,documentId,profile,chaseProfile,resetProfile,timingProfile,startTick=0,endTick}){
+ async function start({project,documentId,profile,chaseProfile,resetProfile,timingProfile,startTick=0,endTick,startAtUptimeNs=null}){
   if(closed)throw problem('NATIVE_CLOSED','Native transport owner is closed');
   if(running(state)||operation||stopping||resetting)throw problem('NATIVE_PLAYING','Stop existing native playback first');
   const token=++generation,jobId=randomUUID();
@@ -59,7 +59,7 @@ export function createNativeTransport({openBackend=openCoreMidi,onChange=()=>{},
      if(reset.status==='failed')throw problem('MIDI_RESET_FAILED','Locate Reset failed; playback was not started',503);await fresh();
     }
     await prepareNativePlan(helper,plan,{jobId,signal:abort.signal,...(resetProfile?{resetPreferences:resetProfile.settings.options}:{})});prepared=true;await fresh();
-    const result=await helper.start(jobId);started=true;await fresh();
+    const result=await helper.start(jobId,{...(startAtUptimeNs!==null?{startAtUptimeNs}:{})});started=true;await fresh();
     state={...state,...result};publish();return snapshot();
    }catch(error){
     if(helper)try{if(started)await helper.stop(jobId,{reason:'failure'});else if(prepared)await helper.request('transport.discard',{jobId});}catch(cleanupError){try{await helper.close();}catch{}error.cleanupError=cleanupError.message;}
@@ -93,7 +93,7 @@ export function createNativeTransport({openBackend=openCoreMidi,onChange=()=>{},
   })();resetting=task;try{return await task;}finally{if(resetting===task)resetting=null;}
  }
  const timer=setInterval(async()=>{if(polling||closed||resetting||!running(state))return;polling=true;const id=state.jobId;try{if(!await checkFresh(snapshot())&&state.jobId===id)await stopInternal('settings-or-document-changed');}catch(error){if(state.jobId===id)await stopInternal('profile-unavailable');}finally{polling=false;}},pollMs);timer.unref();
- return {snapshot,start,reset,ports:async()=>{const helper=await backend();return {...await helper.ports(),available:true};},
+ return {snapshot,start,reset,clock:async()=>{const helper=await backend();return helper.request('clock.now');},ports:async()=>{const helper=await backend();return {...await helper.ports(),available:true};},
   async status(){if(bridge&&state.status==='playing'){const value=await bridge.transportStatus();if(value.transport.jobId===state.jobId){state={...state,...value.transport};sequence++;}}return snapshot();},
   async stop(jobId,{reason='stop'}={}){if(typeof jobId!=='string'||jobId!==state.jobId)throw problem('NATIVE_JOB_CONFLICT','Playback changed; fetch its current job ID before Stop');return stopInternal(reason==='locate'?'locate':'user-stop');},
   stopAll:stopInternal,

@@ -2,7 +2,7 @@
 
 [한국어](MANUAL.ko.md) · [Project](../README.md) · [CLI reference](CLI.md) · [Development notes](DEVELOPMENT.en.md)
 
-This manual covers the current development release, 0.129.0. The interface is primarily Korean; labels below help English readers find the controls. Complete UI translation is still planned. The verified desktop environment is macOS with Chrome; other operating systems and browsers need separate validation. Optional native MIDI is macOS-only.
+This manual covers the current development release, 0.129.0. The primary workspace supports Korean and English; advanced dialogs and some detailed settings retain untranslated text, so complete bilingual UI is still a development goal. The verified desktop environment is macOS with Chrome; other operating systems and browsers need separate validation. Optional native MIDI is macOS-only.
 
 ## 1. Install and start
 
@@ -37,6 +37,8 @@ node src/cli.mjs serve --project "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.js
 The **프로젝트 열기** (Projects) window also exposes project opening and creation. Inspect the target path and current active project. Multiple projects can be open; the active one receives edits and playback. Opening, activating and closing are separate actions. Unsaved/Untitled work may need a named first save.
 
 ## 3. Find the main controls
+
+Use **English / 한국어** in the top bar to switch the primary workspace. The choice is stored in this browser and restored after reload; it does not edit project data. Advanced dialogs may still contain untranslated text. The Audio Unit dialog translates its controls, scope options, parameter metadata and generated render/preview/import status; component names, keyPaths and server/plugin errors remain source data. Edit history and automatic-backup dialogs also translate controls, action labels, boundaries, persistence and list status; command IDs, timestamps and warnings remain identifiable.
 
 | Label | Meaning and use |
 |---|---|

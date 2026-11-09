@@ -51,7 +51,7 @@ Then open [port 4318](http://127.0.0.1:4318) and add `--url http://127.0.0.1:431
 - Optional macOS CoreMIDI output. It sends MIDI only; it is not synchronized native audio playback.
 - Product tests, browser acceptance scripts, development notes, a task queue, and a local-agent harness.
 
-See [development notes](docs/DEVELOPMENT.en.md), [개발 노트](docs/DEVELOPMENT.ko.md), [requirements](docs/agent/REQUIREMENTS.md), and [validation](docs/VALIDATION.md) for the distinction between implemented, tested, and unfinished work.
+See [development notes](docs/DEVELOPMENT.en.md), [개발 노트](docs/DEVELOPMENT.ko.md), [requirements](docs/agent/REQUIREMENTS.md), [feature inventory](docs/FEATURE_INVENTORY.en.md), and [validation](docs/VALIDATION.md) for the distinction between implemented, tested, and unfinished work.
 
 ## The wider workflow
 

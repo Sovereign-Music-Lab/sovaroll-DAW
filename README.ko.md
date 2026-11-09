@@ -51,7 +51,7 @@ npm start -- --port 4318
 - 선택적 macOS CoreMIDI 출력. MIDI만 전송하며 네이티브 오디오와 동기 재생하지 않습니다.
 - 제품 테스트, 브라우저 인수 테스트, 개발 노트, 작업 큐와 로컬 에이전트 하네스.
 
-[개발 노트](docs/DEVELOPMENT.ko.md), [English development notes](docs/DEVELOPMENT.en.md), [요건표](docs/agent/REQUIREMENTS.md), [검증 기록](docs/VALIDATION.md)에서 구현된 기능, 실제 검증한 범위와 남은 작업을 확인할 수 있습니다.
+[개발 노트](docs/DEVELOPMENT.ko.md), [English development notes](docs/DEVELOPMENT.en.md), [요건표](docs/agent/REQUIREMENTS.md), [기능 인벤터리](docs/FEATURE_INVENTORY.ko.md), [검증 기록](docs/VALIDATION.md)에서 구현된 기능, 실제 검증한 범위와 남은 작업을 확인할 수 있습니다.
 
 ## 전체 작업 흐름
 

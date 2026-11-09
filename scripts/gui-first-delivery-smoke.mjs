@@ -19,31 +19,44 @@ await fs.mkdir(downloads);
 const tests=[],pageErrors=[],consoleErrors=[],httpErrors=[],timings={};const t0=Date.now();
 const check=id=>{tests.push(id);timings[id]=Date.now()-t0;console.log('PASS '+id);};
 const cliRaw=async(...args)=>(await exec(process.execPath,['src/cli.mjs',...args],{cwd:root,timeout:60000})).stdout;
+function sine(seconds,freq,rate=48000){const frames=Math.round(seconds*rate),c=new Float32Array(frames);for(let i=0;i<frames;i++)c[i]=.4*Math.sin(2*Math.PI*freq*i/rate);return encodeWav({sampleRate:rate,channels:[c,c]});}
+const fakeMicPath=path.join(dir,'Fake microphone.wav');await fs.writeFile(fakeMicPath,sine(2,440));
 await cliRaw('init',projectPath);
 const start=()=>startServer({projectPath,port:0,demo:false,quiet:true,backupPollMs:600000});let session=await start();
-const browser=await chromium.launch({headless:true,channel:'chrome',args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required']});
+const browser=await chromium.launch({headless:true,channel:'chrome',args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream',`--use-file-for-fake-audio-capture=${fakeMicPath}`,'--autoplay-policy=no-user-gesture-required']});
 const context=await browser.newContext({viewport:{width:1580,height:2000},acceptDownloads:true});let page;
 const state=async()=>(await fetch(session.url+'/api/state')).json(),proj=async()=>(await state()).project;
 const cli=async(...args)=>JSON.parse(await cliRaw(...args,'--url',session.url)),cmd=(c,a={})=>cli('command',c,JSON.stringify(a));
 const revision=()=>page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,'')));
 const synced=()=>page.waitForFunction(()=>document.getElementById('connection-status')?.textContent.includes('동기화'));
-async function after(rev){await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,rev);await page.waitForFunction(()=>!document.querySelector('#undo')?.closest('[aria-busy="true"]'));}
+async function after(rev){await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,rev);await page.waitForFunction(()=>document.querySelector('#project-name')?.disabled===false);}
 async function act(fn){const rev=(await proj()).revision;await fn();await after(rev);return proj();}
 async function openPage(){page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>pageErrors.push(e.message));page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});page.on('response',r=>{if(r.status()>=400)httpErrors.push(`${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}`);});await page.goto(session.url);await synced();}
 async function download(trigger,name){const [d]=await Promise.all([page.waitForEvent('download',{timeout:60000}),trigger()]);const file=path.join(downloads,name);await d.saveAs(file);return file;}
-const openMenu=async id=>{const d=page.locator('#'+id);if(!(await d.evaluate(e=>e.open)))await d.locator('summary').click();};
+const openMenu=async id=>{const d=page.locator('#'+id);if(!(await d.evaluate(e=>e.open)))await d.locator(':scope > summary').click();};
 const zoom=async()=>Number(await page.locator('#zoom').inputValue());
 async function gridPoint(tick,pitch){await scrollPianoTo(pitch);const grid=page.locator('#note-grid'),box=await grid.boundingBox();return {x:box.x+tick/960*await zoom()+3,y:box.y+(127-pitch)*19+9};}
 async function scrollPianoTo(pitch){await page.locator('#piano-scroll').evaluate((e,p)=>{e.scrollTop=Math.max(0,(127-p)*19-e.clientHeight/2);e.scrollLeft=0;},pitch);}
 async function clickRuler(selector,tick){const box=await page.locator(selector).boundingBox();const scroll=selector==='#piano-ruler'?await page.locator('#piano-scroll').evaluate(e=>e.scrollLeft):await page.locator('#timeline-scroll').evaluate(e=>e.scrollLeft);await page.mouse.click(box.x+tick/960*await zoom()-scroll+0.01,box.y+5);}
-function sine(seconds,freq,rate=48000){const frames=Math.round(seconds*rate),c=new Float32Array(frames);for(let i=0;i<frames;i++)c[i]=.4*Math.sin(2*Math.PI*freq*i/rate);return encodeWav({sampleRate:rate,channels:[c,c]});}
 const near=(a,b,tol,msg)=>assert.ok(Math.abs(a-b)<=tol,`${msg??''} ${a} expected ${b} ±${tol}`);
 const rms=ch=>Math.sqrt(ch.reduce((s,x)=>s+x*x,0)/Math.max(1,ch.length));
 let summary={};
 try{
  // 1. Project
  await openPage();
+ await page.waitForSelector('#recording-panel .recording-controls',{state:'attached'});await page.waitForSelector('#recording-panel .midi-input-controls',{state:'attached'});
+ assert.equal(await page.locator('.transport').evaluate(e=>e.nextElementSibling?.id),'recording-panel');
+ assert.equal(await page.locator('#recording-panel').evaluate(e=>e.open),false);
+ assert.equal(await page.locator('#recording-panel .recording-controls').isVisible(),false);check('recording.GUI-panel-default-collapsed');
  assert.equal((await proj()).tracks.length,0);assert.equal(await page.locator('#timeline-empty').isVisible(),true);check('project.new-empty-project-opens-in-GUI');
+ const languageRevision=(await proj()).revision;assert.equal(await page.locator('#language-select').inputValue(),'ko');
+ await page.locator('#language-select').selectOption('en');
+ await page.waitForFunction(()=>document.documentElement.lang==='en'&&document.querySelector('#projects-button').textContent==='Open project'&&document.querySelector('#recording-panel > summary').textContent==='Recording');
+ assert.match(await page.locator('#render-button').textContent(),/Export WAV mix/);assert.equal(await page.locator('#audio-record').textContent(),'● Record audio');
+ await page.reload();await page.waitForFunction(()=>document.querySelector('#language-select')?.value==='en'&&document.querySelector('#projects-button')?.textContent==='Open project'&&!document.querySelector('#projects-button').disabled);
+ assert.equal((await proj()).revision,languageRevision);
+ await page.locator('#language-select').selectOption('ko');await page.waitForFunction(()=>document.documentElement.lang==='ko'&&document.querySelector('#projects-button').textContent==='프로젝트 열기'&&document.querySelector('#recording-panel > summary').textContent==='녹음');
+ check('project.GUI-language-switch-persists-without-project-edit');
 
  // 2. MIDI track + notes
  let p=await act(()=>page.locator('#empty-add').click());
@@ -53,6 +66,15 @@ try{
  for(const [tick,pitch] of melody){const pt=await gridPoint(tick,pitch);await act(()=>page.mouse.click(pt.x,pt.y));}
  p=await proj();let notes=p.clips.find(c=>c.id===midiClip.id).notes;
  assert.deepEqual(notes.map(n=>[n.startTick,n.pitch]).sort((a,b)=>a[0]-b[0]),melody);check('midi.GUI-piano-roll-note-input');
+ const expectPosition=async text=>page.waitForFunction(expected=>document.querySelector('#position-time').textContent===expected,text);
+ await clickRuler('#timeline-ruler',7700);await expectPosition('00:04.000');
+ await clickRuler('#piano-ruler',7700);await expectPosition('00:04.000');
+ await page.keyboard.down('Alt');
+ try{
+  await clickRuler('#timeline-ruler',7700);await expectPosition('00:04.010');
+  await clickRuler('#piano-ruler',7700);await expectPosition('00:04.010');
+ }finally{await page.keyboard.up('Alt');}
+ check('playback.GUI-ruler-click-snap-and-alt-override');
  // drag the last note up a whole tone and one beat later
  const lastNote=notes.find(n=>n.startTick===2880);let from=await gridPoint(2880+120,72);let to={x:from.x+await zoom(),y:from.y-2*19};
  await act(async()=>{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:10});await page.mouse.up();});
@@ -82,6 +104,36 @@ try{
  p=await act(()=>openMenu('arrangement-edit-menu').then(()=>page.locator('#split-clips-cursor').click()));
  const splitClips=p.clips.filter(c=>c.trackId===midiTrack.id).sort((a,b)=>a.startTick-b.startTick);assert.equal(splitClips.length,3);assert.deepEqual(splitClips.slice(0,2).map(c=>[c.startTick,c.lengthTicks]),[[0,7680],[7680,7680]]);
  assert.equal(splitClips[0].notes.length+splitClips[1].notes.length,8);check('midi.GUI-part-split-at-cursor');
+ await page.locator(`.timeline-clip[data-clip-id="${splitClips[0].id}"]`).first().click({position:{x:12,y:8}});
+ const toolOriginal=(await proj()).clips.find(c=>c.id===splitClips[0].id).notes.map(note=>({...note}));
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ await page.waitForFunction(count=>document.querySelectorAll('#note-grid .midi-note.selected').length===count,toolOriginal.length);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('transpose');await page.locator('#transpose-semitones').fill('2');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ const transposed=p.clips.find(c=>c.id===splitClips[0].id).notes;assert.equal(transposed.length,toolOriginal.length);
+ for(const note of transposed)assert.equal(note.pitch,toolOriginal.find(original=>original.id===note.id).pitch+2);
+ p=await act(()=>page.locator('#undo').click());
+ for(const note of p.clips.find(c=>c.id===splitClips[0].id).notes)assert.equal(note.pitch,toolOriginal.find(original=>original.id===note.id).pitch);
+ check('midi.GUI-tools-transpose');
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ await page.waitForFunction(count=>document.querySelectorAll('#note-grid .midi-note.selected').length===count,toolOriginal.length);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('velocity');await page.locator('#velocity-mode').selectOption('set');await page.locator('#velocity-value').fill('54');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ assert.ok(p.clips.find(c=>c.id===splitClips[0].id).notes.every(note=>note.velocity===54));
+ p=await act(()=>page.locator('#undo').click());
+ for(const note of p.clips.find(c=>c.id===splitClips[0].id).notes)assert.equal(note.velocity,toolOriginal.find(original=>original.id===note.id).velocity);
+ check('midi.GUI-tools-velocity');
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ p=await act(()=>cmd('midi.notes.update',{clipId:splitClips[0].id,noteId:toolOriginal[0].id,startTick:25}));
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,25);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('quantize');
+ await page.locator('#midi-scope').selectOption('selection');await page.locator('#quantize-grid').selectOption('0.25');await page.locator('#quantize-target').selectOption('start');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,0);
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.length,toolOriginal.length);
+ p=await act(()=>page.locator('#undo').click());
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,25);
+ check('midi.GUI-tools-quantize');
  summary.midiNotes=p.clips.filter(c=>c.type==='midi').reduce((s,c)=>s+c.notes.length,0);
 
  // 3. Audio: WAV import at cursor, fake microphone recording, edit
@@ -91,7 +143,7 @@ try{
  let audioClip=p.clips.find(c=>c.type==='audio');assert.ok(audioClip,'imported audio clip');const audioTrack=p.tracks.find(t=>t.id===audioClip.trackId);assert.equal(audioTrack.type,'audio');
  summary.importStartSample=audioClip.startSample;near(audioClip.startSample,48000,48,'imported at cursor (1 s)');check('audio.GUI-WAV-import-at-cursor');
  await clickRuler('#timeline-ruler',960*12);
- const recordRev=(await proj()).revision;await page.locator('#audio-record').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('녹음 중'));await page.waitForTimeout(1200);
+ const recordRev=(await proj()).revision;await openMenu('recording-panel');await page.locator('#audio-record').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('녹음 중'));assert.equal(await page.locator('#recording-panel').evaluate(e=>e.open),true);await page.waitForTimeout(1200);
  await page.locator('#audio-record-stop').click();await page.waitForFunction(()=>document.querySelector('#audio-record-status').textContent.includes('클립 저장 완료'),null,{timeout:30000});
  p=await proj();assert.equal(p.revision,recordRev+1);const recorded=p.clips.find(c=>c.type==='audio'&&c.id!==audioClip.id);assert.ok(recorded);near(recorded.startSample,48000*6,48,'recorded at cursor');assert.ok(recorded.lengthFrames>0);check('audio.GUI-fake-microphone-recording-to-cursor-clip');
  // move imported clip to 0.5 s via inspector, then split it at 2 s, then trim the tail
@@ -103,7 +155,94 @@ try{
  await page.locator(`.timeline-clip[data-clip-id="${audioParts[1].id}"]`).first().click({position:{x:12,y:8}});
  await page.locator('#clip-form input[name="lengthFrames"]').fill('12000');p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
  assert.equal(p.clips.find(c=>c.id===audioParts[1].id).lengthFrames,12000);check('audio.GUI-clip-trim-length');
+ await page.locator(`.timeline-clip[data-clip-id="${audioParts[0].id}"]`).first().click({position:{x:12,y:8}});
+ const renderAudioMix=async name=>{const file=path.join(downloads,name);await cli('render',file);return decodeWav(await fs.readFile(file));};
+ const beforeFade=await renderAudioMix('before-fade.wav');
+ await page.locator('#clip-form input[name="fadeInSeconds"]').fill('0.5');
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ const fadedClip=p.clips.find(c=>c.id===audioParts[0].id);
+ const fadeAsset=p.assets.find(a=>a.id===fadedClip.assetId);
+ assert.equal(fadedClip.fadeInFrames,Math.round(0.5*fadeAsset.sampleRate));
+ const afterFade=await renderAudioMix('after-fade.wav');
+ const fadeWindowRms=(mix,offsetSeconds,durationSeconds)=>{
+  const start=Math.round((fadedClip.startSample/p.sampleRate+offsetSeconds)*mix.sampleRate);
+  const end=Math.round(start+durationSeconds*mix.sampleRate),mono=new Float32Array(end-start);
+  for(let i=0;i<mono.length;i++)mono[i]=(mix.channels[0][start+i]+mix.channels[1][start+i])/2;
+  return rms(mono);
+ };
+ const earlyBefore=fadeWindowRms(beforeFade,0,0.05),lateBefore=fadeWindowRms(beforeFade,0.45,0.05);
+ const earlyAfter=fadeWindowRms(afterFade,0,0.05),lateAfter=fadeWindowRms(afterFade,0.45,0.05);
+ assert.ok(earlyAfter<lateAfter/2,`faded clip start ${earlyAfter} must be less than half of ${lateAfter}`);
+ assert.ok(earlyAfter<earlyBefore,`fade must reduce the matching start window: ${earlyAfter} vs ${earlyBefore}`);
+ assert.ok(lateAfter<lateBefore,`fade must reduce the matching late window: ${lateAfter} vs ${lateBefore}`);
+ summary.fadeIn={earlyBefore,lateBefore,earlyAfter,lateAfter};
+ p=await act(()=>page.locator('#undo').click());
+ assert.ok(!p.clips.find(c=>c.id===audioParts[0].id).fadeInFrames,'Undo removes fade-in');
+ check('audio.GUI-fade-in-changes-render');
+ const beforeFadeOut=await renderAudioMix('before-fade-out.wav');
+ await page.locator('#clip-form input[name="fadeOutSeconds"]').fill('0.5');
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ const fadedOutClip=p.clips.find(c=>c.id===audioParts[0].id);
+ assert.equal(fadedOutClip.fadeOutFrames,Math.round(0.5*fadeAsset.sampleRate));
+ const afterFadeOut=await renderAudioMix('after-fade-out.wav'),fadeDuration=fadedClip.lengthFrames/fadeAsset.sampleRate;
+ const earlyOutBefore=fadeWindowRms(beforeFadeOut,fadeDuration-0.5,0.05),lateOutBefore=fadeWindowRms(beforeFadeOut,fadeDuration-0.05,0.05);
+ const earlyOutAfter=fadeWindowRms(afterFadeOut,fadeDuration-0.5,0.05),lateOutAfter=fadeWindowRms(afterFadeOut,fadeDuration-0.05,0.05);
+ assert.ok(lateOutAfter<lateOutBefore,`fade-out must reduce the ending window: ${lateOutAfter} vs ${lateOutBefore}`);
+ assert.ok(lateOutAfter/lateOutBefore<earlyOutAfter/earlyOutBefore,'fade-out ending must attenuate more than its beginning');
+ summary.fadeOut={earlyOutBefore,lateOutBefore,earlyOutAfter,lateOutAfter};
+ p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===audioParts[0].id).fadeOutFrames,'Undo removes fade-out');
+ check('audio.GUI-fade-out-changes-render');
  const assetBytes=await fs.readFile(path.join(dir,p.assets.find(a=>a.id===audioClip.assetId).path));assert.equal(decodeWav(assetBytes).frames,96000);check('audio.source-WAV-preserved-after-edits');
+ p=await act(()=>cmd('track.update',{trackId:midiTrack.id,mute:true}));
+ assert.equal(p.tracks.find(t=>t.id===midiTrack.id).mute,true);
+ const beforeClipControls=await renderAudioMix('before-clip-controls.wav');
+ const recordedAsset=p.assets.find(a=>a.id===recorded.assetId);
+ const recordedStart=recorded.startSample/p.sampleRate,recordedWindow=Math.min(0.5,recorded.lengthFrames/recordedAsset.sampleRate);
+ const recordedRms=mix=>{
+  const start=Math.round(recordedStart*mix.sampleRate),end=Math.round(start+recordedWindow*mix.sampleRate),mono=new Float32Array(end-start);
+  for(let i=0;i<mono.length;i++)mono[i]=(mix.channels[0][start+i]+mix.channels[1][start+i])/2;
+  return rms(mono);
+ };
+ const recordedBeforeRms=recordedRms(beforeClipControls);
+ assert.ok(recordedBeforeRms>0.0001,`recorded clip baseline must be audible: ${recordedBeforeRms}`);
+ await page.locator(`.timeline-clip[data-clip-id="${recorded.id}"]`).first().click({position:{x:12,y:8}});
+ await page.locator('#clip-form input[name="audioMute"]').check();
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ assert.equal(p.clips.find(c=>c.id===recorded.id).mute,true);
+ assert.ok(await page.locator(`.timeline-clip[data-clip-id="${recorded.id}"]`).first().evaluate(e=>e.classList.contains('muted-clip')));
+ const afterClipMute=await renderAudioMix('after-clip-mute.wav'),recordedMutedRms=recordedRms(afterClipMute);
+ assert.ok(recordedMutedRms<0.0001,`muted recorded region must be near zero: ${recordedMutedRms}`);
+ assert.ok(recordedMutedRms<recordedBeforeRms*0.01,`mute must reduce ${recordedBeforeRms} to near zero, got ${recordedMutedRms}`);
+ summary.clipMute={before:recordedBeforeRms,after:recordedMutedRms};
+ p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===recorded.id).mute,'Undo restores clip mute');
+ check('audio.GUI-clip-mute-silences-render');
+ const polarityClip=p.clips.find(c=>c.id===audioParts[0].id);
+ const polarityFrame=Math.round((polarityClip.startSample/p.sampleRate+0.13)*beforeClipControls.sampleRate);
+ const beforePolaritySample=beforeClipControls.channels[0][polarityFrame];
+ assert.ok(Math.abs(beforePolaritySample)>0.01,`polarity reference sample must be non-zero: ${beforePolaritySample}`);
+ await page.locator(`.timeline-clip[data-clip-id="${polarityClip.id}"]`).first().click({position:{x:12,y:8}});
+ await page.locator('#clip-form input[name="invertPolarity"]').check();
+ p=await act(()=>page.locator('#clip-form button[type="submit"]').click());
+ assert.equal(p.clips.find(c=>c.id===polarityClip.id).invertPolarity,true);
+ const afterPolarity=await renderAudioMix('after-polarity.wav'),invertedSample=afterPolarity.channels[0][polarityFrame];
+ assert.ok(Math.sign(invertedSample)===-Math.sign(beforePolaritySample),`polarity sign must flip: ${beforePolaritySample} vs ${invertedSample}`);
+ near(invertedSample,-beforePolaritySample,2/32768,'inverted PCM sample');
+ summary.polarity={frame:polarityFrame,before:beforePolaritySample,after:invertedSample};
+ p=await act(()=>page.locator('#undo').click());assert.ok(!p.clips.find(c=>c.id===polarityClip.id).invertPolarity,'Undo restores polarity');
+ check('audio.GUI-clip-polarity-inverts-render');
+ const beforeNormalize=p.clips.find(c=>c.id===polarityClip.id),previousGain=beforeNormalize.gainDb??0;
+ const {gainDb:ignoredBeforeGain,...beforeNormalizeWithoutGain}=beforeNormalize;
+ await page.locator('#audio-normalize-target').fill('-1');
+ p=await act(()=>page.locator('[data-action="normalize-audio"]').click());
+ const normalizedClip=p.clips.find(c=>c.id===polarityClip.id),{gainDb:normalizedGain,...afterNormalizeWithoutGain}=normalizedClip;
+ near(normalizedGain,6.96,0.05,'normalize gain');
+ assert.deepEqual(afterNormalizeWithoutGain,beforeNormalizeWithoutGain,'normalize changes only clip gain');
+ p=await act(()=>page.locator('#undo').click());assert.equal(p.clips.find(c=>c.id===polarityClip.id).gainDb??0,previousGain,'Undo restores pre-normalize gain');
+ const normalizedAssetBytes=await fs.readFile(path.join(dir,p.assets.find(a=>a.id===polarityClip.assetId).path));
+ assert.equal(sha(normalizedAssetBytes),sha(assetBytes),'normalize preserves source WAV bytes');
+ summary.normalize={previousGain,normalizedGain,assetSha256:sha(normalizedAssetBytes)};check('audio.GUI-normalize-sets-clip-gain');
+ p=await act(()=>cmd('track.update',{trackId:midiTrack.id,mute:false}));
+ assert.equal(p.tracks.find(t=>t.id===midiTrack.id).mute,false);
 
  // 4. Playback + mixer
  await clickRuler('#timeline-ruler',0);
@@ -117,9 +256,44 @@ try{
  p=await act(()=>head(midiTrack.id).locator('button[data-action="solo"]').click());assert.equal(p.tracks.find(t=>t.id===midiTrack.id).solo,true);
  p=await act(()=>head(midiTrack.id).locator('button[data-action="solo"]').click());assert.equal(p.tracks.find(t=>t.id===midiTrack.id).solo,false);
  const setRange=async(locator,value)=>act(()=>locator.evaluate((e,v)=>{e.value=String(v);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));},value));
- p=await setRange(head(midiTrack.id).locator('input[data-action="gain"]'),-3);assert.equal(p.tracks.find(t=>t.id===midiTrack.id).gainDb,-3);
- p=await setRange(head(audioTrack.id).locator('input[data-action="pan"]'),0.3);assert.equal(p.tracks.find(t=>t.id===audioTrack.id).pan,0.3);
+ const mixerPanRequests=[],mixerSync={delayedGainMs:200,sseAdvancedBeforeResponse:false,busyWhileResponseDelayed:false,panRequests:mixerPanRequests};summary.mixerSync=mixerSync;
+ const mixerRequestListener=request=>{if(!request.url().endsWith('/api/command'))return;const body=request.postDataJSON();if(body?.command==='track.update'&&body.arguments?.pan!==undefined)mixerPanRequests.push({expectedRevision:body.expectedRevision,pan:body.arguments.pan});};
+ page.on('request',mixerRequestListener);const revisionBeforeGain=(await proj()).revision;
+ await page.route('**/api/command',async route=>{
+  const body=route.request().postDataJSON();
+  if(body?.command==='track.update'&&body.arguments?.trackId===midiTrack.id&&body.arguments?.gainDb===-3){
+   const response=await route.fetch();mixerSync.gainStatus=response.status();
+   await page.waitForFunction(r=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>r,revisionBeforeGain);
+   mixerSync.sseAdvancedBeforeResponse=true;mixerSync.busyWhileResponseDelayed=await page.locator('#project-name').isDisabled();
+   await page.waitForTimeout(mixerSync.delayedGainMs);await route.fulfill({response});
+  }else await route.continue();
+ });
+ try{
+  p=await setRange(head(midiTrack.id).locator('input[data-action="gain"]'),-3);assert.equal(p.tracks.find(t=>t.id===midiTrack.id).gainDb,-3);
+  p=await setRange(head(audioTrack.id).locator('input[data-action="pan"]'),0.3);assert.equal(p.tracks.find(t=>t.id===audioTrack.id).pan,0.3);
+ }finally{await page.unroute('**/api/command');page.off('request',mixerRequestListener);}
+ mixerSync.panRequests=mixerPanRequests;assert.equal(mixerSync.sseAdvancedBeforeResponse,true);assert.equal(mixerSync.busyWhileResponseDelayed,true);assert.equal(mixerPanRequests.length,1);
  p=await setRange(page.locator('#master-gain'),-4);assert.equal(p.masterGainDb,-4);check('mixer.GUI-mute-solo-gain-pan-master');
+ p=await act(()=>cmd('project.locators',{range:{startTick:0,endTick:3840}}));
+ assert.deepEqual(p.locators,{startTick:0,endTick:3840});await clickRuler('#timeline-ruler',0);
+ p=await act(()=>page.locator('#cycle-playback').click());assert.equal(p.cycleEnabled,true);
+ assert.equal(await page.locator('#cycle-playback').getAttribute('aria-pressed'),'true');
+ await page.locator('#play').click();await page.waitForFunction(()=>document.getElementById('playback-status').textContent.includes('재생 중'),null,{timeout:60000});
+ const cycleSamples=[],cyclePollStart=Date.now();
+ while(Date.now()-cyclePollStart<3000){
+  const parts=(await page.locator('#position-time').textContent()).split(/[:.]/).map(Number);
+  assert.equal(parts.length,3);const seconds=parts[0]*60+parts[1]+parts[2]/1000;
+  assert.ok(Number.isFinite(seconds),`cycle position must be numeric: ${parts}`);cycleSamples.push(seconds);
+  await page.waitForTimeout(75);
+ }
+ await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('playback-status').textContent==='정지');
+ assert.ok(cycleSamples.length>=10,`expected repeated cycle samples, got ${cycleSamples.length}`);
+ for(const seconds of cycleSamples)assert.ok(seconds>=0&&seconds<=2.15,`cycle position outside locator range: ${seconds}`);
+ const cycleWrapped=cycleSamples.some((seconds,index)=>index>0&&seconds+0.1<cycleSamples[index-1]);
+ assert.ok(cycleWrapped,`expected a transport wrap: ${cycleSamples.join(', ')}`);
+ summary.cycle={samples:cycleSamples.length,min:Math.min(...cycleSamples),max:Math.max(...cycleSamples),wrapped:cycleWrapped};
+ p=await act(()=>page.locator('#cycle-playback').click());assert.equal(p.cycleEnabled,false);
+ assert.equal(await page.locator('#cycle-playback').getAttribute('aria-pressed'),'false');check('playback.GUI-cycle-loops-locator-range');
 
  // 5. Export: WAV mix, MIDI, bundle
  await page.locator('#render-button').click();await page.locator('#mix-export-submit').click();
@@ -139,6 +313,9 @@ try{
  await cmd('track.update',{trackId:midiTrack.id,name:'Lead (CLI)'});await page.waitForFunction(id=>document.querySelector(`.track-head[data-track-id="${id}"] .track-name`)?.textContent==='Lead (CLI)',midiTrack.id);
  await act(()=>page.locator('#undo').click());assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,midiTrack.name);
  await act(()=>page.locator('#redo').click());assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,'Lead (CLI)');check('cli.edit-appears-in-GUI-and-GUI-undo-redo-covers-it');
+ await page.locator('#timeline-scroll').focus();
+ await act(()=>page.keyboard.press('ControlOrMeta+z'));assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,midiTrack.name);
+ await act(()=>page.keyboard.press('ControlOrMeta+Shift+z'));assert.equal((await proj()).tracks.find(t=>t.id===midiTrack.id).name,'Lead (CLI)');check('project.GUI-keyboard-undo-redo');
 
  // Explicit Save (Cmd/Ctrl+S) → stop server → restart → reopen
  await page.locator('#timeline-surface').click({position:{x:4,y:4}}).catch(()=>{});await page.locator('body').press('ControlOrMeta+s');

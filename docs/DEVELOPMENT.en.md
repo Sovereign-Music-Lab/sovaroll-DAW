@@ -1,6 +1,6 @@
 # Development notes — Sovereign DAW / SovaRoll
 
-[한국어](DEVELOPMENT.ko.md) · [Philosophy](../PHILOSOPHY.en.md) · [Validation](VALIDATION.md)
+[한국어](DEVELOPMENT.ko.md) · [Philosophy](../PHILOSOPHY.en.md) · [Feature inventory](FEATURE_INVENTORY.en.md) · [Validation](VALIDATION.md)
 
 ## Direction and release boundary
 
@@ -48,15 +48,17 @@ These notes describe this repository's behavior and testable decisions. They mak
 | MIDI | Note edit/selection/clipboard, quantization, step input, controllers/curves, events, modifiers, merge/freeze, import/export | The simple internal oscillator does not render every preserved MIDI event |
 | Arrangement | Clips, folders, ordering, locators, markers, timing and tempo | Larger sessions and all platform/input combinations need more testing |
 | Audio | WAV/AIFF, trim/split/slip, gain/fades/polarity, normalize/DC, statistics, optional FFmpeg tempo processing | Snapshot preview is not a low-latency native engine; format and processing limits apply |
-| Recording | Browser audio/Web MIDI, take preservation, count-in and monitoring | Fake-device tests do not establish hardware quality, latency or permission behavior |
+| Recording | Browser audio/Web MIDI in a collapsible panel that opens while recording is active, take preservation, count-in and monitoring | Fake-device tests do not establish hardware quality, latency or permission behavior |
 | Mixing/export | Track/master controls, EQ/effects, mix/stems, MIDI and project bundles | External plugin/instrument hosting and advanced mastering are unfinished |
 | Native MIDI | Optional macOS bridge, routing, cancellation, reset/chase policies | MIDI output only; no synchronized native audio or cross-platform native backend claim |
+| Native audio foundation | Optional native preview routes a completed WAV through the AVAudioEngine helper; offline rendering preserves mono/stereo PCM and GUI Stop controls the current job | Explicit opt-in only; built-in preview remains default; no native-MIDI synchronization, listening or low-latency quality claim |
+| Audio Unit discovery | On-demand server/GUI discovery, exact-ID selection, explicit instantiation, deterministic offline PCM processing, processed WAV download, whole-mix/locator-range modes, all/selected-track and all/selected-clip rendering, editable clip import with Undo and bounded server/GUI numeric parameter inspection, range-checked setting and per-parameter default restoration, server/GUI explicit-output effect preview and server/GUI real-time instrument MIDI playback with output-gain control and owned note cleanup | No automatic loading or default playback change; active instances lock component discovery/selection until release; whole-mix import uses the cursor and locator-range import uses the server-recorded range start; parameter control uses generic numeric fields without custom plugin GUI or realtime automation; job-based preview does not synchronize native MIDI or replace the default transport; T-064 provides host-time primitives: MIDI uses an explicit target and audio starts a prepared buffer through a cancellable DispatchTime target with actual-start/completion evidence; T-065 adds a server coordinator that preopens helpers, assigns one bounded future target, rolls back audio on MIDI failure and stops both resources together; sample accuracy and latency remain unmeasured; compatibility, listening and low-latency quality remain unverified |
 
 See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQUIREMENTS.md).
 
 ## Open work
 
-T-001–T-013 retain browser coverage work for fades, clip mute/polarity, normalization, cycle, recording support, keyboard undo/redo, fresh-project GUI flow, audio shortcuts, backup recovery, MIDI input, and layout. T-010 awaits a human decision about snapping ruler clicks. Publishing does not promote their status.
+The Audio Unit probe supports downloadable output, editable clip import, explicit preview controls and native offline instrument MIDI rendering through a fresh instance per render. Full real-time plugin/instrument hosting remains future work. T-060 connects selected MIDI clips to fresh-instance instrument WAV output and editable clip import after fixing the modal's overflowing button row. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

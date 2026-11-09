@@ -35,6 +35,7 @@ let midiExportDraft=null,midiExportDownloading=false;
 let midiTrackExportSupported=false;
 import {setupMetronome} from './metronome.mjs';
 import {setupRecording} from './recording-ui.mjs';
+import {setupI18n,applyLanguage} from './i18n.mjs';
 import {navigateNoteSelection,selectNotePitch,selectNoteMenu} from './note-keyboard-selection.mjs';
 import {compileEditorSnap,resolveSnapGrid} from '/media/snap-grid.mjs';
 import {setupSnapGridSettings} from './snap-grid-settings.mjs';
@@ -46,6 +47,8 @@ import {setupMusicalTimeDisplay} from './musical-time-display.mjs';
 import {setupTimingSettings,readTimingProfile} from './timing-settings.mjs';
 import {setupResetSettings} from './reset-settings.mjs';
 import {setupNativeMidi} from './native-midi.mjs';
+import {setupNativeAudio} from './native-audio.mjs';
+import {setupAudioUnits} from './audio-units.mjs';
 import {setupChaseSettings,readChaseProfile} from './chase-settings.mjs';
 import {setupMidiMerge} from './midi-merge.mjs';
 import {setupMidiModifiers} from './midi-modifiers.mjs';
@@ -125,7 +128,7 @@ let selectedClipIds = new Set();
 let selectedNote = null;
 let selectedNoteIds = new Set();
 let recordingUI,metronomeUI;
-let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,midiMergeUI,midiModifiersUI,controllerLanesUI,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
+let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,nativeAudioUI,audioUnitsUI,midiMergeUI,midiModifiersUI,controllerLanesUI,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
 let busy = false;
 let connected = false;
 let pxPerBeat = Number($('zoom').value);
@@ -368,6 +371,8 @@ function applySnapshot(snapshot, {force = false} = {}) {
   documentState=snapshot.session?.document??null;
   workspaceState=snapshot.workspace??workspaceState;
   nativeMidiUI?.snapshot(snapshot.nativeTransport,snapshot.session?.id);
+  nativeAudioUI?.snapshot(snapshot);
+  audioUnitsUI?.snapshot(snapshot);
   if(changed){nativeMidiUI?.projectChanged();timingUI?.invalidate();}
   if (snapshot.capabilities?.projectOpen && !projectsUI && !projectsUILoading) loadProjectsUI();
   if(!project){history={canUndo:false,canRedo:false};renderUI(true);if(documentChanged){documentUI?.documentChanged();resolutionUI?.documentChanged();}return;}
@@ -486,13 +491,13 @@ function updateButtons() {
   $('play-selected-range').disabled=$('play').disabled||!selectedClipIds.size;
   $('audition-selected-clips').disabled=$('play-selected-range').disabled;
   $('track-audition-tool').disabled=!renderTrackSelectionSupported||unavailable||Boolean(activeJob)&&activeJob.purpose!=='preview';
-  $('stop').disabled = !nativeMidiUI?.active && !audioSource && !previewPreparing && activeJob?.purpose !== 'preview';
+  $('stop').disabled = !nativeMidiUI?.active && !nativeAudioUI?.active && !audioSource && !previewPreparing && activeJob?.purpose !== 'preview';
   $('midi-download').disabled=unavailable||midiExportDownloading||!midiExportDraft||midiExportDraft.documentId!==documentState?.id||midiExportDraft.revision!==project?.revision;
   if($('midi-export-dialog').open&&midiExportDraft&&midiExportDraft.revision!==project?.revision)$('midi-export-project').textContent='프로젝트가 변경되었습니다. 닫고 다시 열어 내보낼 범위를 확인하세요.';
   $('master-gain').disabled = unavailable;$('project-pan-law').disabled=unavailable;$('pan-law-status').disabled=unavailable;
   $('tempo').disabled = unavailable;
-  $('play').classList.toggle('playing', Boolean(audioSource)||Boolean(nativeMidiUI?.active));
-  nativeMidiUI?.update();
+  $('play').classList.toggle('playing', Boolean(audioSource)||Boolean(nativeMidiUI?.active)||Boolean(nativeAudioUI?.active));
+  nativeMidiUI?.update();nativeAudioUI?.update();audioUnitsUI?.update();
   $('history-button').disabled = !sessionUI || unavailable;
   $('backups-button').disabled = !sessionUI || unavailable;
   $('projects-button').disabled = !projectsUI || busy || !connected;
@@ -511,7 +516,7 @@ function updateButtons() {
   documentUI?.update();
 }
 function renderUI(forceInspector = false) {
-  $('main-workspace').hidden=!project;$('workspace-empty').hidden=Boolean(project);
+  queueMicrotask(applyLanguage);  $('main-workspace').hidden=!project;$('workspace-empty').hidden=Boolean(project);
   $('workspace-status').textContent=`열린 프로젝트 ${workspaceState?.documents?.length??(project?1:0)}개 · ${project?'활성: '+project.name:'활성 없음'}`;
   if (!project) {
     document.title='활성 프로젝트 없음 — newdaw';$('project-name').value='활성 프로젝트 없음';
@@ -886,7 +891,7 @@ function stopPreview(reset = false) {
   updatePosition();
   updateButtons();
 }
-async function stopTransport(reset=false,reason=reset?'locate':'stop'){resetFollowSuspension();userStops++;stopPreview(reset);try{await nativeMidiUI?.stop(reason);}catch(e){notice(e.message,true);}finally{userStops--;if(reset){transportSeconds=0;updatePosition();}updateButtons();}}
+async function stopTransport(reset=false,reason=reset?'locate':'stop'){resetFollowSuspension();userStops++;stopPreview(reset);try{await nativeMidiUI?.stop(reason);await nativeAudioUI?.stop();}catch(e){notice(e.message,true);}finally{userStops--;if(reset){transportSeconds=0;updatePosition();}updateButtons();}}
 function cancelActiveJob() {
   const job = activeJob;
   if (!job) return;
@@ -937,7 +942,7 @@ async function play({selectionRange=null,selectionClipIds=null,selectionTrackIds
   if(recordingUI?.active||browserMidiRecordingUI?.active){notice('녹음 저장 또는 취소 후 재생하세요.',true);return;}
   controllerLanesUI?.cancelAudition();
   if (!project || busy) return;
-  if (nativeMidiUI?.active || audioSource || previewPreparing || activeJob?.purpose === 'preview') { await stopTransport(false); return; }
+  if (nativeMidiUI?.active || nativeAudioUI?.active || audioSource || previewPreparing || activeJob?.purpose === 'preview') { await stopTransport(false); return; }
   const token = ++previewToken;
   previewPreparing = true;
   $('playback-status').textContent = '재생 준비 중…';
@@ -952,6 +957,7 @@ async function play({selectionRange=null,selectionClipIds=null,selectionTrackIds
     if(transportSeconds>=realProjectSeconds()+.2)transportSeconds=0;
     const rendered = await renderSnapshot('preview',selectionRange?{previewRange:selectionRange,bypassTrackEffects,...(selectionTrackIds?{trackIds:selectionTrackIds}:{}),...(selectionClipIds?{clipIds:selectionClipIds}:{}),ignoreCycle:true,tailSeconds:0,autoEffectTail:false}:{});
     if (token !== previewToken || rendered.revision !== project.revision || rendered.mediaRevision !== mediaRevision) return;
+    if(nativeAudioUI?.enabled){await nativeAudioUI.play(rendered);return;}
     const response = await fetch(rendered.url);
     if (!response.ok) throw new Error('렌더된 오디오를 가져오지 못했습니다.');
     const decoded = await audioContext.decodeAudioData(await response.arrayBuffer());
@@ -1631,7 +1637,8 @@ $('timeline-lanes').addEventListener('click', (event) => {
 });
 async function seekRuler(event,scope){
   if(!project||event.button!==0)return;const view=geometry()[scope],element=$(scope==='timeline'?'timeline-ruler':'piano-ruler');
-  const target=view.xToSeconds(Math.max(0,event.clientX-element.getBoundingClientRect().left)),doc=documentState?.id;
+  const x=Math.max(0,event.clientX-element.getBoundingClientRect().left),doc=documentState?.id;
+  const target=event.altKey?view.xToSeconds(x):tickToSeconds((scope==='piano'?noteSnap():compileEditorSnap(project,{scope:'primary'})).snap(view.xToTick(x)).tick);
   const token=++seekGeneration;transportSeeking=true;const stopped=stopTransport(false,'locate');transportSeconds=target;updatePosition();updateButtons();
   await stopped;if(token!==seekGeneration)return;transportSeeking=false;if(doc===documentState?.id){transportSeconds=target;updatePosition();}updateButtons();
 }
@@ -1945,6 +1952,8 @@ async function initialize() {
   };
   events.addEventListener('snapshot',receive);
   events.addEventListener('native-transport',event=>nativeMidiUI?.event(JSON.parse(event.data)));
+  events.addEventListener('native-audio',event=>nativeAudioUI?.event(JSON.parse(event.data)));
+  events.addEventListener('audio-units',event=>audioUnitsUI?.event(JSON.parse(event.data)));
   events.addEventListener('native-settings',()=>nativeMidiUI?.settingsChanged());
   events.addEventListener('timing-settings',()=>{nativeMidiUI?.settingsChanged();window.dispatchEvent(new Event('newdaw-timing-settings'));});
   events.addEventListener('reset-settings',()=>{nativeMidiUI?.settingsChanged();window.dispatchEvent(new Event('newdaw-reset-settings'));});
@@ -1982,6 +1991,7 @@ async function loadSessionUI(){
  catch(error){notice(`이력·백업 화면을 불러오지 못했습니다: ${error.message}`,true);}
  finally{sessionUILoading=false;}
 }
+setupI18n({onChange:()=>renderUI(true)});
 initialize();
 
 async function loadResolutionUI(){
@@ -2007,6 +2017,8 @@ async function loadProjectsUI(){
 
 recordingUI=setupRecording({getContext:()=>({project,documentId:documentState?.id,busy:busy||!!browserMidiRecordingUI?.active||!!editingUI?.stepMidiArmed,connected,cursorSeconds:transportSeconds,cursorTick:project?secondsToTick(transportSeconds):0}),request:jsonFetch,onImported:refreshState,notify:notice,stopPlayback:()=>stopTransport(false),prepareBacking:async()=>{if(!await nativeMidiUI.previewAllowed())throw new Error('오버더빙은 내장 오디오 프리뷰 모드를 사용하세요.');const rendered=await renderSnapshot('preview',{ignoreCycle:true});const response=await fetch(rendered.url);if(!response.ok)throw new Error('반주 오디오를 읽을 수 없습니다.');return {bytes:await response.arrayBuffer(),startSeconds:rendered.stats?.startSeconds??0};}});
 
+nativeAudioUI=setupNativeAudio({request:jsonFetch,getContext:()=>({project,busy,connected}),notify:notice});
+audioUnitsUI=setupAudioUnits({request:jsonFetch,getContext:()=>({project,busy,connected,cursorSeconds:transportSeconds,selectedTrackIds:[...selectedTrackIds],selectedClipIds:[...selectedClipIds],tickToSeconds}),renderCurrentMix:(options)=>renderSnapshot('export',options),onImported:refreshState,notify:notice});
 metronomeUI=setupMetronome({getContext:()=>({project,playing:!!audioSource,positionSeconds:transportSeconds,secondsToTick,tickToSeconds})});
 
 void jsonFetch('/api/health').then(async result=>{if(!result.capabilities?.browserMidiInput)return;const {setupBrowserMidiInput,setupBrowserMidiRecording}=await import('./web-midi-input.mjs');browserMidiInputUI=setupBrowserMidiInput({onFilterChange:result.capabilities.projectMidiInputFilter?((filter,revision,doc)=>doc===documentState?.id?runCommand('project.midiInputFilter',{filter},revision):Promise.resolve(null)):null,filterSupported:result.capabilities.midiInputFilter===true,notify:notice,getContext:()=>({project,documentId:documentState?.id,busy,connected,cursorSeconds:transportSeconds})});editingUI?.setMidiInput(browserMidiInputUI);if(result.capabilities.midiTakeCommit)browserMidiRecordingUI=setupBrowserMidiRecording(browserMidiInputUI,{autoQuantizeSupported:result.capabilities.midiTakeAutoQuantize===true,getContext:()=>({project,documentId:documentState?.id,busy:busy||!!recordingUI?.active||!!editingUI?.stepMidiArmed,connected,selectedClip,cursorTick:project?secondsToTick(transportSeconds):0}),commitTake:(args,revision)=>runCommand('midi.record.take',args,revision),stopPlayback:()=>stopTransport(false),prepareBacking:async()=>{if(!await nativeMidiUI.previewAllowed())throw new Error('MIDI 반주는 내장 프리뷰 모드에서 사용하세요.');const rendered=await renderSnapshot('preview',{ignoreCycle:true});const response=await fetch(rendered.url);if(!response.ok)throw new Error('MIDI 반주 오디오를 읽을 수 없습니다.');return {bytes:await response.arrayBuffer(),startSeconds:rendered.stats?.startSeconds??0};},notify:notice,onCommitted:result=>{const id=result.changes?.recording?.clipId;if(id)selectClip(id);}});}).catch(error=>notice(`MIDI 입력 UI: ${error.message}`,true));

@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-08T14:43:01.993Z",
+  "updatedAt": "2026-11-09T10:59:54.253Z",
   "tasks": [
     {
       "id": "T-001",
@@ -11,7 +11,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove in the real GUI that setting a fade-in on an audio clip makes the rendered mix quieter at the clip start, and that Undo removes it.",
       "context": [
         "Inspector audio clip form (#clip-form) has inputs name=\"fadeInSeconds\" and name=\"fadeOutSeconds\" (rendered in public/app.mjs around line 724).",
@@ -35,7 +35,10 @@
       ],
       "notes": [
         "Do not change product code unless the test reveals a real bug; if it does, record it in the evidence."
-      ]
+      ],
+      "startedAt": "2026-11-08T18:29:28.407Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 28 steps including audio.GUI-fade-in-changes-render; fadeInFrames=0.5s in asset frames, before/after CLI mono-sum RMS comparisons, and Undo passed. npm run agent:verify: VERIFY PASS (guard and all .mjs syntax; unit tests skipped because this GUI-smoke-only change has no related unit test file). No product code changed; FD-20 scope limits recorded.",
+      "doneAt": "2026-11-08T18:33:27.574Z"
     },
     {
       "id": "T-002",
@@ -46,7 +49,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove clip-level mute removes the clip from the mix and invert polarity flips sample sign, both undoable.",
       "context": [
         "#clip-form checkboxes name=\"audioMute\" and name=\"invertPolarity\".",
@@ -65,7 +68,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:35:02.383Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 30 steps including audio.GUI-clip-mute-silences-render and audio.GUI-clip-polarity-inverts-render. Recorded mono-sum RMS 0.0975930279 to 0 after mute; fixed PCM sample -0.1178283691 to +0.1178283691 after polarity inversion; muted-clip state and both Undo paths passed. Initial silent fake-mic baseline was corrected by supplying a deterministic tone WAV; assertions unchanged. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T18:39:58.325Z"
     },
     {
       "id": "T-003",
@@ -76,7 +82,7 @@
       "requirements": [
         "FD-20"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove the Inspector 'clip normalize' action (data-action=normalize-audio, target #audio-normalize-target) changes only clip gainDb, is undoable, and leaves the asset file unchanged.",
       "context": [
         "Handler: public/app.mjs (search: normalize-audio) → POST /api/audio/normalize → clip.update gainDb.",
@@ -95,7 +101,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:41:16.149Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 31 steps including audio.GUI-normalize-sets-clip-gain. -1 dBFS target set clip gain within 6.96±0.05 dB, all non-gain clip fields deep-equal, source WAV SHA-256 unchanged, Undo restored previous gain. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T18:43:40.439Z"
     },
     {
       "id": "T-004",
@@ -106,7 +115,7 @@
       "requirements": [
         "FD-25"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove that with locators set and #cycle-playback pressed, playback position loops inside the locator range.",
       "context": [
         "Locators: CLI command project.locators {range:{startTick,endTick}}; GUI button #cycle-playback runs project.cycle {enabled}.",
@@ -127,7 +136,10 @@
       ],
       "notes": [
         "Headless Chrome needs --autoplay-policy=no-user-gesture-required (already set in the smoke)."
-      ]
+      ],
+      "startedAt": "2026-11-08T18:44:51.622Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 32 steps including playback.GUI-cycle-loops-locator-range. Locators 0..3840 ticks; cycleEnabled and aria-pressed checked; ~3 seconds of position-time samples stayed within 0..2.15s and a wrap was observed; Stop and Cycle off passed. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). Transport evidence only; no listening claim or product code change.",
+      "doneAt": "2026-11-08T18:47:41.235Z"
     },
     {
       "id": "T-005",
@@ -138,7 +150,7 @@
       "requirements": [
         "FD-01"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Cover creating a new Untitled project from the GUI projects dialog and saving it under a name, then reopening it.",
       "context": [
         "Dialog: #projects-button opens #projects-dialog (public/projects.mjs). New project: <details> with summary #projects-new-toggle and form #projects-new-form.",
@@ -160,7 +172,10 @@
         "npm run agent:verify",
         "npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:49:00.182Z",
+      "evidence": "npm run agent:e2e -- scripts/gui-new-project-delivery-smoke.mjs: E2E PASS, 4 steps (GUI Untitled, MIDI track, first Save-as, restart/reopen same track). Initial project bytes unchanged; script project writes confined to its temp folder. npm run agent:e2e: E2E PASS, 32 existing steps. npm run agent:verify: VERIFY PASS (guard and all .mjs syntax; no related unit tests). agent:map regenerated CODEMAP; no product code changed.",
+      "doneAt": "2026-11-08T18:52:58.644Z"
     },
     {
       "id": "T-006",
@@ -171,7 +186,7 @@
       "requirements": [
         "FD-14"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Add first-delivery coverage for the MIDI tools dialog (#midi-tools-button → #midi-operation → submit).",
       "context": [
         "scripts/gui-editing-smoke.mjs already drives #midi-tools-button, #midi-operation (quantize/transpose/velocity), #transpose-semitones, #velocity-mode, #velocity-value, #midi-tools-form [type=submit]. Copy its sequence."
@@ -188,7 +203,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:54:15.858Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 34 steps including midi.GUI-tools-transpose and midi.GUI-tools-velocity. Every selected first-part note transposed +2 and restored on Undo; all velocities set to 54 and restored individually on Undo; note counts unchanged. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). Quantize first-delivery status unchanged; no product code changed.",
+      "doneAt": "2026-11-08T18:57:05.854Z"
     },
     {
       "id": "T-007",
@@ -199,7 +217,7 @@
       "requirements": [
         "FD-13"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Prove the keyboard shortcuts undo and redo the last edit when focus is not in an input.",
       "context": [
         "Handler in public/app.mjs keydown: (metaKey||ctrlKey)&&key 'z' → history.undo / history.redo (shift)."
@@ -214,7 +232,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T18:58:18.965Z",
+      "evidence": "npm run agent:e2e: E2E PASS, 35 steps including project.GUI-keyboard-undo-redo. With #timeline-scroll focused, ControlOrMeta+Z reverted the CLI track-name edit and increased revision; ControlOrMeta+Shift+Z reapplied it and increased revision. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests). No product code changed.",
+      "doneAt": "2026-11-08T19:00:34.615Z"
     },
     {
       "id": "T-008",
@@ -226,7 +247,7 @@
         "FD-16",
         "FD-21"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Confirm scripts/gui-recording-protection-smoke.mjs and scripts/gui-recording-workflow-smoke.mjs still pass with the harness runner, and fix only test drift if they fail.",
       "context": [
         "Run with: npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
@@ -243,7 +264,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
         "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:01:44.613Z",
+      "evidence": "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs: E2E PASS, 6 steps. npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs: E2E PASS, 4 steps. Both scripts passed unchanged; no selector drift, product bug, or code change. docs/VALIDATION.md records scope and physical-device limitation. npm run agent:verify: VERIFY PASS (guard and syntax; no related unit tests).",
+      "doneAt": "2026-11-08T19:03:32.114Z"
     },
     {
       "id": "T-009",
@@ -252,7 +276,7 @@
       "priority": 4,
       "size": "S",
       "requirements": [],
-      "status": "todo",
+      "status": "done",
       "goal": "Produce .test-output/smoke-sweep.json listing every scripts/gui-*-smoke.mjs with pass/fail and first error line, without changing product code.",
       "context": [
         "64 smoke scripts exist. Some may be stale. Use scripts/agent/e2e.mjs per script or write scripts/agent/smoke-sweep.mjs that loops and records results (timeout 5 min each)."
@@ -269,7 +293,10 @@
       "verify": [
         "node --check scripts/agent/smoke-sweep.mjs",
         "npm run agent:guard"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:12:03.474Z",
+      "evidence": "npm run agent:smoke-sweep completed 64 unique GUI smokes sequentially: 45 passed, 19 failed; exit 1 reported failures after writing .test-output/smoke-sweep.json. Result assertion PASS for exact script coverage, fields, no duplicate first-delivery, and one follow-up per failure. Added T-017 through T-035; no existing smoke/product code changed. node --check PASS; npm run agent:guard PASS; npm run agent:verify VERIFY PASS. Screenshots retained under .test-output/smoke-sweep-screenshots/.",
+      "doneAt": "2026-11-08T19:27:40.276Z"
     },
     {
       "id": "T-010",
@@ -278,8 +305,7 @@
       "priority": 5,
       "size": "XS",
       "requirements": [],
-      "status": "blocked",
-      "blockedReason": "Needs a human product decision. Currently clicking the timeline/piano ruler sets the cursor to the exact pointer position (e.g. 7700 ticks instead of 7680), so pasting/importing 'at cursor' lands slightly off-grid. Ask the user whether ruler clicks should follow the Snap setting.",
+      "status": "done",
       "goal": "Get a decision; if yes, snap seekRuler() result with the existing noteSnap()/compileEditorSnap and add a test.",
       "context": [
         "public/app.mjs seekRuler(event, scope) (search: async function seekRuler)."
@@ -292,7 +318,13 @@
       ],
       "verify": [
         "npm run agent:e2e"
-      ]
+      ],
+      "notes": [
+        "Human decision recorded 2026-11-09: the maintainer chose Snap 적용. Timeline/piano ruler clicks follow the current primary/piano Snap grid; Alt/Option preserves the exact pointer position."
+      ],
+      "startedAt": "2026-11-09T00:13:21.309Z",
+      "evidence": "Maintainer explicitly chose Snap 적용; decision recorded in notes before code. Timeline/piano ruler clicks now use current primary/piano grid, Alt/Option preserves exact pointer position. npm run agent:e2e: E2E PASS, 37 steps including playback.GUI-ruler-click-snap-and-alt-override for both rulers and Alt. npm run agent:verify: VERIFY PASS. Final smoke sweep separately passed 64/64.",
+      "doneAt": "2026-11-09T00:19:30.115Z"
     },
     {
       "id": "T-011",
@@ -301,7 +333,7 @@
       "priority": 4,
       "size": "M",
       "requirements": [],
-      "status": "todo",
+      "status": "done",
       "dependsOn": [
         "T-008"
       ],
@@ -326,7 +358,10 @@
         "npm run agent:e2e",
         "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
         "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:28:56.901Z",
+      "evidence": "Audio/Web MIDI hosts now share closed-by-default details#recording-panel immediately after transport; control IDs unchanged and prepare/record/save opens it automatically. Screenshots saved to .test-output/recording-panel-before.png and recording-panel-after.png. npm run agent:e2e: E2E PASS, 36 steps including default collapsed/hosts and active auto-open. Recording workflow E2E PASS 4; protection E2E PASS 6 using direct :scope>summary. npm run agent:verify: VERIFY PASS. English/Korean development notes and validation updated; physical devices unverified.",
+      "doneAt": "2026-11-08T19:36:21.907Z"
     },
     {
       "id": "T-012",
@@ -338,7 +373,7 @@
         "FD-22",
         "FD-26"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Find out and test what happens when a project is ~150 s long: CLI render must succeed (limit is 600 s); GUI Play must either work or show a clear Korean message — never fail silently.",
       "context": [
         "src/media/render-limits.mjs MAX_RENDER_SECONDS=600. Older docs mention a 120 s preview window for the built-in instrument path; verify current behaviour in public/app.mjs play() and src/server.mjs /api/render."
@@ -355,7 +390,10 @@
       "verify": [
         "node --test tests/long-project-render-integration.test.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:37:42.906Z",
+      "evidence": "node --test tests/long-project-render-integration.test.mjs: 2/2 PASS. 150s project CLI render 48kHz, >=150s frames, nonzero PCM at 140s; 601s render CLI_ERROR/RENDER_FAILED with 600s message, unchanged project and no output. Standalone GUI probe probeExecArgv=[]: playing=true, position 00:00.010 to 00:00.714, Stop passed, pageErrors=[], silentFailure=false. Earlier inline --input-type worker error identified as probe artifact; no product follow-up needed. npm run agent:verify: VERIFY PASS including related integration file.",
+      "doneAt": "2026-11-08T19:45:11.754Z"
     },
     {
       "id": "T-013",
@@ -368,7 +406,7 @@
         "FD-21",
         "FD-22"
       ],
-      "status": "todo",
+      "status": "done",
       "goal": "Write docs/agent/MANUAL_CHECKS.md: a short checklist a human follows with a real mic/headphones (record, overdub with backing, count-in, metronome, monitor latency, listen to mix export).",
       "context": [
         "Agents cannot listen. This file lets the human record results; agents must not mark these items verified."
@@ -382,7 +420,10 @@
       ],
       "verify": [
         "npm run agent:guard"
-      ]
+      ],
+      "startedAt": "2026-11-09T00:09:59.613Z",
+      "evidence": "Created docs/agent/MANUAL_CHECKS.md with six numbered bilingual real-device procedures, expected results and empty observed-result columns. Structural assertion PASS; FD-16/21/22 link the checklist. npm run agent:guard PASS; npm run agent:verify VERIFY PASS. Documentation only: no real microphone, speaker, listening or latency result claimed.",
+      "doneAt": "2026-11-09T00:11:50.123Z"
     },
     {
       "id": "T-014",
@@ -417,7 +458,7 @@
       "doneAt": "2026-11-08T14:33:24.494Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 3,
       "area": "test-reliability",
       "id": "T-015",
@@ -440,7 +481,10 @@
       "verify": [
         "npm run agent:verify",
         "npm run agent:e2e"
-      ]
+      ],
+      "startedAt": "2026-11-08T19:04:43.257Z",
+      "evidence": "Deterministic reproduction: delaying gain POST 200ms while SSE advanced revision caused old act() to time out at pan after 23 steps; instrumentation recorded sseAdvancedBeforeResponse=true, busyWhileResponseDelayed=true, gain HTTP 200 and no HTTP errors. Replaced nonexistent aria-busy wait with actual busy-driven #project-name.disabled===false. npm run agent:e2e: E2E PASS, 35 steps; one pan request expectedRevision=36 pan=0.3, assertions/timeouts unchanged. npm run agent:verify: VERIFY PASS. Test synchronization race only; no product code changed.",
+      "doneAt": "2026-11-08T19:10:46.681Z"
     },
     {
       "status": "done",
@@ -468,6 +512,1650 @@
       "startedAt": "2026-11-08T14:41:50.256Z",
       "evidence": "Documentation-only: agent:verify PASS (guard and all .mjs syntax); git diff --check PASS; prompt structure, privacy and local links PASS. First prompt preserved with portable path, bilingual introduction, author credits and README links. Explicit user instruction authorizes this commit and push.",
       "doneAt": "2026-11-08T14:43:01.992Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-017",
+      "title": "Investigate failing smoke: gui-controller-bend-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-bend-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-bend-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 27510 ms.",
+        "First recorded error line: FAIL: FAILED after 2 checks AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs; recorded first error: FAIL: FAILED after 2 checks AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T19:46:37.121Z",
+      "evidence": "Reproduced failure after 2 checks. Screenshot showed viewport resize cancellation during active drag; fullPage screenshot triggered the intended ResizeObserver reset. Changed only v78-ramp-bend-preview capture to fullPage:false, with no gesture/assertion/product change. npm run agent:e2e -- scripts/gui-controller-bend-smoke.mjs: E2E PASS, 13 steps. npm run agent:verify: VERIFY PASS. Evidence recorded in docs/VALIDATION.md and screenshots retained under .test-output/t017-screenshots/.",
+      "doneAt": "2026-11-08T19:49:55.512Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-018",
+      "title": "Investigate failing smoke: gui-controller-paint-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-paint-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-paint-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1489 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T19:51:08.794Z",
+      "evidence": "Reproduced pre-browser CLI failure. New server project has tempoTrackEnabled=false; multi-point tempo.set was rejected, while the same engine commands apply after enabling tempo mode. Added tempo.mode enabled:true before tempo.set as fixture drift fix; assertions unchanged. npm run agent:e2e -- scripts/gui-controller-paint-smoke.mjs: E2E PASS, 16 steps. npm run agent:verify: VERIFY PASS. Evidence recorded in docs/VALIDATION.md.",
+      "doneAt": "2026-11-08T19:54:30.244Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-019",
+      "title": "Investigate failing smoke: gui-controller-shapes-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-shapes-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-shapes-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1429 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T19:55:33.398Z",
+      "evidence": "Reproduced the same fixed-tempo multi-point tempo.set rejection as T-018. Added tempo.mode enabled:true before tempo.set; gestures/assertions/product code unchanged. npm run agent:e2e -- scripts/gui-controller-shapes-smoke.mjs: E2E PASS, 23 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T19:57:50.848Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-020",
+      "title": "Investigate failing smoke: gui-controller-snap-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-controller-snap-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-controller-snap-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1423 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T19:59:02.902Z",
+      "evidence": "Reproduced fixed-tempo multi-point tempo.set rejection. Enabled tempo.mode before tempo.set as fixture-only drift fix; assertions unchanged. npm run agent:e2e -- scripts/gui-controller-snap-smoke.mjs: E2E PASS, 13 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T20:01:04.450Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-021",
+      "title": "Investigate failing smoke: gui-document-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-document-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-document-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 34234 ms.",
+        "First recorded error line: FAIL:     at importSource (/Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-document-smoke.mjs:54:24)"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-document-smoke.mjs; recorded first error: FAIL:     at importSource (/Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-document-smoke.mjs:54:24)",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-document-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-document-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T20:03:07.750Z",
+      "evidence": "Reproduced first import timeout. Current GUI rejected null importFileDraft because the test bypassed Import options; screenshot showed retry notice. Updated importSource to open Import and use the actual file chooser, preserving HTTP/project assertions. npm run agent:e2e -- scripts/gui-document-smoke.mjs: E2E PASS, 17 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T20:07:19.288Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-022",
+      "title": "Investigate failing smoke: gui-drafts-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-drafts-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-drafts-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 26992 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-drafts-smoke.mjs:65:23 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-drafts-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-drafts-smoke.mjs:65:23 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-drafts-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-drafts-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T20:08:39.236Z",
+      "evidence": "Reproduced null-draft import timeout after four passing steps. Routed upload through Import options and actual file chooser as in the current GUI contract; assertions unchanged. npm run agent:e2e -- scripts/gui-drafts-smoke.mjs: E2E PASS, 17 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T20:11:11.788Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-023",
+      "title": "Investigate failing smoke: gui-editing-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-editing-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-editing-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 32374 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-editing-smoke.mjs:49:74 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-editing-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-editing-smoke.mjs:49:74 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-editing-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-editing-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:25:38.071Z",
+      "blockedReason": "Original stale-dialog wait timed out; source shows pre-submit conflicts intentionally keep the dialog open. Updated conflict expectation passed. The following clip-tools-button then timed out on three attempts. Diagnostic copy showed no duplicate request, a nonzero enabled button rect, but isVisible=false and elementFromPoint hit timeline-clip. Real busy synchronization and a flex-shrink layout attempt did not resolve it. Known T-023 file edits and diagnostic copy were reverted; no product change retained. Needs focused UI/layout investigation or maintainer decision.",
+      "evidence": "Focused DOM ancestry probe proved clip-tools-button is inside closed details#arrangement-edit-menu; hit-target was timeline because the menu was closed. Open direct summary before every clip-tools click; verify intentional MIDI conflict notice with Escape close, submit actual duplicate-track confirmation, and use stable track-edit up selector. npm run agent:e2e -- scripts/gui-editing-smoke.mjs: E2E PASS, all 14 steps. No product code changed. npm run agent:verify: VERIFY PASS; diagnostic copy removed.",
+      "doneAt": "2026-11-08T23:31:15.576Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-024",
+      "title": "Investigate failing smoke: gui-midi-events-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-events-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-events-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 28803 ms.",
+        "First recorded error line: FAIL: PASS gui.midi-events.actual-list-includes-notes-controllers-and-render-limit"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs; recorded first error: FAIL: PASS gui.midi-events.actual-list-includes-notes-controllers-and-render-limit",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:32:14.100Z",
+      "evidence": "Reproduced timeout after 12 checks at midi-export-format. Current control is inside a dialog that closes after download; open midi-export-dialog before each SMF 0/1 export. npm run agent:e2e -- scripts/gui-midi-events-smoke.mjs: E2E PASS, 16 steps. No product code changed. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:34:33.693Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-025",
+      "title": "Investigate failing smoke: gui-midi-modifiers-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-modifiers-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-modifiers-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 28169 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-midi-modifiers-smoke.mjs:40:242 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-midi-modifiers-smoke.mjs:40:242 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:35:36.959Z",
+      "evidence": "Reproduced freeze timeout after 8 checks. Current status says 저장된 출력을 확정, test waited for 실제 이벤트로 확정. Updated only completion text wait; all revision/source/MIDI/reset/no-op/Undo assertions unchanged. npm run agent:e2e -- scripts/gui-midi-modifiers-smoke.mjs: E2E PASS, 12 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:38:06.959Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-026",
+      "title": "Investigate failing smoke: gui-midi-playback-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-midi-playback-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-midi-playback-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 26492 ms.",
+        "First recorded error line: FAIL: FAILED after 1 checks; pageErrors=[]: page.waitForResponse: Timeout 25000ms exceeded while waiting for event \"response\""
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs; recorded first error: FAIL: FAILED after 1 checks; pageErrors=[]: page.waitForResponse: Timeout 25000ms exceeded while waiting for event \"response\"",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:39:00.903Z",
+      "evidence": "Reproduced missing /api/render after render-button click. Current GUI requires mix-export-submit; updated render helper to submit dialog, preserving all PCM/Web Audio assertions. npm run agent:e2e -- scripts/gui-midi-playback-smoke.mjs: E2E PASS, 11 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:41:07.018Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-027",
+      "title": "Investigate failing smoke: gui-note-object-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-object-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-object-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1435 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-object-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-object-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-object-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:41:59.422Z",
+      "evidence": "Reproduced fixed-tempo multi-point tempo.set rejection before browser launch. Enabled tempo.mode before tempo.set as fixture-only fix; assertions unchanged. npm run agent:e2e -- scripts/gui-note-object-smoke.mjs: E2E PASS, 24 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:43:39.763Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-028",
+      "title": "Investigate failing smoke: gui-note-paint-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-paint-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-paint-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1427 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:44:32.830Z",
+      "evidence": "Reproduced fixed-tempo tempo.set rejection before browser launch. Enabled tempo.mode before tempo.set; assertions/product code unchanged. npm run agent:e2e -- scripts/gui-note-paint-smoke.mjs: E2E PASS, 23 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:46:12.531Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-029",
+      "title": "Investigate failing smoke: gui-note-shapes-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-note-shapes-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-note-shapes-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 1425 ms.",
+        "First recorded error line: FAIL:   const err = new Error(message);"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs; recorded first error: FAIL:   const err = new Error(message);",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:47:05.425Z",
+      "evidence": "Reproduced fixed-tempo tempo.set rejection before browser launch. Enabled tempo.mode before tempo.set; all shape/source/history assertions unchanged. npm run agent:e2e -- scripts/gui-note-shapes-smoke.mjs: E2E PASS, 20 steps. npm run agent:verify: VERIFY PASS. docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:48:40.598Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-030",
+      "title": "Investigate failing smoke: gui-projects-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-projects-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-projects-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 33761 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-projects-smoke.mjs:112:60 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-projects-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-projects-smoke.mjs:112:60 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-projects-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-projects-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:49:34.806Z",
+      "evidence": "Reproduced render timeout after 9 checks because the test only opened export dialog. Added mix-export-submit to start actual render; media assertions unchanged. npm run agent:e2e -- scripts/gui-projects-smoke.mjs: E2E PASS, 20 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:51:42.148Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-031",
+      "title": "Investigate failing smoke: gui-split-controller-policy-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-controller-policy-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-controller-policy-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16382 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-controller-policy-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-controller-policy-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:52:40.644Z",
+      "evidence": "Reproduced clip-tools-button timeout in closed arrangement-edit-menu. Both clicks now open the direct summary; split/controller/Undo assertions unchanged. npm run agent:e2e -- scripts/gui-split-controller-policy-smoke.mjs: E2E PASS, 4 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:54:38.211Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-032",
+      "title": "Investigate failing smoke: gui-split-note-policy-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-note-policy-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-note-policy-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16392 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-note-policy-smoke.mjs:35:334 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-note-policy-smoke.mjs:35:334 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:55:38.752Z",
+      "evidence": "Reproduced closed arrangement-edit-menu timeout. Opened direct summary before both clip-tool actions; split/history assertions unchanged. npm run agent:e2e -- scripts/gui-split-note-policy-smoke.mjs: E2E PASS, 3 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-08T23:57:44.941Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-033",
+      "title": "Investigate failing smoke: gui-split-settings-race-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-settings-race-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-settings-race-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16381 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-race-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-race-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-08T23:58:36.249Z",
+      "evidence": "Reproduced closed-menu initial timeout. Opened arrangement-edit-menu before all clip-tools actions, including split preference save/reopen and conflict checks. npm run agent:e2e -- scripts/gui-split-settings-race-smoke.mjs: E2E PASS, 8 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-09T00:01:15.792Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-034",
+      "title": "Investigate failing smoke: gui-split-settings-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-split-settings-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-split-settings-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 16375 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-smoke.mjs:35:407 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-split-settings-smoke.mjs:35:407 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T00:02:10.288Z",
+      "evidence": "Reproduced closed-menu timeout. Opened arrangement-edit-menu before all clip-tools actions, preserving split and preference assertions. npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs: E2E PASS, 6 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-09T00:04:12.461Z"
+    },
+    {
+      "status": "done",
+      "priority": 4,
+      "area": "test-reliability",
+      "id": "T-035",
+      "title": "Investigate failing smoke: gui-workspace-smoke.mjs",
+      "size": "S",
+      "goal": "Reproduce and resolve the recorded T-009 failure in scripts/gui-workspace-smoke.mjs without weakening assertions, or document a product defect with a focused task.",
+      "files": [
+        "scripts/gui-workspace-smoke.mjs",
+        ".test-output/smoke-sweep.json"
+      ],
+      "context": [
+        "T-009 sweep status: failed in 33086 ms.",
+        "First recorded error line: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-workspace-smoke.mjs:83:60 {"
+      ],
+      "acceptance": [
+        "Reproduce the failure with npm run agent:e2e -- scripts/gui-workspace-smoke.mjs; recorded first error: FAIL:     at /Users/mo/Documents/moMusic/sovaroll-DAW/scripts/gui-workspace-smoke.mjs:83:60 {",
+        "Classify test drift, synchronization, environment, or product defect and apply only a justified minimal fix; do not delete or weaken assertions.",
+        "Pass npm run agent:e2e -- scripts/gui-workspace-smoke.mjs and npm run agent:verify, or block with evidence if a maintainer decision is required."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-workspace-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T00:05:12.608Z",
+      "evidence": "Reproduced workspace render timeouts after 6 and 20 checks. Normal and delayed-gate paths now submit mix-export-submit; media and stale-render assertions unchanged. npm run agent:e2e -- scripts/gui-workspace-smoke.mjs: E2E PASS, 21 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-09T00:08:38.682Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "audio",
+      "id": "T-036",
+      "title": "E2E: audio fade-out changes rendered mix and Undo",
+      "size": "S",
+      "requirements": [
+        "FD-20"
+      ],
+      "goal": "Prove in the real GUI that an Inspector fade-out attenuates the imported clip ending and Undo restores it.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "public/app.mjs"
+      ],
+      "acceptance": [
+        "Select an imported audio clip and set fadeOutSeconds=0.5 in the Inspector; verify fadeOutFrames in asset frames.",
+        "Compare CLI-rendered mono-sum RMS at the clip ending before/after the fade, with unrelated tracks controlled as needed.",
+        "Undo removes fade-out and the whole first-delivery E2E passes."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T01:50:40.491Z",
+      "evidence": "audio.GUI-fade-out-changes-render passed: 0.5s Inspector fade-out converted to asset frames, ending RMS decreased versus matching baseline and attenuated more than fade beginning, Undo removed it. npm run agent:e2e: E2E PASS, 38 steps. npm run agent:verify: VERIFY PASS. FD-20 requirements and validation updated.",
+      "doneAt": "2026-11-09T01:54:05.703Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "midi",
+      "id": "T-037",
+      "title": "E2E: quantize selected MIDI notes in delivery flow",
+      "size": "S",
+      "requirements": [
+        "FD-14"
+      ],
+      "goal": "Add first-delivery coverage for the existing MIDI tools quantize dialog without changing note counts or weakening later assertions.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "scripts/gui-editing-smoke.mjs"
+      ],
+      "acceptance": [
+        "Use the MIDI tools dialog to quantize a known off-grid note and verify the exact expected startTick.",
+        "Undo restores the original startTick and note counts remain unchanged.",
+        "The whole first-delivery E2E passes."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T01:54:33.545Z",
+      "evidence": "midi.GUI-tools-quantize passed: off-grid startTick 25 quantized to 0 with selection 1/16 grid, note count unchanged, Undo restored 25. npm run agent:e2e: E2E PASS, 39 steps. npm run agent:verify: VERIFY PASS. FD-14 and validation updated.",
+      "doneAt": "2026-11-09T01:58:39.031Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "project",
+      "id": "T-038",
+      "title": "E2E: automatic backup and recovery in the delivery flow",
+      "size": "M",
+      "requirements": [
+        "FD-04"
+      ],
+      "goal": "Verify automatic backup creation and recovery through the real GUI in an isolated temporary project.",
+      "files": [
+        "scripts/gui-first-delivery-smoke.mjs",
+        "scripts/gui-recovery-smoke.mjs"
+      ],
+      "acceptance": [
+        "Create a backup through the existing GUI and confirm the backup entry is available.",
+        "Recover through the actual GUI and verify the expected project content without modifying user projects.",
+        "The targeted recovery smoke and first-delivery E2E pass, or record a justified separate recovery-script command."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T01:58:55.610Z",
+      "evidence": "New gui-auto-backup-recovery-smoke E2E PASS, 4 steps: GUI original track, backup creation/listing, independent CLI recover-backup, GUI open recovered project with original track/clip. Original project bytes unchanged and files isolated. Default agent:e2e PASS 39 steps; agent:verify VERIFY PASS. agent:map updated; FD-04 evidence recorded.",
+      "doneAt": "2026-11-09T02:04:22.509Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "audio",
+      "id": "T-039",
+      "title": "E2E: recording assistance controls and real captured results",
+      "size": "M",
+      "requirements": [
+        "FD-21"
+      ],
+      "goal": "Verify input selection, gain, monitoring, count-in, metronome and backing-track controls through the GUI using fake devices without claiming hardware verification.",
+      "files": [
+        "scripts/gui-recording-protection-smoke.mjs",
+        "scripts/gui-recording-workflow-smoke.mjs",
+        "public/recording-ui.mjs"
+      ],
+      "acceptance": [
+        "Exercise each supported recording assistance control through the GUI and verify the stored or rendered behavior that is observable in the harness.",
+        "Preserve project state on rejected or cancelled actions and keep the fake-device limitation explicit.",
+        "Both recording smokes and agent:verify pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T02:04:41.913Z",
+      "evidence": "New gui-recording-assistance-smoke E2E PASS, 4 steps: input selection, nonzero baseline, count-in 4 oscillators, backing 4.2s, monitor path, stereo WAV, metronome scheduling; -6dB gain ratio 0.5011878275. Existing recording workflow/protection PASS 4/6. agent:verify VERIFY PASS. Fake-device/Web Audio only; hardware verification not claimed. Requirements/validation/map updated.",
+      "doneAt": "2026-11-09T02:08:30.678Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "ux",
+      "id": "T-040",
+      "title": "Bilingual UI: Korean/English primary workspace and persisted language choice",
+      "size": "M",
+      "goal": "Add a persisted Korean/English language switch for the primary SovaRoll workspace without changing control IDs or behavior. Korean remains the default; translate the top-level transport, arrangement and recording controls used in the first-delivery flow.",
+      "files": [
+        "public/index.html",
+        "public/app.mjs",
+        "public/styles.css",
+        "scripts/gui-first-delivery-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "A discoverable language control switches primary workspace labels between Korean and English and persists across reload without changing project state.",
+        "Existing Korean E2E selectors and behavior remain unchanged; a new browser check verifies English labels and persistence.",
+        "Both language documentation editions record the actual supported scope; no full-UI translation claim.",
+        "npm run agent:e2e and npm run agent:verify pass."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T02:11:29.967Z",
+      "evidence": "Persisted Korean/English selector added for primary transport/arrangement/recording workspace; IDs and Korean default preserved. E2E PASS 40 steps including English labels, reload persistence, unchanged revision and Korean return. agent:verify:full PASS 172 files; test:native PASS 97. Manuals updated in both languages with advanced-dialog limits; no full bilingual claim.",
+      "doneAt": "2026-11-09T02:22:11.931Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "native-audio",
+      "id": "T-041",
+      "title": "Native audio foundation: validated WAV preview backend with offline tests",
+      "size": "M",
+      "goal": "Implement a separate macOS AVAudioEngine preview foundation for existing PCM16 WAV renders: explicit validated play/stop/status lifecycle and deterministic offline tests, without changing current GUI or native MIDI behavior.",
+      "files": [
+        "native/macos/audio-bridge.swift",
+        "native/tests/audio-bridge.test.mjs",
+        "scripts/build-native-audio.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "A separate native audio helper accepts only validated local PCM16 WAV input and exposes explicit play/stop/status without implicit device selection or changes to the existing MIDI helper.",
+        "Native tests cover WAV validation, invalid-input rejection and deterministic offline rendering/lifecycle without claiming listening or low-latency hardware quality.",
+        "The new backend is clearly marked not yet integrated with GUI playback; existing native and full product suites pass.",
+        "Both development-note languages record actual scope and next integration work."
+      ],
+      "verify": [
+        "node --test native/tests/audio-bridge.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T02:22:49.515Z",
+      "evidence": "Separate AVAudioEngine helper validates local PCM16 WAV and supports play/status/stop with explicit output permission. Offline mono/stereo renders preserve source PCM SHA-256. Targeted native tests 2 PASS; npm run test:native 99 PASS; agent:verify:full 172 files PASS. GUI/native-MIDI integration intentionally not implemented; T-042 added. Bilingual development notes updated; no listening or low-latency claim.",
+      "doneAt": "2026-11-09T02:30:59.007Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "native-audio",
+      "id": "T-042",
+      "title": "Integrate optional native audio preview with GUI transport",
+      "size": "L",
+      "dependsOn": [
+        "T-041"
+      ],
+      "goal": "Connect the validated native audio helper to an explicit opt-in preview path, preserving the existing built-in preview and native MIDI behavior.",
+      "files": [
+        "native/macos/audio-bridge.swift",
+        "native/macos/client.mjs",
+        "src/server.mjs",
+        "public/app.mjs",
+        "native/tests/audio-bridge.test.mjs"
+      ],
+      "acceptance": [
+        "An explicit opt-in native audio preview mode routes an existing rendered WAV through the helper with Play/Stop/status and structured Korean errors; the default built-in preview remains unchanged.",
+        "Concurrent edits, document changes and Stop cancel or stop the correct native job without stale output; no physical-device quality claim.",
+        "Add server/helper integration tests and browser coverage using offline or mocked native paths where hardware is unavailable.",
+        "Document GUI integration scope and run targeted tests, agent:e2e, native tests and agent:verify:full."
+      ],
+      "verify": [
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T02:31:26.200Z",
+      "evidence": "Optional native audio mode integrated with completed server WAV jobs; built-in preview unchanged. API tests PASS 2 for offline completion, stale/unknown jobs, Stop conflict and edit cleanup. GUI native-audio smoke PASS 2 for offline preview and active Stop. Default E2E PASS 40; native suite PASS 101; agent:verify:full PASS 172. T-043 added for safe Audio Unit discovery. No hardware-listening or MIDI-sync claim.",
+      "doneAt": "2026-11-09T03:16:28.038Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-043",
+      "title": "External audio unit foundation: safe local discovery and explicit selection boundary",
+      "size": "M",
+      "dependsOn": [
+        "T-042"
+      ],
+      "goal": "Add a separate macOS Audio Unit discovery helper that lists local component metadata and rejects invalid selection without instantiating or executing plugin audio. Preserve current playback and provide a tested boundary for future hosting.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "scripts/build-native-audio-units.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "The helper uses AVAudioUnitComponentManager to return bounded structured component metadata without auto-instantiating a component or changing current playback.",
+        "Invalid/unknown selections and malformed requests fail with structured errors; tests cover protocol and discovery without depending on a particular installed plugin.",
+        "Documentation explicitly says plugin hosting/instantiation is not yet implemented and identifies the next task; existing native and product suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T03:16:59.609Z",
+      "evidence": "Audio Unit helper lists bounded component metadata and exact-ID selection with structured invalid/ambiguous errors; selection never instantiates code. Targeted native tests 2 PASS without installed-plugin dependency. npm run test:native PASS 103; agent:verify:full PASS 172. T-044 added for explicit offline instantiation. Bilingual docs updated; no hosting claim.",
+      "doneAt": "2026-11-09T03:23:25.920Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-044",
+      "title": "Audio Unit offline instantiation: explicit component and deterministic probe",
+      "size": "L",
+      "dependsOn": [
+        "T-043"
+      ],
+      "goal": "Extend the separate Audio Unit helper so an explicitly selected local component can be instantiated only by a dedicated command and probed offline, without changing current playback or auto-loading components.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "Instantiation is separate from selection and requires a previously discovered exact component ID plus explicit offline intent; unknown or ambiguous IDs preserve state.",
+        "Tests use an available system component when present or record a clear environment-limited result without claiming plugin compatibility or sound quality.",
+        "Lifecycle cleanup and errors are structured; no current playback or GUI behavior changes.",
+        "Document actual offline scope and add the next GUI hosting task; native and full suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T03:24:00.598Z",
+      "evidence": "Explicit offline-only Audio Unit instantiation requires exact ID and intent; errors preserve state and release cleans lifecycle. Observed system effect instantiated and format/cleanup passed. Targeted native tests 3 PASS; native suite 104 PASS; full verification 172 files PASS. T-045 added for bounded offline PCM processing. No GUI/playback or compatibility claim.",
+      "doneAt": "2026-11-09T04:31:00.476Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-045",
+      "title": "Audio Unit offline processing: render PCM through an explicitly instantiated effect",
+      "size": "L",
+      "dependsOn": [
+        "T-044"
+      ],
+      "goal": "Extend the separate Audio Unit helper to render a bounded PCM16 input through an explicitly instantiated effect using AVAudioEngine offline mode, with lifecycle cleanup and deterministic native evidence.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "Offline processing requires a previously instantiated exact component, validated PCM16 WAV input and explicit bounds; unknown state or invalid input preserves the current probe.",
+        "Native tests compare deterministic source/output PCM and verify cleanup, without claiming plugin compatibility, listening or low-latency quality.",
+        "Current GUI and native MIDI behavior remain unchanged; document the offline-only scope and next integration task.",
+        "Native and full product suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:31:38.169Z",
+      "evidence": "Offline PCM16 WAV processed through explicitly instantiated system effect with AVAudioEngine. Two repeated renders had identical output hashes; source/frame/rate/channel checked; no-instance/missing-file errors preserved lifecycle. Targeted native tests 4 PASS; native suite 105 PASS; full verification 172 files PASS. T-046 added for server/GUI offline probe. No listening/compatibility/low-latency claim.",
+      "doneAt": "2026-11-09T04:38:03.821Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-046",
+      "title": "GUI Audio Unit offline probe: select a component and render the current mix",
+      "size": "L",
+      "dependsOn": [
+        "T-045"
+      ],
+      "goal": "Expose the validated Audio Unit helper through an explicit server/GUI offline probe. Let the user discover/select a component, instantiate it and render the current mix without changing default playback.",
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "Server routes enforce active-document/revision checks, exact component IDs, completed WAV jobs and helper ownership; no browser-provided executable path or automatic plugin loading.",
+        "GUI lists components only on demand, shows structured Korean errors, instantiates/renders only on explicit action, and leaves project revision and default playback unchanged.",
+        "Tests cover server/helper lifecycle and GUI offline render with no hardware or compatibility claim; both documentation languages record scope.",
+        "Targeted tests, agent:e2e, native tests and agent:verify:full pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:38:49.062Z",
+      "evidence": "Server/GUI Audio Unit offline probe completed with revision/document guards and no browser executable path. Server test 1 PASS and GUI 2 PASS; default E2E 40 PASS; native suite 106 PASS; full verification 172 files PASS after idle-reset SSE suppression. T-047 added for downloadable processed WAV. No hardware/compatibility/quality claim.",
+      "doneAt": "2026-11-09T04:54:21.935Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-047",
+      "title": "Audio Unit offline output: downloadable processed WAV without source mutation",
+      "size": "M",
+      "dependsOn": [
+        "T-046"
+      ],
+      "goal": "Return the actual processed PCM16 WAV from the offline Audio Unit probe and expose an explicit GUI download, preserving the source render and project state.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "The helper returns bounded rendered WAV bytes or a server-owned download with matching PCM hash, frames, rate and channels; cleanup cannot race the read/download.",
+        "GUI download is explicit and decoded WAV is non-empty; source render and project revision remain unchanged.",
+        "Tests verify output bytes, metadata and cleanup without claiming sound quality; documentation records the actual offline output scope.",
+        "Targeted tests, native and full suites pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:55:00.872Z",
+      "evidence": "Helper writes actual PCM16 WAV and server reads before cleanup; download returns decoded frames/rate/channels and matching PCM hash. Server test 1 PASS and GUI 3 PASS including non-empty stereo 48kHz download. Native 106 PASS; full verification 172 files PASS. Source render/project unchanged. T-048 added for editable clip import.",
+      "doneAt": "2026-11-09T05:03:41.269Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-048",
+      "title": "Import processed Audio Unit WAV as an editable clip with Undo",
+      "size": "M",
+      "dependsOn": [
+        "T-047"
+      ],
+      "goal": "Use the existing verified WAV import path to add the processed Audio Unit output as a new editable audio clip at the cursor, with revision history and Undo.",
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The GUI import action fetches the server-owned processed WAV and uses the existing import endpoint; no new executable or arbitrary path is accepted.",
+        "A new editable audio clip appears at the cursor, source render/output remains unchanged, and one Undo removes the imported clip.",
+        "Tests verify revision/history and decoded output without claiming sound quality; existing suites pass and both development notes record the scope."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:04:11.873Z",
+      "evidence": "Targeted GUI E2E PASS: 4 steps including audioUnits.GUI-import-processed-clip-and-Undo; ruler cursor 4s, exactly one processed audio clip at 4*sampleRate with decoded frame count and WAV SHA-256, preserved Audio Unit output metadata, and one Undo restored prior clips/tracks/assets. Default E2E PASS: 40 steps. npm run test:native: 106/106 passed. npm run agent:verify:full and final npm run agent:verify: VERIFY PASS, guard/syntax and 172 product test files. Audio Unit self-import alone preserves offline instance/output; no listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:17:36.477Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-049",
+      "title": "Audio Unit offline processing for the locator range",
+      "size": "M",
+      "dependsOn": [
+        "T-048"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-25"
+      ],
+      "goal": "Allow an explicit locator-range Audio Unit offline bounce and import the processed WAV at the locator start with Undo, while retaining whole-mix processing as the default.",
+      "context": [
+        "public/app.mjs renderSnapshot supports purpose=export with exportRange=locators and tailSeconds=0.",
+        "public/audio-units.mjs currently renders the whole mix and imports at the transport cursor.",
+        "Use existing locators, renderer, processed output and WAV import; do not add a plugin path or realtime-hosting claim."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The Audio Unit dialog defaults to the whole mix and offers an explicit locator-range mode; missing locators produce a clear error without changing the project.",
+        "Locator mode uses the existing export renderer with tailSeconds=0, preserves project revision/default playback, and imports the processed clip at the locator start rather than an unrelated cursor.",
+        "Browser tests verify range output frame bounds, imported asset identity/position and one-Undo restoration; whole-mix behavior and existing suites still pass.",
+        "Update bilingual development notes and validation without claiming listening, realtime hosting or broad plugin compatibility."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:18:48.069Z",
+      "evidence": "Targeted GUI E2E PASS: 6 steps. Missing locators rejected without project edit; whole-mix cursor import retained; 0.25–1.25s locator render produced 48,000 stereo frames at 48kHz, sourceStartSample=12000, imported at 12000 despite cursor at 4s with matching WAV SHA-256, and one Undo restored clips/tracks/assets. Owner snapshot retains outputUrl/range metadata. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. No realtime-hosting, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:27:39.791Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-050",
+      "title": "Audio Unit offline processing for selected tracks",
+      "size": "M",
+      "dependsOn": [
+        "T-049"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-24"
+      ],
+      "goal": "Allow the explicit Audio Unit offline probe to render only selected tracks, combined with whole-project or locator time range, and import the result with Undo.",
+      "context": [
+        "src/server.mjs render endpoint already validates trackIds for export; no renderer or plugin-path changes are needed.",
+        "public/app.mjs owns selectedTrackIds; the Audio Unit dialog currently sends no track selection.",
+        "Default remains all tracks; empty selection in selected-track mode must fail clearly before creating a render job."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The dialog defaults to all tracks and offers selected-track mode with a clear empty-selection error and no project edit.",
+        "Selected-track mode passes only current selected track IDs through the existing validated export renderer and works with both time-range modes without changing default playback.",
+        "Browser tests use at least two sounding tracks and verify selected-only source PCM differs from the all-track source, output/import identity and Undo; no arbitrary track IDs or plugin paths are accepted by the Audio Unit API.",
+        "Update bilingual notes and validation; retain full default E2E, native and product verification without listening or compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:28:10.633Z",
+      "evidence": "Targeted GUI E2E PASS: 8 steps. Empty selected-track mode rejected without edit; two sounding MIDI tracks verified selected-only source PCM SHA-256 differs from all-track source; selected-track mode also passed locator-range 48,000-frame render, sourceStartSample=12000 import with matching asset hash and one-Undo restoration. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full: VERIFY PASS, 172 product files; final agent:verify guard/syntax PASS. No arbitrary IDs/paths, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:35:07.727Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-051",
+      "title": "Inspect and set Audio Unit parameters for offline rendering",
+      "size": "M",
+      "dependsOn": [
+        "T-050"
+      ],
+      "goal": "Expose bounded parameter metadata for an explicitly instantiated Audio Unit and apply validated parameter values to subsequent deterministic offline renders.",
+      "context": [
+        "native/macos/audio-units.swift owns one explicit AVAudioUnit instance and renders only after offline instantiation.",
+        "Parameter access must require an active instance; discovery/selection must remain free of plugin instantiation.",
+        "Use keyPath identity, finite range-checked values and a bounded flattened parameter list; do not claim generic custom-GUI or realtime automation support."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "src/audio-units.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "An active instance can return a bounded parameter list with stable keyPath, display name, current/default/min/max values; no-instance and malformed requests return structured errors.",
+        "Setting an exact keyPath validates finite numeric range, updates the actual AUParameter and is reflected in subsequent status/list results without changing project data.",
+        "Native tests use an available system effect with parameters, verify a changed parameter and deterministic output; missing/unknown/out-of-range values preserve lifecycle. Server exposes only guarded parameter routes if needed by the tested API scope.",
+        "Existing native/product suites pass and documentation distinguishes parameter control from full custom GUI, realtime automation and compatibility."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:35:27.656Z",
+      "evidence": "Targeted native Audio Unit tests: 5/5 PASS. New parameter test verifies no-instance/unknown/malformed/out-of-range errors, bounded metadata and initial/default values, exact-keyPath setting/readback, changed PCM versus baseline and identical repeated renders with preserved lifecycle. npm run test:native: 107/107 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 172 product files. Native-only scope; no server/GUI parameter route, custom GUI, realtime automation, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:40:54.837Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-052",
+      "title": "Server and GUI Audio Unit parameter control",
+      "size": "M",
+      "dependsOn": [
+        "T-051"
+      ],
+      "goal": "Connect bounded native Audio Unit parameter inspection and validated setting to revision-guarded server routes and the existing offline probe dialog.",
+      "context": [
+        "T-051 native helper supports parameters and setParameter for one explicitly instantiated effect.",
+        "Use current document/revision guards and exact keyPath; parameter edits do not create project history entries.",
+        "The generic numeric GUI is not a custom plugin editor or realtime automation."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "Guarded server routes list parameters and set one exact keyPath/value without browser executable paths or project revision changes; stale/invalid requests preserve lifecycle.",
+        "The dialog loads parameters after explicit instantiation, displays current/default/range metadata, rejects invalid input visibly and applies a valid value to later offline renders.",
+        "Browser evidence compares default versus changed PCM hash and retains existing range/track/import/Undo behavior; native server tests cover guards and actual parameter readback.",
+        "Default E2E, native and full product suites pass; bilingual documentation states numeric offline control only."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:41:22.708Z",
+      "evidence": "Targeted GUI E2E PASS: 10 steps including parameter range rejection, valid readback, unchanged project revision and changed PCM on the next offline render; all scope/track/import/Undo checks retained. Native server test covers stale/malformed/unknown/out-of-range guards and actual parameter state. Default E2E PASS: 40. npm run test:native: 107/107. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. Generic numeric offline control only; no custom GUI, realtime automation, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:48:45.180Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-053",
+      "title": "Audio Unit offline processing for selected clips",
+      "size": "M",
+      "dependsOn": [
+        "T-052"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-18"
+      ],
+      "goal": "Allow the Audio Unit offline dialog to restrict rendering to explicitly selected clips, combined with existing track and locator scopes, without changing default playback.",
+      "context": [
+        "The renderer already accepts clipIds but src/server.mjs currently restricts clip selection to preview:true.",
+        "public/app.mjs owns selectedClipIds; current Audio Unit track selection is independent.",
+        "Retain all-clip default and validate empty selection before creating a render job."
+      ],
+      "files": [
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "tests"
+      ],
+      "acceptance": [
+        "Selected-clip mode sends only current clip IDs through the shared validated renderer; empty selection and unknown/stale IDs fail without project changes.",
+        "Clip selection composes with selected tracks and whole/locator time ranges; default all-clip behavior remains unchanged.",
+        "Browser tests with at least two sounding clips verify selected-only source hash differs from all-clip source, processed import identity/position and one Undo; existing export/render tests pass.",
+        "Update bilingual evidence without listening, realtime hosting or plugin compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:49:11.016Z",
+      "evidence": "Targeted GUI E2E PASS: 12 steps including empty clip rejection, selected-only source hash, selected track/locator composition and processed import/Undo. New tests/render-export-clip-selection.test.mjs: 2/2 PASS for export PCM selection and empty/unknown/stale guards. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Native suite remains 107 PASS from T-052; no native code changed. No listening, realtime hosting or compatibility claim.",
+      "doneAt": "2026-11-09T05:57:52.882Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-054",
+      "title": "Keep Audio Unit instance and GUI selection lifecycle consistent",
+      "size": "S",
+      "dependsOn": [
+        "T-053"
+      ],
+      "goal": "Prevent the offline Audio Unit dialog from changing component identity or pretending an active instance is gone before explicit release.",
+      "context": [
+        "The native/server API rejects selection or another instantiation while an instance is active.",
+        "The GUI component selector currently remains enabled and its change handler sets instantiated=false locally, which can diverge from the server.",
+        "Explicit release retains the selected component for a subsequent instantiation."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "While an instance is active, component selection, discovery reload and another instantiation are disabled; processing, parameters and release remain available.",
+        "Changing selection without an active instance still works; explicit release clears parameter UI, re-enables selection/listing and permits reinstantiation of the same exact component.",
+        "Browser tests verify GUI/server state agreement and existing processing/import behavior; full product/browser verification passes.",
+        "Documentation records the lifecycle boundary without a realtime-hosting claim."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:58:20.358Z",
+      "evidence": "Targeted GUI E2E PASS: 13 steps including active-instance component/list/instantiate locking, explicit release, cleared parameters, server state agreement and same-component reinstantiation; all prior parameter/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No realtime hosting or listening claim.",
+      "doneAt": "2026-11-09T06:04:07.608Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-055",
+      "title": "Restore Audio Unit parameter defaults from the offline GUI",
+      "size": "S",
+      "dependsOn": [
+        "T-054"
+      ],
+      "goal": "Add an explicit per-parameter default restoration action using the captured initial value and existing guarded setter.",
+      "context": [
+        "T-051 captures initial values as defaultValue for each parameter.",
+        "T-052 has a validated server/GUI exact-keyPath setter; no new native or server command is needed.",
+        "Default restoration affects the offline instance, not project Undo history."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "A reset action is available only for an active selected parameter and uses its reported defaultValue through the existing guarded setter.",
+        "GUI readback returns to the initial value and a subsequent render matches the baseline PCM hash in the observed system effect.",
+        "Existing parameter validation, scopes, import/Undo and all regression suites pass; documentation states no project-history or realtime automation behavior."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:04:31.603Z",
+      "evidence": "Targeted GUI E2E PASS: 14 steps including audioUnits.GUI-parameter-default-restores-baseline-render; selected parameter readback returned to captured defaultValue and the next render matched the exact baseline PCM hash with unchanged project revision. All lifecycle/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Offline-instance reset only; no project-history or realtime automation claim.",
+      "doneAt": "2026-11-09T06:09:56.110Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-056",
+      "title": "Native Audio Unit real-time preview lifecycle with silent PCM",
+      "size": "M",
+      "dependsOn": [
+        "T-055"
+      ],
+      "goal": "Add explicit default-output AVAudioEngine playback through the currently instantiated Audio Unit, with Play/Stop/Status lifecycle and no automatic playback.",
+      "context": [
+        "native/macos/audio-units.swift owns one AVAudioUnit and currently supports only offline render.",
+        "Tests must not make audible output: use silent PCM16 and explicit allowDefaultOutput=true for the actual device-path check.",
+        "This task is native-helper only; server/GUI routing and native-MIDI synchronization remain follow-ups."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "Play requires an active instance and explicit allowDefaultOutput=true; duplicate Play, malformed input and render-while-playing fail with structured errors and preserve ownership.",
+        "A silent PCM buffer can traverse the real AVAudioEngine default-output path and complete; a second longer silent preview can be stopped without releasing the component instance.",
+        "Release/quit stop active output and status distinguishes component instantiation from preview playing; offline rendering recovers after Stop.",
+        "Native/full verification passes and documentation reports silent device-path evidence only, not listening, latency, synchronization or broad hosting compatibility."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:53:03.383Z",
+      "evidence": "Targeted native tests 6/6 PASS. Silent PCM16 traversed the actual AVAudioEngine default-output path and completed; permission/no-instance/malformed/duplicate/render-while-playing errors, Stop, release, status and offline recovery passed. npm run test:native: 108/108 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. No audible signal, listening/latency judgment, server/GUI routing or MIDI synchronization claim.",
+      "doneAt": "2026-11-09T06:57:52.222Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-057",
+      "title": "Server and GUI Audio Unit real-time preview controls",
+      "size": "M",
+      "dependsOn": [
+        "T-056"
+      ],
+      "goal": "Connect explicit Audio Unit default-output preview to server-owned completed render jobs with Play/Stop controls and project-edit cleanup.",
+      "context": [
+        "T-056 native helper supports play/stop/status through the active component.",
+        "Browser tests use a controlled helper that emits no device audio; native silent-device evidence remains T-056.",
+        "Default built-in/native-audio playback and project revision must remain unchanged until explicit Audio Unit Play."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-unit-preview-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "Play requires active document/revision, a completed server-owned WAV job and explicit allowDefaultOutput=true; no browser paths or arbitrary executables are accepted.",
+        "GUI Play uses the selected clip/track/locator render scope, exposes current preview status and Stop, and rejects stale/wrong-job Stop without stopping a newer job.",
+        "Project edits/document changes stop and release active preview state; default playback, processed offline output and project history retain their existing behavior.",
+        "Controlled GUI/server tests and full suites pass; documentation separates this from audible listening, latency and MIDI synchronization."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-preview-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:58:28.198Z",
+      "evidence": "New controlled-helper GUI E2E PASS: 3 steps for scoped server-job Play, wrong-job/stale/path/permission guards, Stop and project-edit stop/release without device output or default playback changes. Existing offline Audio Unit GUI PASS: 14 steps; default E2E PASS: 40. npm run test:native: 108/108. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No listening, latency or MIDI synchronization claim.",
+      "doneAt": "2026-11-09T07:09:16.753Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-058",
+      "title": "Native offline MIDI rendering through an Audio Unit instrument",
+      "size": "L",
+      "dependsOn": [
+        "T-057"
+      ],
+      "goal": "Render bounded validated MIDI notes through an explicitly instantiated Audio Unit instrument using AVAudioEngine offline scheduling and deterministic PCM output.",
+      "context": [
+        "The helper currently renders PCM through effects but has no instrument note input path.",
+        "Use AUAudioUnit scheduleMIDIEventBlock with frame-accurate note-on/off events and bounded offline chunks.",
+        "Native helper only; no GUI instrument track assignment, realtime MIDI or compatibility claim."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "An explicitly instantiated instrument accepts bounded validated note pitch/velocity/channel/frame/duration input; malformed notes and excessive ranges fail without output.",
+        "Offline render schedules note-on/off at exact frames, writes a bounded PCM16 WAV and produces non-zero samples for an available system instrument.",
+        "Repeated equivalent renders are deterministic; Stop/release lifecycle and existing effect paths remain intact.",
+        "Native/full verification passes and documentation limits evidence to the observed system instrument without listening or general compatibility claims."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T07:48:57.434Z",
+      "blockedReason": "Native aumu MIDI rendering produced non-silent WAV, but same-instance repeated renders were not byte-identical (first SHA-256 75ddc4b0a4bacaf79982c3c5c1e946e670395d8783c704a3e9058035b535bd08, second fc1918c9cc095b0f1e2a6cd43b65ad6833b3380ad35e405901f4b2d7b92a94e2). Corrected aumu FourCC, then pre-render reset and post-render reset did not resolve the same deterministic-output failure. After three attempts at that point, restored only T-058 native files from checkpoint 20261109T071001-6npg; restored native suite passed 108/108 and agent:verify PASS. Needs a scoped fresh-instance/per-render lifecycle design; do not claim deterministic instrument hosting.",
+      "evidence": "Resolved earlier blocker with fresh instrument instance per render. Targeted native tests 7/7 PASS: bounded validation, exact scheduled note on/off, non-silent stereo 48kHz WAV and two byte-identical renders, freshInstance=true and release/status lifecycle. npm run test:native: 109/109 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. Native-only; no GUI assignment, realtime MIDI, listening or general compatibility claim.",
+      "doneAt": "2026-11-09T07:54:25.088Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "documentation",
+      "id": "T-059",
+      "title": "Build a verifiable feature inventory without a 2500-feature claim",
+      "size": "M",
+      "dependsOn": [
+        "T-058"
+      ],
+      "goal": "Measure actual engine commands, API routes, native helper commands, UI controls and executable checks, and document that no 2500-feature source catalogue exists.",
+      "context": [
+        "Repository search found no 2500/2,500 feature specification or checklist.",
+        "Command counts, control IDs and test counts are different dimensions and must not be summed as features.",
+        "Use Node built-ins, source-derived arrays and a checked report; retain FD-01–FD-30."
+      ],
+      "files": [
+        "scripts/feature-inventory.mjs",
+        "tests/feature-inventory.test.mjs",
+        "docs/FEATURE_INVENTORY.en.md",
+        "docs/FEATURE_INVENTORY.ko.md",
+        "package.json"
+      ],
+      "acceptance": [
+        "A dependency-free inventory emits source-derived unique command/API/native/UI/test identifiers with counts and file provenance.",
+        "Automated tests verify nonempty unique collections, stable acceptance IDs and explicit unverified status for any 2500-feature claim.",
+        "Bilingual documentation gives observed counts and implemented/partial/missing scope without summing unlike metrics into a feature total.",
+        "Full verification passes and the actual report can be regenerated by a package script."
+      ],
+      "verify": [
+        "node scripts/feature-inventory.mjs",
+        "node --test tests/feature-inventory.test.mjs",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T07:54:54.628Z",
+      "evidence": "npm run agent:features generated .test-output/feature-inventory.json with source arrays: 144 engine commands, 90 API route strings, 16 native helper commands, 861 per-file UI IDs, 1,518 declared product tests, 109 native tests, 755 GUI checks and 30 FD IDs. No 2500-item catalogue exists; report status not-verified-no-source-catalogue. Targeted feature inventory test PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. Bilingual inventory and navigation added; no summed feature claim.",
+      "doneAt": "2026-11-09T08:00:16.524Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-060",
+      "title": "Render selected MIDI clips through Audio Unit instruments into editable clips",
+      "size": "L",
+      "dependsOn": [
+        "T-059"
+      ],
+      "goal": "Connect fresh-instance native instrument rendering to selected MIDI clips, a guarded server route, processed WAV output and editable clip import with Undo.",
+      "context": [
+        "T-058 native renderMidi validates bounded frame-based notes and creates a fresh instrument per render.",
+        "The GUI has component type metadata and existing processed-output import at sourceStartSample.",
+        "Convert selected MIDI ticks through the current tempo map; no realtime instrument or default-playback change."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-unit-instrument-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "A guarded server route accepts bounded note/frame data only for an active aumu instance and returns server-owned decoded WAV without browser paths.",
+        "The GUI renders selected MIDI clips using current tempo and selected/locator range, preserves revision/default playback and reports clear empty/non-MIDI errors.",
+        "Actual system-instrument browser evidence verifies non-silent decoded WAV, deterministic output, import at the original range start with asset identity and one Undo.",
+        "Existing Audio Unit/native/product suites and bilingual documentation pass without realtime hosting or compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-instrument-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T08:44:36.643Z",
+      "blockedReason": "Selected a real aumu component and audioUnitMidiOffline capability=true, but the actual #audio-units-instantiate click timed out three times: button was visible/enabled/stable while dialog#audio-units-dialog intercepted pointer events. This is a modal layout/hit-testing blocker before instrument rendering, not a native MIDI failure. Following the three-failure rule restored T-060 server/public/new-smoke changes from checkpoint 20261109T080048-hwlq. Restored offline Audio Unit GUI passed 14 steps and native suite passed 109/109. Needs a focused dialog geometry/pointer hit-test fix before reconnecting render-midi.",
+      "evidence": "Resolved modal hit-test: measured button outside 500px dialog, then wider scrollable wrapped layout made elementFromPoint target the actual button. Actual instrument GUI E2E PASS 3 steps: empty selection, scoped one-note non-silent deterministic 48,001-frame WAV, stale/invalid/path guards, sourceStartSample 24000 import with asset hash and one Undo. Offline GUI 14, preview 3, default E2E 40 PASS. Native 109/109. Full/final verification PASS 174 files. Inventory 91 API, 862 UI, 758 GUI.",
+      "doneAt": "2026-11-09T08:59:36.281Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "i18n",
+      "id": "T-061",
+      "title": "Translate the Audio Unit dialog and dynamic workflow status",
+      "size": "M",
+      "dependsOn": [
+        "T-060"
+      ],
+      "goal": "Add Korean/English switching for Audio Unit controls, scope labels, parameter metadata and render/preview status without changing project state.",
+      "context": [
+        "The primary workspace persists language through public/i18n.mjs; Audio Unit controls are created dynamically in public/audio-units.mjs.",
+        "Server/plugin error strings and third-party parameter names remain source data, not translated product claims.",
+        "Use actual system-effect rendering for dynamic status verification."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-i18n-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "Audio Unit labels, scope options, parameter detail and render/import status switch Korean/English on the open dialog and persist across reload.",
+        "Dynamic offline render and parameter status use the selected language; component names, keyPaths and server/plugin errors remain identifiable.",
+        "Language changes do not alter project revision, component instance or processed output; existing Audio Unit/default suites pass.",
+        "Bilingual manuals and validation record exactly which Audio Unit strings are covered."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-i18n-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:00:40.636Z",
+      "evidence": "New Audio Unit i18n GUI E2E PASS 3 steps: Korean controls/metadata, English dynamic offline output/import controls, reload persistence and Korean restore without project revision changes. Offline GUI 14, instrument GUI 3 and default E2E 40 PASS. npm run agent:verify:full and final agent:verify VERIFY PASS with 174 product files. Component/keyPath/server errors remain source; no complete app translation claim. Inventory 761 GUI checks.",
+      "doneAt": "2026-11-09T09:07:32.379Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-062",
+      "title": "Native real-time Audio Unit instrument MIDI playback lifecycle",
+      "size": "L",
+      "dependsOn": [
+        "T-061"
+      ],
+      "goal": "Add explicit default-output real-time MIDI note playback through an active Audio Unit instrument with owned note cleanup and deterministic lifecycle state.",
+      "context": [
+        "T-058 validates frame-based notes and fresh offline instances; T-056 owns effect preview playback.",
+        "Real-time scheduling is initial lifecycle support, not a latency or synchronized-transport claim.",
+        "Tests use outputGain=0 on the actual default-output path so no audible signal is produced."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "playMidi requires an active aumu instance, explicit output permission, bounded notes/duration and finite outputGain 0..1; malformed and duplicate starts fail without stealing ownership.",
+        "The actual engine accepts note-on/off events, completes a short silent-output preview, rejects duplicate starts and stops a longer preview with owned note-offs before release.",
+        "Status distinguishes instrument playback from effect preview and component instantiation; release/quit clean up pending events and held notes.",
+        "Existing native/full suites pass and documentation limits claims to lifecycle evidence without latency, synchronization or listening quality."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:32:45.538Z",
+      "evidence": "Targeted native tests 8/8 PASS including real-time instrument MIDI completion, outputGain=0 actual engine path, permission/range/note validation, duplicate-start rejection, Stop with held-note cleanup, release and offline recovery. npm run test:native: 110/110 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. No server/GUI playback, transport synchronization, latency or listening-quality claim.",
+      "doneAt": "2026-11-09T09:40:13.426Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-063",
+      "title": "Server and GUI real-time Audio Unit instrument playback",
+      "size": "L",
+      "dependsOn": [
+        "T-062"
+      ],
+      "goal": "Connect real-time native instrument MIDI playback to selected clips through guarded server routes and explicit output-gain GUI controls.",
+      "context": [
+        "T-062 native playMidi owns note cleanup and supports outputGain=0 lifecycle evidence.",
+        "Reuse instrumentInput for selected MIDI/locator conversion and the existing preview Stop/project-edit cleanup.",
+        "Default transport and project revision remain unchanged."
+      ],
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "scripts/gui-audio-unit-instrument-playback-smoke.mjs"
+      ],
+      "acceptance": [
+        "Guarded play-midi accepts bounded selected-note data only with explicit output permission and outputGain 0..1; wrong/stale requests preserve active playback.",
+        "GUI exposes instrument Play/Stop and gain, reports instrumentPlaying and completes project-edit cleanup without changing default transport or revision.",
+        "Actual system-instrument browser checks run with outputGain=0 and verify play/stop/edit lifecycle; existing Audio Unit/native/full suites pass.",
+        "Documentation distinguishes this from native-MIDI synchronization and measured low latency."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-unit-instrument-playback-smoke.mjs",
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:40:48.239Z",
+      "evidence": "Actual system-instrument GUI E2E PASS 3 steps with outputGain=0: real-time Play, invalid-gain/stale/wrong-job preservation, Stop and project-edit cleanup with default transport/revision unchanged. Offline GUI 14, offline instrument 3, i18n 3 and default E2E 40 PASS. npm run test:native 110/110. Full and final verification PASS 174 product files; auxiliary FD-22 relation removed to keep acceptance IDs unique. No synchronization or low-latency claim.",
+      "doneAt": "2026-11-09T09:53:52.472Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "native-audio",
+      "id": "T-064",
+      "title": "Shared host-time scheduled starts for native MIDI and audio",
+      "size": "L",
+      "dependsOn": [
+        "T-063"
+      ],
+      "goal": "Allow native MIDI transport and native audio preview to accept an explicit shared mach-uptime start target while preserving existing default starts.",
+      "context": [
+        "CoreMIDI ActiveTransport currently assigns now+30ms internally; AVAudioPlayerNode can schedule buffers at hostTime.",
+        "Each helper must expose its current uptime so a server can compute one future target without assuming Node clock semantics.",
+        "This task provides primitives, not a synchronized server transport or low-latency claim."
+      ],
+      "files": [
+        "native/macos/midi-bridge.swift",
+        "native/macos/client.mjs",
+        "src/native-transport.mjs",
+        "native/macos/audio-bridge.swift",
+        "native/tests/transport.test.mjs",
+        "native/tests/audio-bridge.test.mjs"
+      ],
+      "acceptance": [
+        "Both helpers expose bounded current uptime and reject invalid/past/far-future targets with structured errors; omitted targets preserve current behavior.",
+        "MIDI scheduled events use the explicit target in actual CoreMIDI timestamps; audio buffer playback reports and honors the same target semantics.",
+        "Tests cover future scheduled starts and invalid targets while existing suites remain unchanged; no common-server-sync or latency-quality claim yet.",
+        "Bilingual validation records host-time evidence and the remaining synchronization coordinator work."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:34:32.183Z",
+      "blockedReason": "CoreMIDI explicit target worked (observed offsets 305500ns and 100320916ns), but AVAudioEngine scheduled audio remained status=playing after target and did not complete across scheduleBuffer(at:) and play(at:) attempts. After three audio failures restored all T-064 files from checkpoint 20261109T095527-xs4j; restored native 110/110 and full product 174 files PASS. Need an audio start/completion scheduling design with observed lifecycle before server synchronization.",
+      "evidence": "Resolved scheduled-audio blocker using cancellable DispatchTime start of a prepared buffer. Silent PCM actualStart>=target, completion and pre-start Stop cancellation passed; invalid/offline targets rejected. CoreMIDI explicit target actual offsets 201041ns and 100291791ns. npm run test:native 112/112. npm run agent:verify:full and final agent:verify PASS, 174 product files. Primitives only; no synchronized coordinator or low-latency claim. Final installed listening/latency is deferred to human session.",
+      "doneAt": "2026-11-09T10:40:55.191Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "native-audio",
+      "id": "T-065",
+      "title": "Coordinate native MIDI and audio at a shared future start time",
+      "size": "L",
+      "dependsOn": [
+        "T-064"
+      ],
+      "goal": "Add a server coordinator that schedules a completed audio job and native MIDI transport at one future mach-uptime target with atomic failure cleanup and shared Stop.",
+      "context": [
+        "T-064 helpers expose clock and accept startAtUptimeNs; native transport start forwards it.",
+        "Reuse existing /api/native/play settings/fingerprint checks and completed WAV jobs.",
+        "Tests use virtual MIDI and controlled/silent audio; no low-latency or human listening claim."
+      ],
+      "files": [
+        "src/native-transport.mjs",
+        "src/native-audio.mjs",
+        "src/server.mjs",
+        "native/tests/audio-preview.test.mjs",
+        "native/tests/native-server.test.mjs"
+      ],
+      "acceptance": [
+        "An optional audioJobId on native play schedules both resources at a server-computed future target with bounded lead time and existing settings guards.",
+        "Audio-first scheduling rolls back on MIDI failure; MIDI/audio failure never leaves another resource playing; shared Stop and project edits clean both.",
+        "Tests verify identical target fields and lifecycle with virtual MIDI/controlled audio plus real helper evidence from T-064; existing suites pass.",
+        "Documentation distinguishes coordinated scheduling from measured sample accuracy, latency and final human listening."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:42:06.545Z",
+      "evidence": "Native server sync test PASS: completed silent WAV and virtual native MIDI share identical targetUptimeNs/startedUptimeNs/audio startAtUptimeNs; shared Stop stops both and MIDI destination failure rolls audio back with sync-midi-failed. Helpers preopen before clock target; metadata strings consistent. npm run test:native 113/113. Full/final verification PASS 174 product files. No sample-accuracy, low-latency or human listening claim.",
+      "doneAt": "2026-11-09T10:51:29.982Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "i18n",
+      "id": "T-066",
+      "title": "Translate edit-history and automatic-backup dialogs",
+      "size": "M",
+      "dependsOn": [
+        "T-065"
+      ],
+      "goal": "Add Korean/English switching and reload persistence for history boundaries, action labels, persistence state and automatic-backup controls/status.",
+      "context": [
+        "public/index.html owns static dialog text and public/session.mjs generates history/backup status.",
+        "Command/action IDs, timestamps, revision numbers and server warnings remain identifiable source data.",
+        "Final installed-program UX verification remains a human session."
+      ],
+      "files": [
+        "public/i18n.mjs",
+        "public/session.mjs",
+        "scripts/gui-session-i18n-smoke.mjs",
+        "docs/MANUAL.en.md",
+        "docs/MANUAL.ko.md"
+      ],
+      "acceptance": [
+        "History/backup static controls and generated status switch language without changing project revision or settings.",
+        "History action labels, boundary/persistence and backup list/empty state use the selected language; source warnings and IDs remain readable.",
+        "Browser checks cover open dialogs, English/Korean switching and reload persistence; existing Audio Unit/default suites and full verification pass.",
+        "Manuals and inventory identify this scope without claiming complete app-wide translation."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-session-i18n-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:52:26.591Z",
+      "evidence": "New session i18n E2E PASS 4 steps: English history actions/boundary/persistence, reload persistence/Korean restore, English backup controls/status/empty list and persistence, no revision/settings edits. Default E2E 40 and Audio Unit i18n 3 PASS. Full verification PASS 174 product files and final agent:verify PASS. Inventory 765 GUI checks. No complete app-wide translation or human UX claim.",
+      "doneAt": "2026-11-09T10:59:54.253Z"
     }
   ]
 }

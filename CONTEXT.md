@@ -1,9 +1,9 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-08 handoff. This file is part of the initial public release commit.
+Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated starts work and history/backup dialogs now switch Korean/English. Final listening remains human work.
 
 ## Identity
-- Repository: Sovereign-Music-Lab/sovaroll-DAW, intended branch main.
+- Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current branch sovaroll-continuation, pushed to origin through commit 6d901ff.
 - Version: 0.129.0. Node.js 22+, no npm runtime dependencies.
 - Goal: a professional-grade independent open-source DAW; current release remains in development.
 
@@ -27,8 +27,22 @@ Updated: 2026-11-08 handoff. This file is part of the initial public release com
 - Added three public-guard regression tests in one file.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
-- First-delivery Chrome E2E: 27 steps passed. Fake microphone; no physical listening claim.
-- Fresh-tree startup passed; E2E passed on retry after an intermittent mixer-pan timeout. T-015 tracks the unresolved cause; assertions are unchanged.
+- First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
+- T-001–T-066 `agent:verify`: VERIFY PASS. Full verification passed 174 test files and native tests passed 113 after T-066; no complete app-wide bilingual UI or low-latency claim.
+- T-066 history/backup i18n passed 4 steps with reload persistence and no edits; default E2E 40 and Audio Unit i18n 3 passed. Final listening/latency remains human installed-program work.
+- T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
+- T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
+- Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
+- T-013 added six-step bilingual manual hardware checklist with empty result columns; no physical-device result claimed.
+- T-017–T-035: all 19 failed-smoke follow-ups completed individually; details and exact step counts are in docs/VALIDATION.md.
+- T-012 CLI rendered a 150-second project with non-zero PCM at 140 seconds and preserved state on the 600-second limit rejection. Standalone GUI playback advanced and stopped without silent failure; evidence is .test-output/long-project-gui.json.
+- T-011 keeps all recording control IDs inside one closed-by-default panel that opens while recording is active. Recording workflow/protection passed 4/6 steps; before/after screenshots are in .test-output/.
+- T-009 `agent:smoke-sweep`: all 64 unique GUI smokes completed, 45 passed and 19 failed; JSON evidence is in .test-output/smoke-sweep.json and each failure has one follow-up, T-017–T-035. The sweep's exit 1 is not a passing-suite result.
+- T-008 existing recording protection/workflow smokes passed unchanged: 6 and 4 steps. Physical microphone/device listening remains unverified.
+- T-005 added a separate 4-step new-project/first-save/restart E2E; it passed along with the default 32-step E2E. Its project writes are confined to a temporary folder and the original project bytes remain unchanged.
+- T-002 initially exposed a silent default fake-microphone fixture; a deterministic tone WAV now supplies fake capture. Recorded-region RMS fell from 0.0975930279 to 0 after mute, and the polarity sample changed from -0.1178283691 to +0.1178283691.
+- The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions. The maintainer explicitly pushed this branch on 2026-11-09; future pushes still require authorization.
+- Fresh-tree startup passed. T-015 deterministically reproduced the intermittent mixer-pan timeout as an SSE/POST test synchronization race; the helper now waits for real busy release and the current 37-step flow passes with unchanged assertions/timeouts.
 - E2E wrapper now creates its output directory for a fresh checkout; native test command builds its bridge first.
 - Gemma coding and hardware audio latency/quality have not been verified.
 - Detailed release record: docs/VALIDATION.md; tasks: docs/agent/tasks.json.
@@ -38,10 +52,9 @@ Updated: 2026-11-08 handoff. This file is part of the initial public release com
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- Current work ends at publication/handoff; do not expand features automatically.
-- Start with `npm run agent:task -- show T-007` for a small supervised keyboard undo/redo test task, or `next` for queue order.
-- Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
-- T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
+- T-001–T-066 are done. See FEATURE_INVENTORY; no 2,500-item catalogue exists. Continue remaining advanced-dialog translation and native architecture without claiming human verification.
+- T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
+- Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.
 
 ## Navigation

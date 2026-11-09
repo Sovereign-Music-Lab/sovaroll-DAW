@@ -40,7 +40,7 @@ function decode(bytes){
 const rms=(wav,ch,start,end)=>{let sum=0;const a=Math.ceil(start*wav.sampleRate),b=Math.ceil(end*wav.sampleRate);for(let i=a;i<b;i++)sum+=wav.channels[ch][i]**2;return Math.sqrt(sum/(b-a));};
 const frequency=(wav,ch,start,end)=>{const a=Math.ceil(start*wav.sampleRate),b=Math.ceil(end*wav.sampleRate),cross=[];for(let i=a+1;i<b;i++)if(wav.channels[ch][i-1]<0&&wav.channels[ch][i]>=0)cross.push(i);assert.ok(cross.length>10);return (cross.length-1)*wav.sampleRate/(cross.at(-1)-cross[0]);};
 const render=async()=>{
- const pending=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/render'&&r.request().method()==='POST');await page.locator('#render-button').click();const res=await pending;assert.equal(res.status(),202);const job=await res.json(),id=job.jobId??job.id;
+ const pending=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/render'&&r.request().method()==='POST');await page.locator('#render-button').click();await page.locator('#mix-export-submit').click();const res=await pending;assert.equal(res.status(),202);const job=await res.json(),id=job.jobId??job.id;
  await page.waitForFunction(id=>document.querySelector('.render-result a')?.getAttribute('href').includes(id),id);
  const href=await page.locator('.render-result a').getAttribute('href');const bytes=Buffer.from(await(await fetch(new URL(href,session.url))).arrayBuffer());return decode(bytes);
 };

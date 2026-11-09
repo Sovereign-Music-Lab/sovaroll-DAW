@@ -13,7 +13,7 @@
     <header class="topbar">
       <a class="brand" href="/" aria-label="SovaRoll Studio 홈"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>SovaRoll<span class="brand-version">STUDIO / 08</span></a>
       <form id="project-name-form" class="project-title"><input id="project-name" aria-label="프로젝트 이름" value="Connecting…" maxlength="120" required><span id="save-state" class="save-state">연결 중</span></form>
-      <div class="top-actions"><button id="projects-button" disabled>프로젝트 열기</button><button id="document-button" class="quiet" disabled>저장·버전</button><button id="history-button" class="quiet">편집 이력</button><button id="backups-button" class="quiet">자동백업</button><button id="media-pool-button" class="quiet">미디어 풀</button><button id="bundle-download" class="quiet">백업 ZIP ↗</button><button id="help-button" class="quiet">도움말 <span class="keycap">?</span></button><button id="project-download" class="quiet" title="프로젝트 JSON 다운로드. WAV 파일은 포함하지 않습니다.">프로젝트 JSON <span aria-hidden="true">↗</span></button></div>
+      <div class="top-actions"><select id="language-select" aria-label="언어 / Language" title="언어 / Language"><option value="ko">한국어</option><option value="en">English</option></select><button id="projects-button" disabled>프로젝트 열기</button><button id="document-button" class="quiet" disabled>저장·버전</button><button id="history-button" class="quiet">편집 이력</button><button id="backups-button" class="quiet">자동백업</button><button id="media-pool-button" class="quiet">미디어 풀</button><button id="bundle-download" class="quiet">백업 ZIP ↗</button><button id="help-button" class="quiet">도움말 <span class="keycap">?</span></button><button id="project-download" class="quiet" title="프로젝트 JSON 다운로드. WAV 파일은 포함하지 않습니다.">프로젝트 JSON <span aria-hidden="true">↗</span></button></div>
     </header>
 
     <section class="transport" aria-label="재생과 프로젝트 설정">
@@ -26,6 +26,8 @@
       <button id="import-button" class="secondary"><span aria-hidden="true">↥</span> 가져오기 <span class="small-label">WAV / AIFF / MIDI</span></button><button id="cancel-import-batch" type="button" hidden>다음 파일부터 중단</button><a id="import-batch-report" download="import-report.json" hidden>가져오기 결과</a><input id="import-file" type="file" multiple accept=".wav,.aif,.aiff,.aifc,.mid,.midi,audio/wav,audio/aiff,audio/midi" hidden>
       <button id="midi-export-open" type="button" class="secondary">MIDI 내보내기</button><button id="render-button" class="primary">믹스 WAV 내보내기 <span aria-hidden="true">↗</span></button>
     </section>
+
+    <details id="recording-panel"><summary>녹음</summary></details>
 
     <div id="notice" class="notice" role="status" aria-live="polite" hidden><span id="notice-text"></span><button id="notice-dismiss" aria-label="알림 닫기">×</button></div>
     <div id="job-bar" class="job-bar" role="status" hidden><span class="spinner" aria-hidden="true"></span><span id="job-text">오디오 렌더 중…</span><button id="cancel-render">취소</button></div>

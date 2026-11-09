@@ -140,3 +140,11 @@ test('Snap native CLI: query and settings dry-run preserve MIDI while saved grid
  const q=await cli(s,'time-snap',JSON.stringify({clipId:'c',localTick:1900}));assert.equal(q.result.tick,1920);assert.equal((await cli(s,'command','project.snapGrid',JSON.stringify({options:{piano:{seconds:'100-ms'}}}),'--dry-run')).applied,false);assert.equal((await status(s)).jobId,job.jobId);assert.equal((await status(s)).status,'playing');assert.equal(s.words().length,2);assert.deepEqual((await get(s)).project,before);assert.deepEqual(await fs.readFile(s.projectPath),bytes);
  await cli(s,'command','project.snapGrid',JSON.stringify({options:{piano:{seconds:'100-ms'}}}));assert.equal((await status(s)).status,'stopped');await wait(()=>s.words().length===4);
 });
+
+test('Native HTTP: synchronized audioJobId shares one target and rolls back failed MIDI starts',async t=>{
+ const s=await fixture(t);ok(await command(s,'track.update',{trackId:'t',mute:true}));let state=await get(s),rendered=await post(s,'/api/render',{expectedRevision:state.project.revision,durationSeconds:.3,tailSeconds:0});assert.equal(rendered.status,202);
+ let job;for(let i=0;i<200;i++){job=await get(s,`/api/jobs/${rendered.body.jobId}`);if(job.status==='completed')break;await delay(10);}assert.equal(job.status,'completed');ok(await command(s,'track.update',{trackId:'t',mute:false}));ok(await configure(s));
+ const started=ok(await play(s,{audioJobId:job.id,syncLeadMs:500})),target=started.sync.targetUptimeNs;assert.equal(started.startedUptimeNs,target);assert.equal(started.audio.startAtUptimeNs,target);assert.equal(started.sync.audioJobId,job.id);assert.equal((await get(s)).nativeAudio.startAtUptimeNs,target);
+ const stopped=ok(await post(s,'/api/native/stop',{jobId:started.jobId}));assert.equal(stopped.status,'stopped');assert.equal(stopped.audio.status,'stopped');assert.equal((await get(s)).nativeAudio.status,'stopped');
+ ok(await configure(s,{routes:[{trackId:'t',destinationId:2147483647,channel:null}]}));const failed=await play(s,{audioJobId:job.id,syncLeadMs:500});assert.equal(failed.status,503);assert.equal((await get(s)).nativeAudio.status,'stopped');assert.equal((await get(s)).nativeAudio.reason,'sync-midi-failed');assert.equal((await status(s)).status,'failed');
+});

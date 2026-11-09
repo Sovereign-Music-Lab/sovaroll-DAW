@@ -1,6 +1,6 @@
 # 개발 노트 — Sovereign DAW / SovaRoll
 
-[English](DEVELOPMENT.en.md) · [철학](../PHILOSOPHY.ko.md) · [검증 기록](VALIDATION.md)
+[English](DEVELOPMENT.en.md) · [철학](../PHILOSOPHY.ko.md) · [기능 인벤터리](FEATURE_INVENTORY.ko.md) · [검증 기록](VALIDATION.md)
 
 ## 개발 방향과 공개 범위
 
@@ -48,15 +48,17 @@
 | MIDI | 노트 편집·선택·클립보드, 퀀타이즈, 스텝 입력, 컨트롤러·곡선, 이벤트, 수정자, Merge/Freeze, 입출력 | 단순 내장 oscillator가 보존한 모든 이벤트를 소리로 재현하는 것은 아님 |
 | 편곡 | 클립, 폴더, 순서, 로케이터, 마커, 시간·템포 | 큰 세션과 모든 플랫폼·입력 조합은 추가 검증 필요 |
 | 오디오 | WAV/AIFF, trim/split/slip, gain/fade/polarity, normalize/DC, 통계, 선택적 FFmpeg 템포 처리 | 스냅샷 프리뷰는 저지연 네이티브 엔진이 아니며 형식·처리 제한이 있음 |
-| 녹음 | 브라우저 오디오·Web MIDI, 테이크 보존, 카운트인·모니터링 | 가짜 장치 테스트는 실제 음질·지연·권한 동작을 증명하지 않음 |
+| 녹음 | 브라우저 오디오·Web MIDI, 녹음 중 자동으로 열리는 접이식 패널, 테이크 보존, 카운트인·모니터링 | 가짜 장치 테스트는 실제 음질·지연·권한 동작을 증명하지 않음 |
 | 믹싱·출력 | 트랙·마스터, EQ·이펙트, 믹스·스템, MIDI·프로젝트 묶음 | 외부 플러그인·악기 호스팅과 고급 마스터링은 미완성 |
 | 네이티브 MIDI | 선택적 macOS 브리지, 라우팅, 취소, Reset/Chase | MIDI 출력만 지원; 네이티브 오디오 동기 재생·다른 플랫폼 백엔드 검증은 아님 |
+| 네이티브 오디오 기반 | 선택적 native 프리뷰가 완료된 WAV를 AVAudioEngine helper로 전달하고 오프라인 PCM 보존과 현재 job의 GUI Stop을 검증 | 명시적 선택만; 기본 내장 프리뷰 유지; native MIDI 동기화·청음·저지연 품질 미검증 |
+| Audio Unit 검색 | 서버/GUI의 요청 시 검색·정확한 ID 선택·명시적 인스턴스화·결정적 오프라인 PCM 처리, 처리 WAV 다운로드, 전체 믹스/Locator 구간, 모든 트랙/선택 트랙·모든 클립/선택 클립 처리, 편집 가능한 클립 가져오기·Undo와 서버/GUI 숫자 파라미터 검색·범위 검증 설정·파라미터별 기본값 복원, 서버/GUI 명시적 effect 미리 듣기와 서버/GUI 실시간 악기 MIDI 재생·출력 게인·노트 정리 | 자동 로딩·기본 재생 변경 없음; 인스턴스 활성 중 해제 전까지 구성요소 검색·선택 잠금; 전체 믹스는 커서, Locator 처리본은 서버가 기록한 구간 시작에 가져옴; 파라미터 제어는 범용 숫자 필드이며 사용자 정의 GUI·실시간 오토메이션 제외; job 기반 미리 듣기는 native MIDI 동기화·기본 전송 대체 없음; T-064는 MIDI 명시 목표 시각과 취소 가능한 DispatchTime 오디오 시작·실제 시작/완료 근거를 제공하며 T-065 서버 coordinator는 helper를 먼저 준비하고 하나의 미래 목표를 지정하며 MIDI 실패 시 오디오 rollback과 공통 Stop을 제공; 샘플 정확도·지연은 미측정; 호환성·청음·저지연 품질 미검증 |
 
 [설명서](MANUAL.ko.md)와 [개별 수용 기준](agent/REQUIREMENTS.md)에 사용법과 검증 범위가 있습니다.
 
 ## 남아 있는 작업
 
-T-001~T-013에는 페이드, 클립 뮤트·극성, 노멀라이즈, Cycle, 녹음 보조, 키보드 Undo/Redo, GUI 새 프로젝트, 오디오 단축키, 백업 복구, MIDI 입력, 화면 배치의 브라우저 검증 과제가 있습니다. T-010은 눈금자 클릭에 Snap을 적용할지 사람이 결정해야 합니다. 공개를 이유로 상태를 올리지 않습니다.
+Audio Unit probe는 처리본 다운로드, Undo 가능한 편집 클립 가져오기, 명시적 미리 듣기와 렌더마다 fresh instance를 사용하는 native 오프라인 악기 MIDI 렌더를 지원합니다. 완전한 실시간 플러그인·악기 호스팅은 향후 작업입니다. T-060은 대화상자 버튼 행 overflow를 수정하고 선택 MIDI의 fresh-instance 악기 WAV 렌더·편집 클립 가져오기를 연결했습니다. 기존 GUI 스모크 64개는 native 작업 이전에 모두 통과했습니다. 실제 장치 결과는 [수동 체크리스트](agent/MANUAL_CHECKS.md)로 기록하고 근거는 [VALIDATION.md](VALIDATION.md)에 있습니다.
 
 장기적으로 저지연 네이티브 오디오, 폭넓은 플러그인·악기, 악보, 심화 믹싱, 전체 이중 언어 UI, 접근성, 다양한 플랫폼·실제 장치 검증과 선택적 자율형 작곡 통합을 발전시킵니다.
 
