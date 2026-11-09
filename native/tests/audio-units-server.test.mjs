@@ -1,0 +1,27 @@
+import test,{before} from 'node:test';
+import assert from 'node:assert/strict';
+import {promises as fs} from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {startServer} from '../../src/server.mjs';
+const root=path.resolve(import.meta.dirname,'../..'),exec=promisify(execFile);
+before(async()=>{await exec(process.execPath,['scripts/build-native-audio-units.mjs'],{cwd:root,timeout:120000});});
+const get=async(s,route='/api/state')=>{const response=await fetch(s.url+route);assert.equal(response.status,200);return response.json();};
+const post=async(s,route,input)=>{const response=await fetch(s.url+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});return {status:response.status,body:await response.json()};};
+test('server Audio Unit probe preserves project and owns selection, render and errors',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-au-server-')),projectPath=path.join(directory,'Probe.newdaw.json'),session=await startServer({projectPath,port:0,demo:false,quiet:true,backupPollMs:600000});
+ t.after(async()=>{await session.close();await fs.rm(directory,{recursive:true,force:true});});
+ const seeded=await post(session,'/api/command',{command:'batch',arguments:{commands:[{command:'track.add',arguments:{id:'track',type:'midi',instrument:'sine'}},{command:'clip.add',arguments:{id:'clip',trackId:'track',type:'midi',startTick:0,lengthTicks:3840,notes:[{id:'note',pitch:60,velocity:80,startTick:0,durationTicks:960,channel:0}]}}]},expectedRevision:0});assert.equal(seeded.status,200);
+ const render=await post(session,'/api/render',{expectedRevision:1,preview:true});assert.equal(render.status,202);
+ let job;for(let i=0;i<100;i++){job=await get(session,`/api/jobs/${render.body.jobId}`);if(job.status==='completed')break;await new Promise(resolve=>setTimeout(resolve,20));}assert.equal(job.status,'completed');
+ const list=await post(session,'/api/audio-units/list',{expectedRevision:1,limit:256});assert.equal(list.status,200,JSON.stringify(list.body));const effect=list.body.components.find(component=>component.type===1635083896);assert.ok(effect,'Expected a system effect component for the offline probe');
+ const selected=await post(session,'/api/audio-units/select',{expectedRevision:1,id:effect.id});assert.equal(selected.status,200);assert.equal(selected.body.instantiated,false);
+ const instantiated=await post(session,'/api/audio-units/instantiate',{expectedRevision:1,id:effect.id});assert.equal(instantiated.status,200,JSON.stringify(instantiated.body));assert.equal(instantiated.body.offline,true);
+ const rendered=await post(session,'/api/audio-units/render',{expectedRevision:1,jobId:job.id});assert.equal(rendered.status,200,JSON.stringify(rendered.body));assert.equal(rendered.body.frames,job.stats.frames);assert.equal(rendered.body.offline,true);assert.equal(rendered.body.sourceSha256.length,64);
+ const stale=await post(session,'/api/audio-units/render',{expectedRevision:0,jobId:job.id});assert.equal(stale.status,409);assert.equal(stale.body.errors[0].code,'REVISION_CONFLICT');
+ assert.equal((await get(session)).project.revision,1);assert.equal((await get(session,'/api/audio-units')).instantiated,true);
+ const released=await post(session,'/api/audio-units/release',{expectedRevision:1});assert.equal(released.status,200);assert.equal((await get(session,'/api/audio-units')).instantiated,false);
+ const missing=await post(session,'/api/audio-units/instantiate',{expectedRevision:1,id:'not-present'});assert.equal(missing.status,409);assert.equal(missing.body.errors[0].code,'AUDIO_UNIT_NOT_FOUND');
+});

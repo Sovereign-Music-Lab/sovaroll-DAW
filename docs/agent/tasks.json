@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T04:38:03.821Z",
+  "updatedAt": "2026-11-09T04:54:21.936Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1369,7 +1369,7 @@
       "doneAt": "2026-11-09T04:38:03.821Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-046",
@@ -1392,6 +1392,40 @@
         "GUI lists components only on demand, shows structured Korean errors, instantiates/renders only on explicit action, and leaves project revision and default playback unchanged.",
         "Tests cover server/helper lifecycle and GUI offline render with no hardware or compatibility claim; both documentation languages record scope.",
         "Targeted tests, agent:e2e, native tests and agent:verify:full pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:38:49.062Z",
+      "evidence": "Server/GUI Audio Unit offline probe completed with revision/document guards and no browser executable path. Server test 1 PASS and GUI 2 PASS; default E2E 40 PASS; native suite 106 PASS; full verification 172 files PASS after idle-reset SSE suppression. T-047 added for downloadable processed WAV. No hardware/compatibility/quality claim.",
+      "doneAt": "2026-11-09T04:54:21.935Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-047",
+      "title": "Audio Unit offline output: downloadable processed WAV without source mutation",
+      "size": "M",
+      "dependsOn": [
+        "T-046"
+      ],
+      "goal": "Return the actual processed PCM16 WAV from the offline Audio Unit probe and expose an explicit GUI download, preserving the source render and project state.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "The helper returns bounded rendered WAV bytes or a server-owned download with matching PCM hash, frames, rate and channels; cleanup cannot race the read/download.",
+        "GUI download is explicit and decoded WAV is non-empty; source render and project revision remain unchanged.",
+        "Tests verify output bytes, metadata and cleanup without claiming sound quality; documentation records the actual offline output scope.",
+        "Targeted tests, native and full suites pass."
       ],
       "verify": [
         "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",

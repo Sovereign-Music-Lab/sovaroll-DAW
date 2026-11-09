@@ -48,6 +48,7 @@ import {setupTimingSettings,readTimingProfile} from './timing-settings.mjs';
 import {setupResetSettings} from './reset-settings.mjs';
 import {setupNativeMidi} from './native-midi.mjs';
 import {setupNativeAudio} from './native-audio.mjs';
+import {setupAudioUnits} from './audio-units.mjs';
 import {setupChaseSettings,readChaseProfile} from './chase-settings.mjs';
 import {setupMidiMerge} from './midi-merge.mjs';
 import {setupMidiModifiers} from './midi-modifiers.mjs';
@@ -127,7 +128,7 @@ let selectedClipIds = new Set();
 let selectedNote = null;
 let selectedNoteIds = new Set();
 let recordingUI,metronomeUI;
-let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,nativeAudioUI,midiMergeUI,midiModifiersUI,controllerLanesUI,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
+let snapGridUI,timeDisplayUI,inspectorTime,musicalDisplay,timingUI,nativeMidiUI,nativeAudioUI,audioUnitsUI,midiMergeUI,midiModifiersUI,controllerLanesUI,midiEventsUI,editingUI,sessionUI,resolutionUI,documentUI,projectsUI,documentState=null,sessionUILoading=false,resolutionUILoading=false,documentUILoading=false,projectsUILoading=false;
 let busy = false;
 let connected = false;
 let pxPerBeat = Number($('zoom').value);
@@ -371,6 +372,7 @@ function applySnapshot(snapshot, {force = false} = {}) {
   workspaceState=snapshot.workspace??workspaceState;
   nativeMidiUI?.snapshot(snapshot.nativeTransport,snapshot.session?.id);
   nativeAudioUI?.snapshot(snapshot);
+  audioUnitsUI?.snapshot(snapshot);
   if(changed){nativeMidiUI?.projectChanged();timingUI?.invalidate();}
   if (snapshot.capabilities?.projectOpen && !projectsUI && !projectsUILoading) loadProjectsUI();
   if(!project){history={canUndo:false,canRedo:false};renderUI(true);if(documentChanged){documentUI?.documentChanged();resolutionUI?.documentChanged();}return;}
@@ -495,7 +497,7 @@ function updateButtons() {
   $('master-gain').disabled = unavailable;$('project-pan-law').disabled=unavailable;$('pan-law-status').disabled=unavailable;
   $('tempo').disabled = unavailable;
   $('play').classList.toggle('playing', Boolean(audioSource)||Boolean(nativeMidiUI?.active)||Boolean(nativeAudioUI?.active));
-  nativeMidiUI?.update();nativeAudioUI?.update();
+  nativeMidiUI?.update();nativeAudioUI?.update();audioUnitsUI?.update();
   $('history-button').disabled = !sessionUI || unavailable;
   $('backups-button').disabled = !sessionUI || unavailable;
   $('projects-button').disabled = !projectsUI || busy || !connected;
@@ -1951,6 +1953,7 @@ async function initialize() {
   events.addEventListener('snapshot',receive);
   events.addEventListener('native-transport',event=>nativeMidiUI?.event(JSON.parse(event.data)));
   events.addEventListener('native-audio',event=>nativeAudioUI?.event(JSON.parse(event.data)));
+  events.addEventListener('audio-units',event=>audioUnitsUI?.event(JSON.parse(event.data)));
   events.addEventListener('native-settings',()=>nativeMidiUI?.settingsChanged());
   events.addEventListener('timing-settings',()=>{nativeMidiUI?.settingsChanged();window.dispatchEvent(new Event('newdaw-timing-settings'));});
   events.addEventListener('reset-settings',()=>{nativeMidiUI?.settingsChanged();window.dispatchEvent(new Event('newdaw-reset-settings'));});
@@ -2015,6 +2018,7 @@ async function loadProjectsUI(){
 recordingUI=setupRecording({getContext:()=>({project,documentId:documentState?.id,busy:busy||!!browserMidiRecordingUI?.active||!!editingUI?.stepMidiArmed,connected,cursorSeconds:transportSeconds,cursorTick:project?secondsToTick(transportSeconds):0}),request:jsonFetch,onImported:refreshState,notify:notice,stopPlayback:()=>stopTransport(false),prepareBacking:async()=>{if(!await nativeMidiUI.previewAllowed())throw new Error('오버더빙은 내장 오디오 프리뷰 모드를 사용하세요.');const rendered=await renderSnapshot('preview',{ignoreCycle:true});const response=await fetch(rendered.url);if(!response.ok)throw new Error('반주 오디오를 읽을 수 없습니다.');return {bytes:await response.arrayBuffer(),startSeconds:rendered.stats?.startSeconds??0};}});
 
 nativeAudioUI=setupNativeAudio({request:jsonFetch,getContext:()=>({project,busy,connected}),notify:notice});
+audioUnitsUI=setupAudioUnits({request:jsonFetch,getContext:()=>({project,busy,connected}),renderCurrentMix:()=>renderSnapshot('export'),notify:notice});
 metronomeUI=setupMetronome({getContext:()=>({project,playing:!!audioSource,positionSeconds:transportSeconds,secondsToTick,tickToSeconds})});
 
 void jsonFetch('/api/health').then(async result=>{if(!result.capabilities?.browserMidiInput)return;const {setupBrowserMidiInput,setupBrowserMidiRecording}=await import('./web-midi-input.mjs');browserMidiInputUI=setupBrowserMidiInput({onFilterChange:result.capabilities.projectMidiInputFilter?((filter,revision,doc)=>doc===documentState?.id?runCommand('project.midiInputFilter',{filter},revision):Promise.resolve(null)):null,filterSupported:result.capabilities.midiInputFilter===true,notify:notice,getContext:()=>({project,documentId:documentState?.id,busy,connected,cursorSeconds:transportSeconds})});editingUI?.setMidiInput(browserMidiInputUI);if(result.capabilities.midiTakeCommit)browserMidiRecordingUI=setupBrowserMidiRecording(browserMidiInputUI,{autoQuantizeSupported:result.capabilities.midiTakeAutoQuantize===true,getContext:()=>({project,documentId:documentState?.id,busy:busy||!!recordingUI?.active||!!editingUI?.stepMidiArmed,connected,selectedClip,cursorTick:project?secondsToTick(transportSeconds):0}),commitTake:(args,revision)=>runCommand('midi.record.take',args,revision),stopPlayback:()=>stopTransport(false),prepareBacking:async()=>{if(!await nativeMidiUI.previewAllowed())throw new Error('MIDI 반주는 내장 프리뷰 모드에서 사용하세요.');const rendered=await renderSnapshot('preview',{ignoreCycle:true});const response=await fetch(rendered.url);if(!response.ok)throw new Error('MIDI 반주 오디오를 읽을 수 없습니다.');return {bytes:await response.arrayBuffer(),startSeconds:rendered.stats?.startSeconds??0};},notify:notice,onCommitted:result=>{const id=result.changes?.recording?.clipId;if(id)selectClip(id);}});}).catch(error=>notice(`MIDI 입력 UI: ${error.message}`,true));

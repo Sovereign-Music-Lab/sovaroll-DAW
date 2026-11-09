@@ -122,3 +122,6 @@
 {"at":"2026-11-09T04:31:38.169Z","id":"T-045","action":"start"}
 {"at":"2026-11-09T04:36:26.566Z","id":"T-046","action":"add"}
 {"at":"2026-11-09T04:38:03.821Z","id":"T-045","action":"done","evidence":"Offline PCM16 WAV processed through explicitly instantiated system effect with AVAudioEngine. Two repeated renders had identical output hashes; source/frame/rate/channel checked; no-instance/missing-file errors preserved lifecycle. Targeted native tests 4 PASS; native suite 105 PASS; full verification 172 files PASS. T-046 added for server/GUI offline probe. No listening/compatibility/low-latency claim.","verify":"PASS"}
+{"at":"2026-11-09T04:38:49.063Z","id":"T-046","action":"start"}
+{"at":"2026-11-09T04:50:01.469Z","id":"T-047","action":"add"}
+{"at":"2026-11-09T04:54:21.936Z","id":"T-046","action":"done","evidence":"Server/GUI Audio Unit offline probe completed with revision/document guards and no browser executable path. Server test 1 PASS and GUI 2 PASS; default E2E 40 PASS; native suite 106 PASS; full verification 172 files PASS after idle-reset SSE suppression. T-047 added for downloadable processed WAV. No hardware/compatibility/quality claim.","verify":"PASS"}
