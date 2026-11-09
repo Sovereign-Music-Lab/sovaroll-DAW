@@ -202,3 +202,6 @@
 {"at":"2026-11-09T15:08:59.121Z","id":"T-070","action":"add"}
 {"at":"2026-11-09T15:08:59.333Z","id":"T-070","action":"start"}
 {"at":"2026-11-09T15:09:50.890Z","id":"T-070","action":"done","evidence":"agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; CLI guide edit works.","verify":"PASS"}
+{"at":"2026-11-09T16:29:30.210Z","id":"T-071","action":"add"}
+{"at":"2026-11-09T16:29:30.423Z","id":"T-071","action":"start"}
+{"at":"2026-11-09T16:31:26.784Z","id":"T-071","action":"done","evidence":"agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; README first-run steps checked against starter.","verify":"PASS"}

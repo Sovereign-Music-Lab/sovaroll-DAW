@@ -78,3 +78,5 @@ Read AGENTS.md, this file, Git status, then one task. Update this English file a
 - 2026-11-09 (Claude; the maintainer explicitly asked to finish SovaFlow, write non-programmer READMEs and an illustrated GUI+CLI manual, then commit and push everything): `docs/manual/{en,ko}` 12-chapter book with 80 real screenshots (`scripts/manual/capture-screens.mjs`), README install/routine/update/uninstall rewrite, `Start SovaRoll.command`/`.bat` starters keeping songs in ~/Music/SovaRoll, server capability version 0.129.0. Full verify PASS (176 files) + E2E PASS. Windows starter not run. Default policy text unchanged.
 
 - T-070: replaced CLI manual terminal screenshots in both languages with selectable command examples; project-specific IDs remain placeholders. `agent:verify` passed guard and syntax; its unit tests were skipped for this docs-only change.
+
+- 2026-11-10: T-071: bilingual README explains the empty first song and how to add MIDI before playback.

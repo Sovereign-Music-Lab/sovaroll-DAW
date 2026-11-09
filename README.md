@@ -39,6 +39,8 @@ SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser 
    - **Terminal**: `npm start` (opens the demo song in `sessions/`).
 4. Your browser opens **http://127.0.0.1:4317**. The terminal window that appeared is SovaRoll's engine — keep it open while you work.
 
+The double-click starter initially opens an **empty song**. Before playback, use **Import → Choose files** to import MIDI, or create a MIDI track and clip and add notes in the piano roll. An empty song has nothing to play. Follow the pictures in [Your first song](docs/manual/en/03-first-song.md).
+
 The double-click starters keep your songs **outside the app**, in `Music/SovaRoll/My First Song` in your home folder, so updating or deleting the app never touches your music. No `npm install`, account, model or internet service is needed. The macOS starter is tested; the Windows starter is provided but less tested.
 
 ## Your daily routine
@@ -47,7 +49,7 @@ The double-click starters keep your songs **outside the app**, in `Music/SovaRol
 |---|---|
 | 1. Open | Double-click the starter; confirm the song name at the top |
 | 2. Safety point | **Ctrl/Cmd+S** before a big change (or **Save · versions → Save new version**) |
-| 3. Make music | **+ Track**, click in the piano roll to add notes, or **Import** your WAV/AIFF/MIDI; record in the **Recording** panel |
+| 3. Make music | **+ Track**, create a MIDI clip, then click in the piano roll to add notes, or **Import** your WAV/AIFF/MIDI; record in the **Recording** panel |
 | 4. Listen and compare | **Space** to play/stop; **Ctrl/Cmd+Z** / **Ctrl/Cmd+Shift+Z** to compare versions |
 | 5. Mix | Track gain, pan, **M**ute, **S**olo, master output; **Clear mute/solo** before exporting |
 | 6. Export | **Export WAV mix** (audio), **Export MIDI** (editable notes), **MusicXML** in the score view |

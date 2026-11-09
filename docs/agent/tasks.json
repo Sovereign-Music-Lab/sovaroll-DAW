@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T15:09:50.890Z",
+  "updatedAt": "2026-11-09T16:31:26.784Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2309,6 +2309,25 @@
       "startedAt": "2026-11-09T15:08:59.332Z",
       "evidence": "agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; CLI guide edit works.",
       "doneAt": "2026-11-09T15:09:50.889Z"
+    },
+    {
+      "status": "done",
+      "priority": 5,
+      "area": "docs",
+      "id": "T-071",
+      "title": "Clarify the first empty SovaRoll project",
+      "goal": "Help new users create or import music before playback.",
+      "acceptance": [
+        "Both README languages explain the empty double-click starter and first MIDI creation or import.",
+        "README retains project preservation and tested-platform caveats."
+      ],
+      "verify": [
+        "git diff --check",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T16:29:30.422Z",
+      "evidence": "agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; README first-run steps checked against starter.",
+      "doneAt": "2026-11-09T16:31:26.783Z"
     }
   ]
 }
