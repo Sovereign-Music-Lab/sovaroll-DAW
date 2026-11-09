@@ -1,6 +1,6 @@
 # SovaRoll 사용 설명서
 
-[English](MANUAL.en.md) · [프로젝트](../README.ko.md) · [CLI 전체 도움말](CLI.md) · [개발 노트](DEVELOPMENT.ko.md)
+[English](MANUAL.en.md) · [프로젝트](../README.ko.md) · [CLI 가이드](CLI-GUIDE.ko.md) · [CLI 전체 도움말](CLI.md) · [개발 노트](DEVELOPMENT.ko.md)
 
 개발 버전 0.129.0 기준입니다. 기본 작업 화면은 한국어·영어를 전환할 수 있지만 고급 대화상자와 일부 세부 설정에는 미번역 문구가 남아 있으므로 완전한 이중 언어 UI는 아직 개발 목표입니다. 검증 환경은 macOS와 Chrome입니다. 다른 운영체제·브라우저는 별도 검증이 필요하며 선택적 native MIDI는 macOS 전용입니다.
 

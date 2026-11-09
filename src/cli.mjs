@@ -125,6 +125,7 @@ Usage: node src/cli.mjs <action> [arguments] [options]
   media-accept PLAN_ID        Apply reviewed source mappings (--allow-replacement for changed content)
   remove-missing             Remove all currently missing Pool sources and referencing clips
                               Supports --dry-run; never deletes physical media files
+  guide [TOPIC|all]           Routine-based bilingual usage guide (offline; no server needed)
   commands                    Show runtime command schemas and help
   command NAME JSON           Apply one command; JSON is its arguments object
   batch FILE.json             Apply an array of commands atomically, one undo step
@@ -231,6 +232,7 @@ export async function main(args=process.argv.slice(2)) {
   if(values['timing-options']!==undefined&&!['offline-render','offline-render-stems','offline-render-stems-dir'].includes(action))throw new Error('--timing-options applies only to offline-render; server render uses timing-settings');
   if(values['chase-options']!==undefined&&!['render','offline-render','render-stems','offline-render-stems','offline-render-stems-dir'].includes(action))throw new Error('--chase-options only applies to render or offline-render');
   if(values.help||!action){console.log(HELP);return;}
+  if(action==='guide'){if(rest.length>1)throw new Error('Usage: guide [TOPIC|all]');const {renderGuide}=await import('./cli-guide.mjs');console.log(renderGuide(rest[0]));return;}
   if(values['dry-run']&&!['command','batch','collect','recover','recover-backup','backup-settings','restore-asset','media-accept','remove-missing','save','save-new-version','save-as','revert','restore-revert-media','open','recent-remove','recent-clear','project-open','project-activate','project-close','project-new','project-recover','project-location-settings','controller-settings','chase-settings','reset-settings','timing-settings','split-settings','stretch-audio-batch','restore-audio-processing','stretch-audio','split-zero','tap-tempo','resize-midi-parts','trim-clips','slip-clips','copy-clips','paste-clips','note-time','display-command','time-command','native-settings'].includes(action))throw new Error('This action does not support --dry-run; no action was performed');
   if(values.media!==undefined&&action!=='revert')throw new Error('--media is only supported for revert');
   if(values.confirm&&!['revert','recent-clear'].includes(action))throw new Error('--confirm is only supported for revert or recent-clear');

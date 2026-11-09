@@ -51,6 +51,8 @@ Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated start
 - T-016 records the first Gemma continuation prompt in docs/agent/FIRST_GEMMA_PROMPT.md, with bilingual introduction and README links.
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
+- 2026-11-09 (cloud session at the maintainer's request, tests deferred to the maintainer): added offline `guide [TOPIC|all]` CLI action (src/cli-guide.mjs), docs/CLI-GUIDE.en.md/ko.md, and routine-based README renewal. Manually spot-checked status, dry-run, select-clips, time-display, render and export-bundle on a temporary project/port 4399; `agent:verify`/E2E were NOT run.
+
 ## Next task and unresolved decisions
 - T-001–T-066 are done. See FEATURE_INVENTORY; no 2,500-item catalogue exists. Continue remaining advanced-dialog translation and native architecture without claiming human verification.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.

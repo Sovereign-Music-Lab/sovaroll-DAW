@@ -7,7 +7,7 @@
 ## Abstract
 **The Sovereign MIDI Workstation · A professional-grade open-source DAW in development**
 
-[한국어](README.ko.md) · [English manual](docs/MANUAL.en.md) · [한국어 설명서](docs/MANUAL.ko.md) · [Philosophy](PHILOSOPHY.en.md) · [철학](PHILOSOPHY.ko.md)
+[한국어](README.ko.md) · [English manual](docs/MANUAL.en.md) · [CLI guide](docs/CLI-GUIDE.en.md) · [한국어 설명서](docs/MANUAL.ko.md) · [Philosophy](PHILOSOPHY.en.md) · [철학](PHILOSOPHY.ko.md)
 
 SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser interface and CLI share the same project, command engine, validation, and undo history. Keep music editable, work on your own computer, and carry MIDI and audio into the production tools you choose.
 
@@ -15,16 +15,19 @@ SovaRoll is Sovereign Music Lab's local MIDI and audio workstation. Its browser 
 
 ## Contents
 
-- [Start](#start)
+- [Quick start (5 minutes)](#quick-start-5-minutes)
+- [Your daily routine](#your-daily-routine)
+- [Using the CLI](#using-the-cli)
+- [Philosophy in one minute](#philosophy-in-one-minute)
 - [What is here](#what-is-here)
 - [The wider workflow](#the-wider-workflow)
 - [Continue development with Gemma 4](#continue-development-with-gemma-4)
 - [License](#license)
 - [Development handoff](#development-handoff)
 
-## Start
+## Quick start (5 minutes)
 
-Install **Node.js 22 or newer** and Git. Use a current desktop Chrome for the browser workflow validated here. No npm package installation, LLM, model weights, account, or companion repository is required for basic operation.
+You need **Node.js 22+**, Git and desktop Chrome. No `npm install`, account, LLM or model weights.
 
 ```sh
 git clone https://github.com/Sovereign-Music-Lab/sovaroll-DAW.git
@@ -32,15 +35,68 @@ cd sovaroll-DAW
 npm start
 ```
 
-Open [the local workstation](http://127.0.0.1:4317). The first start creates a short synthetic demo in `sessions/`; an existing project is preserved. Stop with **Ctrl+C** in the terminal. The [manual](docs/MANUAL.en.md) covers a blank project, normal daily use, saving, backups, exports, troubleshooting, updating, and uninstalling without losing music.
+1. Open [http://127.0.0.1:4317](http://127.0.0.1:4317). The first run creates a short synthetic demo in `sessions/`; an existing project is never replaced.
+2. Press **Play** (or Space) to hear the demo, and click a MIDI clip to open it in the piano roll.
+3. Stop with **Ctrl+C** in the terminal. Closing the tab does not stop the server.
 
-If port 4317 is occupied:
+Port 4317 busy? `npm start -- --port 4318`, open that port, and add `--url http://127.0.0.1:4318` to CLI commands.
+
+**Start your own song** (keep it outside the app folder so updates never touch it):
 
 ```sh
-npm start -- --port 4318
+mkdir -p "$HOME/Music/SovaRoll/My-Song"
+node src/cli.mjs init "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
+node src/cli.mjs serve --project "$HOME/Music/SovaRoll/My-Song/My-Song.newdaw.json"
 ```
 
-Then open [port 4318](http://127.0.0.1:4318) and add `--url http://127.0.0.1:4318` to commands that connect to that server.
+## Your daily routine
+
+| Step | In the browser | In a terminal |
+|---|---|---|
+| 1. Open | Start the server, confirm the project name at the top | `npm start` |
+| 2. Safety point | **저장·버전** → save a version before a big edit | `npm run cli -- save-new-version` |
+| 3. Make music | Add a MIDI track, click the piano roll, or **가져오기** your own WAV/AIFF/MIDI | `npm run cli -- import FILE.mid` |
+| 4. Try and compare | Edit, listen, **Ctrl/Cmd+Z** to compare alternatives | `... command NAME JSON --dry-run`, then without it |
+| 5. Mix | Track gain, pan, mute, solo; check mute/solo before export | `npm run cli -- status` |
+| 6. Save | **Ctrl/Cmd+S** (edits autosave; Save is your reference point) | `npm run cli -- save` |
+| 7. Export | **MIDI 내보내기**, **믹스 WAV 내보내기** | `render`, `export-midi` |
+| 8. Back up | **백업 ZIP** | `npm run cli -- export-bundle backup.zip` |
+| 9. Stop | Stop playback, then **Ctrl+C** | |
+
+Habits that keep your music safe: keep the project folder together (JSON + `assets/`), keep MIDI and source audio next to every mix you export, and make a backup ZIP before updating. If something goes wrong, see **Troubleshooting** and **Save, recover and move work** in the [manual](docs/MANUAL.en.md).
+
+## Using the CLI
+
+The CLI edits the same project as the browser, with the same validation and undo history. Start with the built-in guide, which works without a server:
+
+```sh
+npm run cli -- guide            # routine + topic list
+npm run cli -- guide export     # one topic (start, projects, edit, time, import, export, save, media, native)
+npm run cli -- --help           # every command and option
+```
+
+The routine is **look → dry-run → apply → save**:
+
+```sh
+npm run cli -- status                                              # IDs and revision
+npm run cli -- command track.add '{"type":"midi","name":"Piano"}' --dry-run
+npm run cli -- command track.add '{"type":"midi","name":"Piano"}'
+npm run cli -- save
+npm run cli -- render sessions/mix.wav
+```
+
+Full written guide: [CLI guide](docs/CLI-GUIDE.en.md) · [CLI 가이드](docs/CLI-GUIDE.ko.md). Complete option text: [CLI reference](docs/CLI.md).
+
+## Philosophy in one minute
+
+Read the full [philosophy](PHILOSOPHY.en.md) / [철학](PHILOSOPHY.ko.md). The short version:
+
+- **The musician stays in charge.** Knowledge, intent and listening come from people. A local AI may propose; a person accepts, edits or rejects.
+- **Keep music editable.** Notes, timing, velocity, controllers and source audio survive. A rendered WAV never replaces the choices that made it.
+- **One engine for people and agents.** Browser and CLI share validation, revision checks and undo, so automation is as inspectable as a click.
+- **Independence.** Runs on your computer, keeps local files, uses open formats, and needs no model, account, or sibling project. Integrations are optional.
+- **Tech for all.** Readable bilingual docs, backups and reproducible checks are part of real control.
+- **Honest scope.** We publish what is implemented, tested, partial or planned. A level meter is not a listening test, and a working prototype is not a finished professional workstation.
 
 ## What is here
 

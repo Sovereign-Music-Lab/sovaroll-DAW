@@ -1,6 +1,6 @@
 # SovaRoll user manual
 
-[한국어](MANUAL.ko.md) · [Project](../README.md) · [CLI reference](CLI.md) · [Development notes](DEVELOPMENT.en.md)
+[한국어](MANUAL.ko.md) · [Project](../README.md) · [CLI guide](CLI-GUIDE.en.md) · [CLI reference](CLI.md) · [Development notes](DEVELOPMENT.en.md)
 
 This manual covers the current development release, 0.129.0. The primary workspace supports Korean and English; advanced dialogs and some detailed settings retain untranslated text, so complete bilingual UI is still a development goal. The verified desktop environment is macOS with Chrome; other operating systems and browsers need separate validation. Optional native MIDI is macOS-only.
 

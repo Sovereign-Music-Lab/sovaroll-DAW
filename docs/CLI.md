@@ -1,6 +1,6 @@
 # CLI reference / CLI 전체 도움말
 
-[English manual](MANUAL.en.md) · [한국어 설명서](MANUAL.ko.md)
+[CLI guide](CLI-GUIDE.en.md) · [CLI 가이드](CLI-GUIDE.ko.md) · [English manual](MANUAL.en.md) · [한국어 설명서](MANUAL.ko.md)
 
 Generated from `node src/cli.mjs --help` for this release. For the current command schemas, start the local server and run `npm run cli -- commands`.
 
@@ -116,6 +116,7 @@ Usage: node src/cli.mjs <action> [arguments] [options]
   media-accept PLAN_ID        Apply reviewed source mappings (--allow-replacement for changed content)
   remove-missing             Remove all currently missing Pool sources and referencing clips
                               Supports --dry-run; never deletes physical media files
+  guide [TOPIC|all]           Routine-based bilingual usage guide (offline; no server needed)
   commands                    Show runtime command schemas and help
   command NAME JSON           Apply one command; JSON is its arguments object
   batch FILE.json             Apply an array of commands atomically, one undo step
