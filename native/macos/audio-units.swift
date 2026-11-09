@@ -25,6 +25,7 @@ func metadata(_ component: AVAudioUnitComponent) -> [String: Any] {
 var components: [AVAudioUnitComponent] = []
 var selected: String? = nil
 var instantiatedUnit: AVAudioUnit? = nil
+var parameterDefaults: [String: Float] = [:]
 func exactComponent(_ id: String) throws -> AVAudioUnitComponent {
     if components.isEmpty { _ = discover() }
     let matches = components.filter { unitID($0) == id }
@@ -42,7 +43,8 @@ func instantiate(_ id: String, offline: Bool) throws {
         DispatchQueue.main.async {
             if let error { emit(["event": "error", "code": "INSTANTIATION_FAILED", "message": error.localizedDescription]); return }
             guard let unit else { emit(["event": "error", "code": "INSTANTIATION_FAILED", "message": "Audio Unit returned no instance"]); return }
-            instantiatedUnit = unit; selected = id
+            instantiatedUnit = unit; selected = id; parameterDefaults = [:]
+            if let parameters = try? auParameters(unit) { for parameter in parameters { parameterDefaults[parameter.keyPath] = parameter.value } }
             let inputChannels = unit.numberOfInputs > 0 ? unit.inputFormat(forBus: 0).channelCount : 0
             let outputChannels = unit.numberOfOutputs > 0 ? unit.outputFormat(forBus: 0).channelCount : 0
             let sampleRate = unit.numberOfOutputs > 0 ? unit.outputFormat(forBus: 0).sampleRate : 0
@@ -110,6 +112,36 @@ func auWavData(_ pcm: Data, sampleRate: Int, channels: Int) -> Data {
     text("RIFF"); u32(36 + pcm.count); text("WAVE"); text("fmt "); u32(16); u16(1); u16(channels); u32(sampleRate); u32(sampleRate * channels * 2); u16(channels * 2); u16(16); text("data"); u32(pcm.count); data.append(pcm)
     return data
 }
+func auParameters(_ unit: AVAudioUnit) throws -> [AUParameter] {
+    guard let tree = unit.auAudioUnit.parameterTree else { return [] }
+    var result: [AUParameter] = []
+    func visit(_ group: AUParameterGroup) throws {
+        for child in group.children {
+            if let parameter = child as? AUParameter { result.append(parameter) }
+            else if let childGroup = child as? AUParameterGroup { try visit(childGroup) }
+            if result.count > 256 { throw AudioUnitError(code: "PARAMETER_LIMIT", message: "Audio Unit parameter probe is limited to 256 parameters") }
+        }
+    }
+    try visit(tree)
+    return result
+}
+func parameterMetadata(_ parameter: AUParameter) -> [String: Any] {
+    return ["keyPath": parameter.keyPath, "identifier": parameter.identifier, "name": parameter.displayName,
+            "value": parameter.value, "defaultValue": parameterDefaults[parameter.keyPath] ?? parameter.value, "minValue": parameter.minValue,
+            "maxValue": parameter.maxValue, "unit": parameter.unit.rawValue, "unitName": parameter.unitName as Any]
+}
+func setAudioUnitParameter(_ keyPath: String, _ value: Float) throws {
+    guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before inspecting parameters") }
+    let matches = try auParameters(unit).filter { $0.keyPath == keyPath }
+    guard matches.count == 1 else {
+        if matches.isEmpty { throw AudioUnitError(code: "AUDIO_UNIT_PARAMETER_NOT_FOUND", message: "Parameter keyPath is not present in this instance") }
+        throw AudioUnitError(code: "AMBIGUOUS_AUDIO_UNIT_PARAMETER", message: "Parameter keyPath is ambiguous in this instance")
+    }
+    let parameter = matches[0]
+    guard value.isFinite, value >= parameter.minValue, value <= parameter.maxValue else { throw AudioUnitError(code: "INVALID_AUDIO_UNIT_PARAMETER_VALUE", message: "Parameter value must be finite and within the reported min/max range") }
+    parameter.value = value
+    emit(["event": "parameterSet", "componentId": selected as Any, "parameter": parameterMetadata(parameter), "offline": true])
+}
 func renderAudioUnit(_ path: String, offline: Bool) throws {
     guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Audio Unit processing requires explicit offline=true") }
     guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before offline processing") }
@@ -150,12 +182,20 @@ func handle(_ object: [String: Any]) throws {
     } else if command == "instantiate" {
         guard Set(object.keys) == ["command", "id", "offline"], let id = object["id"] as? String, let value = object["offline"] as? NSNumber, CFGetTypeID(value) == CFBooleanGetTypeID() else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Instantiate requires id and offline=true") }
         try instantiate(id, offline: value.boolValue)
+    } else if command == "parameters" {
+        guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Parameters requires only command") }
+        guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before inspecting parameters") }
+        let parameters = try auParameters(unit)
+        emit(["event": "parameters", "componentId": selected as Any, "parameters": parameters.map(parameterMetadata), "count": parameters.count, "offline": true])
+    } else if command == "setParameter" {
+        guard Set(object.keys) == ["command", "keyPath", "value"], let keyPath = object["keyPath"] as? String, !keyPath.isEmpty, let number = object["value"] as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID(), number.doubleValue.isFinite else { throw AudioUnitError(code: "INVALID_REQUEST", message: "SetParameter requires keyPath and one finite numeric value") }
+        try setAudioUnitParameter(keyPath, number.floatValue)
     } else if command == "render" {
         guard Set(object.keys) == ["command", "path", "offline"], let path = object["path"] as? String, let value = object["offline"] as? NSNumber, CFGetTypeID(value) == CFBooleanGetTypeID() else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Render requires path and offline=true") }
         try renderAudioUnit(path, offline: value.boolValue)
     } else if command == "release" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Unknown release fields") }
-        instantiatedUnit = nil; emit(["event": "released", "instantiated": false])
+        instantiatedUnit = nil; parameterDefaults = [:]; emit(["event": "released", "instantiated": false])
     } else if command == "status" {
         emit(["event": "status", "count": components.count, "selected": selected as Any, "instantiated": instantiatedUnit != nil])
     } else if command == "quit" { instantiatedUnit = nil; exit(0) }

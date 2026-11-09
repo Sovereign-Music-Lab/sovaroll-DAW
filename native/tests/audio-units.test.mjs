@@ -74,3 +74,32 @@ test('Audio Unit offline effect renders bounded PCM deterministically and preser
  h.send({command:'status'});const active=await h.next(event=>event.event==='status');assert.equal(active.instantiated,true);
  h.send({command:'release'});await h.next(event=>event.event==='released');
 });
+
+test('Audio Unit parameters are bounded, validated and affect deterministic offline rendering',async t=>{
+ const h=await helper(t);await h.next(event=>event.event==='ready');h.send({command:'list',limit:256});
+ const list=await h.next(event=>event.event==='list'),effects=list.components.filter(component=>component.type===1635083896);
+ h.send({command:'parameters'});assert.equal((await h.next(event=>event.event==='error')).code,'NO_INSTANCE');
+ h.send({command:'setParameter',keyPath:'missing',value:0});assert.equal((await h.next(event=>event.event==='error')).code,'NO_INSTANCE');
+ let parameterEvent=null;
+ for(const effect of effects.slice(0,16)){
+  h.send({command:'instantiate',id:effect.id,offline:true});const instantiated=await h.next(event=>['instantiated','error'].includes(event.event));if(instantiated.event==='error')continue;
+  h.send({command:'parameters'});const listed=await h.next(event=>['parameters','error'].includes(event.event));
+  if(listed.event==='parameters'&&listed.parameters.some(parameter=>parameter.maxValue>parameter.minValue)){parameterEvent=listed;break;}
+  h.send({command:'release'});await h.next(event=>event.event==='released');
+ }
+ assert.ok(parameterEvent,'Expected an available system effect with a bounded parameter tree');
+ assert.ok(parameterEvent.count<=256);assert.equal(parameterEvent.count,parameterEvent.parameters.length);
+ const parameter=parameterEvent.parameters.find(parameter=>parameter.maxValue>parameter.minValue),target=parameter.value===parameter.minValue?parameter.maxValue:parameter.minValue;
+ for(const field of ['keyPath','identifier','name'])assert.equal(typeof parameter[field],'string');for(const field of ['value','defaultValue','minValue','maxValue'])assert.ok(Number.isFinite(parameter[field]));
+ h.send({command:'setParameter',keyPath:'missing',value:target});assert.equal((await h.next(event=>event.event==='error')).code,'AUDIO_UNIT_PARAMETER_NOT_FOUND');
+ h.send({command:'setParameter',keyPath:parameter.keyPath,value:parameter.maxValue+Math.max(1,Math.abs(parameter.maxValue))});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_AUDIO_UNIT_PARAMETER_VALUE');
+ h.send({command:'setParameter',keyPath:parameter.keyPath,value:'bad'});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_REQUEST');
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-au-parameters-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const left=Float32Array.from({length:4800},(_,i)=>.2*Math.sin(i*.05)),right=Float32Array.from({length:4800},(_,i)=>.1*Math.cos(i*.08)),file=path.join(directory,'input.wav');await fs.writeFile(file,encodeWav({sampleRate:48000,channels:[left,right]}));
+ h.send({command:'render',path:file,offline:true});const baseline=await h.next(event=>['rendered','error'].includes(event.event));assert.equal(baseline.event,'rendered',JSON.stringify(baseline));
+ h.send({command:'setParameter',keyPath:parameter.keyPath,value:target});const changed=await h.next(event=>['parameterSet','error'].includes(event.event));assert.equal(changed.event,'parameterSet',JSON.stringify(changed));assert.ok(Math.abs(changed.parameter.value-target)<1e-5);assert.equal(changed.parameter.defaultValue,parameter.defaultValue);
+ h.send({command:'parameters'});const reread=await h.next(event=>event.event==='parameters'),current=reread.parameters.find(item=>item.keyPath===parameter.keyPath);assert.ok(Math.abs(current.value-target)<1e-5);
+ const outputs=[];for(let i=0;i<2;i++){h.send({command:'render',path:file,offline:true});const rendered=await h.next(event=>['rendered','error'].includes(event.event));assert.equal(rendered.event,'rendered',JSON.stringify(rendered));outputs.push(rendered.pcmSha256);}
+ assert.equal(outputs[0],outputs[1]);assert.notEqual(outputs[0],baseline.pcmSha256,'The changed parameter must affect the observed system-effect PCM');
+ h.send({command:'status'});assert.equal((await h.next(event=>event.event==='status')).instantiated,true);h.send({command:'release'});await h.next(event=>event.event==='released');
+});

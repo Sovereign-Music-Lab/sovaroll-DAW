@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:35:07.728Z",
+  "updatedAt": "2026-11-09T05:40:54.838Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1552,6 +1552,42 @@
       "startedAt": "2026-11-09T05:28:10.633Z",
       "evidence": "Targeted GUI E2E PASS: 8 steps. Empty selected-track mode rejected without edit; two sounding MIDI tracks verified selected-only source PCM SHA-256 differs from all-track source; selected-track mode also passed locator-range 48,000-frame render, sourceStartSample=12000 import with matching asset hash and one-Undo restoration. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full: VERIFY PASS, 172 product files; final agent:verify guard/syntax PASS. No arbitrary IDs/paths, listening or compatibility claim.",
       "doneAt": "2026-11-09T05:35:07.727Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-051",
+      "title": "Inspect and set Audio Unit parameters for offline rendering",
+      "size": "M",
+      "dependsOn": [
+        "T-050"
+      ],
+      "goal": "Expose bounded parameter metadata for an explicitly instantiated Audio Unit and apply validated parameter values to subsequent deterministic offline renders.",
+      "context": [
+        "native/macos/audio-units.swift owns one explicit AVAudioUnit instance and renders only after offline instantiation.",
+        "Parameter access must require an active instance; discovery/selection must remain free of plugin instantiation.",
+        "Use keyPath identity, finite range-checked values and a bounded flattened parameter list; do not claim generic custom-GUI or realtime automation support."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "src/audio-units.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "An active instance can return a bounded parameter list with stable keyPath, display name, current/default/min/max values; no-instance and malformed requests return structured errors.",
+        "Setting an exact keyPath validates finite numeric range, updates the actual AUParameter and is reflected in subsequent status/list results without changing project data.",
+        "Native tests use an available system effect with parameters, verify a changed parameter and deterministic output; missing/unknown/out-of-range values preserve lifecycle. Server exposes only guarded parameter routes if needed by the tested API scope.",
+        "Existing native/product suites pass and documentation distinguishes parameter control from full custom GUI, realtime automation and compatibility."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:35:27.656Z",
+      "evidence": "Targeted native Audio Unit tests: 5/5 PASS. New parameter test verifies no-instance/unknown/malformed/out-of-range errors, bounded metadata and initial/default values, exact-keyPath setting/readback, changed PCM versus baseline and identical repeated renders with preserved lifecycle. npm run test:native: 107/107 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 172 product files. Native-only scope; no server/GUI parameter route, custom GUI, realtime automation, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:40:54.837Z"
     }
   ]
 }
