@@ -26,6 +26,8 @@ var components: [AVAudioUnitComponent] = []
 var selected: String? = nil
 var instantiatedUnit: AVAudioUnit? = nil
 var parameterDefaults: [String: Float] = [:]
+struct ActiveAUPreview { let id: String, engine: AVAudioEngine, player: AVAudioPlayerNode, unit: AVAudioUnit }
+var activePreview: ActiveAUPreview? = nil
 func exactComponent(_ id: String) throws -> AVAudioUnitComponent {
     if components.isEmpty { _ = discover() }
     let matches = components.filter { unitID($0) == id }
@@ -142,8 +144,35 @@ func setAudioUnitParameter(_ keyPath: String, _ value: Float) throws {
     parameter.value = value
     emit(["event": "parameterSet", "componentId": selected as Any, "parameter": parameterMetadata(parameter), "offline": true])
 }
+func stopAudioUnitPreview() {
+    guard let preview = activePreview else { return }
+    preview.player.stop(); preview.engine.stop(); preview.engine.detach(preview.player); preview.engine.detach(preview.unit); activePreview = nil
+    emit(["event": "stopped", "jobId": preview.id, "componentId": selected as Any, "status": "stopped"])
+}
+func completeAudioUnitPreview(_ id: String) {
+    guard let preview = activePreview, preview.id == id else { return }
+    preview.player.stop(); preview.engine.stop(); preview.engine.detach(preview.player); preview.engine.detach(preview.unit); activePreview = nil
+    emit(["event": "completed", "jobId": id, "componentId": selected as Any, "status": "completed"])
+}
+func playAudioUnit(_ path: String, allowDefaultOutput: Bool) throws {
+    guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before native preview") }
+    guard activePreview == nil else { throw AudioUnitError(code: "ALREADY_PLAYING", message: "Stop the current Audio Unit preview before starting another") }
+    guard allowDefaultOutput else { throw AudioUnitError(code: "OUTPUT_REQUIRED", message: "Audio Unit device playback requires explicit allowDefaultOutput=true") }
+    let wave = try readAUWave(path), engine = AVAudioEngine(), player = AVAudioPlayerNode(), id = UUID().uuidString
+    engine.attach(player); engine.attach(unit); engine.connect(player, to: unit, format: wave.format); engine.connect(unit, to: engine.mainMixerNode, format: wave.format)
+    let preview = ActiveAUPreview(id: id, engine: engine, player: player, unit: unit); activePreview = preview
+    do {
+        player.scheduleBuffer(try auSamples(wave), at: nil, options: [], completionHandler: { DispatchQueue.main.async { completeAudioUnitPreview(id) } })
+        try engine.start(); player.play()
+    } catch {
+        player.stop(); engine.stop(); engine.detach(player); engine.detach(unit); activePreview = nil
+        throw AudioUnitError(code: "AUDIO_UNIT_PLAYBACK_FAILED", message: "Audio Unit playback could not start: \(error.localizedDescription)")
+    }
+    emit(["event": "playing", "jobId": id, "componentId": selected as Any, "status": "playing", "offline": false, "frames": wave.frames, "sampleRate": wave.sampleRate, "channels": wave.channels])
+}
 func renderAudioUnit(_ path: String, offline: Bool) throws {
     guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Audio Unit processing requires explicit offline=true") }
+    guard activePreview == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before offline rendering") }
     guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before offline processing") }
     let wave = try readAUWave(path), engine = AVAudioEngine(), player = AVAudioPlayerNode()
     engine.attach(player); engine.attach(unit); engine.connect(player, to: unit, format: wave.format); engine.connect(unit, to: engine.mainMixerNode, format: wave.format)
@@ -182,6 +211,12 @@ func handle(_ object: [String: Any]) throws {
     } else if command == "instantiate" {
         guard Set(object.keys) == ["command", "id", "offline"], let id = object["id"] as? String, let value = object["offline"] as? NSNumber, CFGetTypeID(value) == CFBooleanGetTypeID() else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Instantiate requires id and offline=true") }
         try instantiate(id, offline: value.boolValue)
+    } else if command == "play" {
+        guard Set(object.keys) == ["command", "path", "allowDefaultOutput"], let path = object["path"] as? String, let value = object["allowDefaultOutput"] as? NSNumber, CFGetTypeID(value) == CFBooleanGetTypeID() else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Play requires path and allowDefaultOutput") }
+        try playAudioUnit(path, allowDefaultOutput: value.boolValue)
+    } else if command == "stop" {
+        guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Unknown stop fields") }
+        if activePreview == nil { emit(["event": "stopped", "status": "unchanged"]) } else { stopAudioUnitPreview() }
     } else if command == "parameters" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Parameters requires only command") }
         guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before inspecting parameters") }
@@ -195,17 +230,17 @@ func handle(_ object: [String: Any]) throws {
         try renderAudioUnit(path, offline: value.boolValue)
     } else if command == "release" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Unknown release fields") }
-        instantiatedUnit = nil; parameterDefaults = [:]; emit(["event": "released", "instantiated": false])
+        stopAudioUnitPreview(); instantiatedUnit = nil; parameterDefaults = [:]; emit(["event": "released", "instantiated": false])
     } else if command == "status" {
-        emit(["event": "status", "count": components.count, "selected": selected as Any, "instantiated": instantiatedUnit != nil])
-    } else if command == "quit" { instantiatedUnit = nil; exit(0) }
+        emit(["event": "status", "count": components.count, "selected": selected as Any, "instantiated": instantiatedUnit != nil, "playing": activePreview != nil, "previewJobId": activePreview?.id as Any])
+    } else if command == "quit" { stopAudioUnitPreview(); instantiatedUnit = nil; exit(0) }
     else { throw AudioUnitError(code: "UNKNOWN_COMMAND", message: "Unsupported Audio Unit command") }
 }
 emit(["event": "ready", "protocol": 1, "backend": "AVAudioUnitComponentManager", "instantiated": false])
 var input = Data()
 FileHandle.standardInput.readabilityHandler = { fileHandle in
     let bytes = fileHandle.availableData
-    if bytes.isEmpty { exit(0) }
+    if bytes.isEmpty { stopAudioUnitPreview(); exit(0) }
     input.append(bytes)
     while let newline = input.firstIndex(of: 10) {
         let line = input.subdata(in: 0..<newline); input.removeSubrange(0...newline)

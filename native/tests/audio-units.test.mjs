@@ -103,3 +103,25 @@ test('Audio Unit parameters are bounded, validated and affect deterministic offl
  assert.equal(outputs[0],outputs[1]);assert.notEqual(outputs[0],baseline.pcmSha256,'The changed parameter must affect the observed system-effect PCM');
  h.send({command:'status'});assert.equal((await h.next(event=>event.event==='status')).instantiated,true);h.send({command:'release'});await h.next(event=>event.event==='released');
 });
+
+test('Audio Unit real-time preview requires permission and owns silent Play Stop completion lifecycle',async t=>{
+ const h=await helper(t);await h.next(event=>event.event==='ready');h.send({command:'list',limit:256});const list=await h.next(event=>event.event==='list'),effect=list.components.find(component=>component.type===1635083896);
+ h.send({command:'play',path:'/missing.wav',allowDefaultOutput:false});assert.equal((await h.next(event=>event.event==='error')).code,'NO_INSTANCE');
+ if(!effect){console.log(JSON.stringify({status:'environment-limited',reason:'No effect Audio Unit discovered'}));return;}
+ h.send({command:'instantiate',id:effect.id,offline:true});const instantiated=await h.next(event=>['instantiated','error'].includes(event.event));assert.equal(instantiated.event,'instantiated',JSON.stringify(instantiated));
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-au-preview-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const zeros=length=>Float32Array.from({length},()=>0),shortFile=path.join(directory,'silent-short.wav'),longFile=path.join(directory,'silent-long.wav');await fs.writeFile(shortFile,encodeWav({sampleRate:48000,channels:[zeros(4800),zeros(4800)]}));await fs.writeFile(longFile,encodeWav({sampleRate:48000,channels:[zeros(48000),zeros(48000)]}));
+ h.send({command:'play',path:shortFile});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_REQUEST');
+ h.send({command:'play',path:shortFile,allowDefaultOutput:false});assert.equal((await h.next(event=>event.event==='error')).code,'OUTPUT_REQUIRED');
+ h.send({command:'play',path:shortFile,allowDefaultOutput:true});const playing=await h.next(event=>['playing','error'].includes(event.event));
+ if(playing.event==='error'){assert.equal(playing.code,'AUDIO_UNIT_PLAYBACK_FAILED');console.log(JSON.stringify({status:'environment-limited',code:playing.code,message:playing.message}));return;}
+ assert.equal(playing.offline,false);const completed=await h.next(event=>event.event==='completed'&&event.jobId===playing.jobId);assert.equal(completed.status,'completed');
+ h.send({command:'status'});let status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.instantiated,true);
+ h.send({command:'play',path:longFile,allowDefaultOutput:true});const active=await h.next(event=>['playing','error'].includes(event.event));assert.equal(active.event,'playing',JSON.stringify(active));
+ h.send({command:'play',path:longFile,allowDefaultOutput:true});assert.equal((await h.next(event=>event.event==='error')).code,'ALREADY_PLAYING');
+ h.send({command:'render',path:shortFile,offline:true});assert.equal((await h.next(event=>event.event==='error')).code,'PREVIEW_ACTIVE');
+ h.send({command:'status'});status=await h.next(event=>event.event==='status');assert.equal(status.playing,true);assert.equal(status.previewJobId,active.jobId);
+ h.send({command:'stop'});const stopped=await h.next(event=>event.event==='stopped'&&event.jobId===active.jobId);assert.equal(stopped.status,'stopped');h.send({command:'status'});status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.instantiated,true);
+ h.send({command:'render',path:shortFile,offline:true});const recovered=await h.next(event=>['rendered','error'].includes(event.event));assert.equal(recovered.event,'rendered',JSON.stringify(recovered));
+ h.send({command:'play',path:longFile,allowDefaultOutput:true});const releasing=await h.next(event=>event.event==='playing');h.send({command:'release'});const released=await h.next(event=>event.event==='released');assert.equal(released.instantiated,false);h.send({command:'status'});status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.instantiated,false);
+});

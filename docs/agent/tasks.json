@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T06:09:56.111Z",
+  "updatedAt": "2026-11-09T06:57:52.223Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1740,6 +1740,41 @@
       "startedAt": "2026-11-09T06:04:31.603Z",
       "evidence": "Targeted GUI E2E PASS: 14 steps including audioUnits.GUI-parameter-default-restores-baseline-render; selected parameter readback returned to captured defaultValue and the next render matched the exact baseline PCM hash with unchanged project revision. All lifecycle/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Offline-instance reset only; no project-history or realtime automation claim.",
       "doneAt": "2026-11-09T06:09:56.110Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-056",
+      "title": "Native Audio Unit real-time preview lifecycle with silent PCM",
+      "size": "M",
+      "dependsOn": [
+        "T-055"
+      ],
+      "goal": "Add explicit default-output AVAudioEngine playback through the currently instantiated Audio Unit, with Play/Stop/Status lifecycle and no automatic playback.",
+      "context": [
+        "native/macos/audio-units.swift owns one AVAudioUnit and currently supports only offline render.",
+        "Tests must not make audible output: use silent PCM16 and explicit allowDefaultOutput=true for the actual device-path check.",
+        "This task is native-helper only; server/GUI routing and native-MIDI synchronization remain follow-ups."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "Play requires an active instance and explicit allowDefaultOutput=true; duplicate Play, malformed input and render-while-playing fail with structured errors and preserve ownership.",
+        "A silent PCM buffer can traverse the real AVAudioEngine default-output path and complete; a second longer silent preview can be stopped without releasing the component instance.",
+        "Release/quit stop active output and status distinguishes component instantiation from preview playing; offline rendering recovers after Stop.",
+        "Native/full verification passes and documentation reports silent device-path evidence only, not listening, latency, synchronization or broad hosting compatibility."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T06:53:03.383Z",
+      "evidence": "Targeted native tests 6/6 PASS. Silent PCM16 traversed the actual AVAudioEngine default-output path and completed; permission/no-instance/malformed/duplicate/render-while-playing errors, Stop, release, status and offline recovery passed. npm run test:native: 108/108 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. No audible signal, listening/latency judgment, server/GUI routing or MIDI synchronization claim.",
+      "doneAt": "2026-11-09T06:57:52.222Z"
     }
   ]
 }
