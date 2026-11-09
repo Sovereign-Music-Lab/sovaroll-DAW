@@ -2181,6 +2181,17 @@ export const KO_EN = {
  "프레임 변환: {0}": "Frame conversion: {0}",
  "현재 파트 · {0}": "Current part · {0}",
  "효과 켜기": "Effect on",
+ "피아노롤": "Piano roll",
+ "악보": "Score",
+ "편집기 보기": "Editor view",
+ "조표": "Key",
+ "악보 조표 · 표시 전용": "Score key signature · display only",
+ "악보. 빈 오선 위치 클릭으로 노트 추가, Alt+위/아래로 음계 한 단계 이동": "Score. Click an empty staff position to add a note; Alt+Up/Down moves one scale step",
+ "{0} 장조 · {1}": "{0} major · {1}",
+ "조표 없음": "no accidentals",
+ "{0}, {1}박, 벨로시티 {2}": "{0}, beat {1}, velocity {2}",
+ "악보 위치가 MIDI 음높이 0–127 범위를 벗어났습니다.": "The staff position is outside MIDI pitch 0–127.",
+ "조표 값이 올바르지 않습니다.": "The key signature value is invalid.",
 };
 
 // Used instead of KO_EN when every runtime value of the key is a plain number.

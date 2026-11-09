@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated starts work and history/backup dialogs now switch Korean/English. Final listening remains human work.
+Updated: 2026-11-09. T-001–T-068 are done; the MIDI editor now has a grand-staff score view with note entry. Final listening remains human work.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current branch sovaroll-continuation, pushed to origin through commit 6d901ff.
@@ -55,8 +55,10 @@ Updated: 2026-11-09. T-001–T-066 are done; native MIDI/audio coordinated start
 
 - T-067 (same cloud session, maintainer asked to finish the program): whole-interface Korean/English via public/i18n-dictionary.mjs (2,179 entries) + DOM translator; i18n-coverage 0 missing; 38 dialogs probed in English with no Korean left; session i18n E2E 4 PASS, default E2E PASS, agent:verify VERIFY PASS. E2E scripts hardcode macOS /private/tmp; on Linux create that directory first.
 
+- T-068 (Claude cloud session; the maintainer explicitly authorized it on 2026-11-09 for this session only, default remains local Gemma): score view in the MIDI editor on branch score-editor. Pure layout src/media/score-layout.mjs + SVG public/score-view.mjs; edits use existing midi.notes.* commands; key signature is display-only localStorage. score-layout unit 7 PASS, gui-score-editor-smoke 7 PASS, default E2E 40 PASS, session i18n 4 PASS, note-arrow PASS, agent:verify VERIFY PASS (175 files), i18n-coverage 0 missing. Not pushed.
+
 ## Next task and unresolved decisions
-- T-001–T-067 are done. See FEATURE_INVENTORY; no 2,500-item catalogue exists. UI translation is complete pending native review; continue native architecture (low-latency audio, plugin hosting) and a score editor without claiming human verification.
+- T-001–T-068 are done. Score follow-ups: beams, voices, tuplets, MusicXML export, print layout; notation quality needs human review. See FEATURE_INVENTORY; no 2,500-item catalogue exists. UI translation is complete pending native review; continue native architecture (low-latency audio, plugin hosting) and a score editor without claiming human verification.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting or complete autonomous workflow claim. English UI text is not native-editor reviewed.
