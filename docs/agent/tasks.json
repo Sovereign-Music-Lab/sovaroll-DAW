@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T09:07:32.379Z",
+  "updatedAt": "2026-11-09T09:40:13.426Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1968,6 +1968,41 @@
       "startedAt": "2026-11-09T09:00:40.636Z",
       "evidence": "New Audio Unit i18n GUI E2E PASS 3 steps: Korean controls/metadata, English dynamic offline output/import controls, reload persistence and Korean restore without project revision changes. Offline GUI 14, instrument GUI 3 and default E2E 40 PASS. npm run agent:verify:full and final agent:verify VERIFY PASS with 174 product files. Component/keyPath/server errors remain source; no complete app translation claim. Inventory 761 GUI checks.",
       "doneAt": "2026-11-09T09:07:32.379Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-062",
+      "title": "Native real-time Audio Unit instrument MIDI playback lifecycle",
+      "size": "L",
+      "dependsOn": [
+        "T-061"
+      ],
+      "goal": "Add explicit default-output real-time MIDI note playback through an active Audio Unit instrument with owned note cleanup and deterministic lifecycle state.",
+      "context": [
+        "T-058 validates frame-based notes and fresh offline instances; T-056 owns effect preview playback.",
+        "Real-time scheduling is initial lifecycle support, not a latency or synchronized-transport claim.",
+        "Tests use outputGain=0 on the actual default-output path so no audible signal is produced."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "playMidi requires an active aumu instance, explicit output permission, bounded notes/duration and finite outputGain 0..1; malformed and duplicate starts fail without stealing ownership.",
+        "The actual engine accepts note-on/off events, completes a short silent-output preview, rejects duplicate starts and stops a longer preview with owned note-offs before release.",
+        "Status distinguishes instrument playback from effect preview and component instantiation; release/quit clean up pending events and held notes.",
+        "Existing native/full suites pass and documentation limits claims to lifecycle evidence without latency, synchronization or listening quality."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T09:32:45.538Z",
+      "evidence": "Targeted native tests 8/8 PASS including real-time instrument MIDI completion, outputGain=0 actual engine path, permission/range/note validation, duplicate-start rejection, Stop with held-note cleanup, release and offline recovery. npm run test:native: 110/110 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS with 174 product files. No server/GUI playback, transport synchronization, latency or listening-quality claim.",
+      "doneAt": "2026-11-09T09:40:13.426Z"
     }
   ]
 }

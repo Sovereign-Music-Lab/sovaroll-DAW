@@ -28,6 +28,12 @@ var instantiatedUnit: AVAudioUnit? = nil
 var parameterDefaults: [String: Float] = [:]
 struct ActiveAUPreview { let id: String, engine: AVAudioEngine, player: AVAudioPlayerNode, unit: AVAudioUnit }
 var activePreview: ActiveAUPreview? = nil
+final class ActiveAUInstrumentPlayback {
+    let id: String, engine: AVAudioEngine, unit: AVAudioUnit
+    var workItems: [DispatchWorkItem] = [], heldKeys: Set<Int> = []
+    init(id: String, engine: AVAudioEngine, unit: AVAudioUnit) { self.id = id; self.engine = engine; self.unit = unit }
+}
+var activeInstrumentPlayback: ActiveAUInstrumentPlayback? = nil
 func exactComponent(_ id: String) throws -> AVAudioUnitComponent {
     if components.isEmpty { _ = discover() }
     let matches = components.filter { unitID($0) == id }
@@ -156,7 +162,7 @@ func completeAudioUnitPreview(_ id: String) {
 }
 func playAudioUnit(_ path: String, allowDefaultOutput: Bool) throws {
     guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before native preview") }
-    guard activePreview == nil else { throw AudioUnitError(code: "ALREADY_PLAYING", message: "Stop the current Audio Unit preview before starting another") }
+    guard activePreview == nil && activeInstrumentPlayback == nil else { throw AudioUnitError(code: "ALREADY_PLAYING", message: "Stop the current Audio Unit preview before starting another") }
     guard allowDefaultOutput else { throw AudioUnitError(code: "OUTPUT_REQUIRED", message: "Audio Unit device playback requires explicit allowDefaultOutput=true") }
     let wave = try readAUWave(path), engine = AVAudioEngine(), player = AVAudioPlayerNode(), id = UUID().uuidString
     engine.attach(player); engine.attach(unit); engine.connect(player, to: unit, format: wave.format); engine.connect(unit, to: engine.mainMixerNode, format: wave.format)
@@ -170,9 +176,49 @@ func playAudioUnit(_ path: String, allowDefaultOutput: Bool) throws {
     }
     emit(["event": "playing", "jobId": id, "componentId": selected as Any, "status": "playing", "offline": false, "frames": wave.frames, "sampleRate": wave.sampleRate, "channels": wave.channels])
 }
+func sendImmediateMidi(_ unit: AVAudioUnit, _ bytes: [UInt8]) throws {
+    guard let schedule = unit.auAudioUnit.scheduleMIDIEventBlock else { throw AudioUnitError(code: "MIDI_SCHEDULING_UNSUPPORTED", message: "This instrument does not expose scheduled MIDI events") }
+    try bytes.withUnsafeBufferPointer { pointer in
+        guard let base = pointer.baseAddress else { throw AudioUnitError(code: "MIDI_SCHEDULING_FAILED", message: "Missing MIDI event bytes") }
+        schedule(AUEventSampleTimeImmediate, 0, 3, base)
+    }
+}
+func finishAudioUnitInstrument(_ id: String, status: String) {
+    guard let playback = activeInstrumentPlayback, playback.id == id else { return }
+    for item in playback.workItems { item.cancel() }
+    for key in playback.heldKeys.sorted() { let bytes: [UInt8] = [UInt8(0x80 | ((key >> 8) & 15)), UInt8(key & 127), 0]; try? sendImmediateMidi(playback.unit, bytes) }
+    playback.heldKeys.removeAll(); playback.engine.stop(); playback.engine.detach(playback.unit); activeInstrumentPlayback = nil
+    emit(["event": status, "jobId": id, "componentId": selected as Any, "status": status, "instrument": true])
+}
+func playAudioUnitInstrument(sampleRate: Int, durationFrames: Int, notes: [[String: Any]], allowDefaultOutput: Bool, outputGain: Float) throws {
+    guard let unit = instantiatedUnit, let selected else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit instrument before MIDI playback") }
+    guard try exactComponent(selected).audioComponentDescription.componentType == 1635085685 else { throw AudioUnitError(code: "AUDIO_UNIT_INSTRUMENT_REQUIRED", message: "Real-time MIDI playback requires an aumu instrument") }
+    guard activeInstrumentPlayback == nil && activePreview == nil && !midiRenderActive else { throw AudioUnitError(code: "ALREADY_PLAYING", message: "Stop the current Audio Unit playback before starting another") }
+    guard allowDefaultOutput else { throw AudioUnitError(code: "OUTPUT_REQUIRED", message: "Audio Unit instrument playback requires explicit allowDefaultOutput=true") }
+    guard (1...96000).contains(sampleRate), durationFrames > 0, durationFrames <= sampleRate * 600, notes.count > 0 && notes.count <= 1024, outputGain.isFinite && outputGain >= 0 && outputGain <= 1 else { throw AudioUnitError(code: "INVALID_MIDI_RENDER", message: "Use 1..96000 Hz, 1..600 seconds, 1..1024 notes and outputGain 0..1") }
+    let events = try validatedMidiWireEvents(notes, durationFrames: durationFrames)
+    guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(sampleRate), channels: 2, interleaved: false) else { throw AudioUnitError(code: "AUDIO_BUFFER_FAILED", message: "Cannot create instrument playback format") }
+    let engine = AVAudioEngine(); engine.attach(unit); engine.connect(unit, to: engine.mainMixerNode, format: format); engine.mainMixerNode.outputVolume = outputGain
+    let id = UUID().uuidString, playback = ActiveAUInstrumentPlayback(id: id, engine: engine, unit: unit); activeInstrumentPlayback = playback
+    do { try engine.start() } catch { engine.detach(unit); activeInstrumentPlayback = nil; throw AudioUnitError(code: "AUDIO_UNIT_PLAYBACK_FAILED", message: "Instrument playback could not start: \(error.localizedDescription)") }
+    for event in events {
+        let item = DispatchWorkItem {
+            guard let active = activeInstrumentPlayback, active.id == id else { return }
+            do {
+                try sendImmediateMidi(unit, event.bytes)
+                let key = Int(event.bytes[0] & 15) << 8 | Int(event.bytes[1])
+                if event.bytes[0] & 0xf0 == 0x80 { active.heldKeys.remove(key) } else { active.heldKeys.insert(key) }
+            } catch { emit(["event": "error", "code": "MIDI_SCHEDULING_FAILED", "message": error.localizedDescription]); finishAudioUnitInstrument(id, status: "stopped") }
+        }
+        playback.workItems.append(item); DispatchQueue.main.asyncAfter(deadline: .now() + Double(event.frame) / Double(sampleRate), execute: item)
+    }
+    let completion = DispatchWorkItem { finishAudioUnitInstrument(id, status: "completed") }
+    playback.workItems.append(completion); DispatchQueue.main.asyncAfter(deadline: .now() + Double(durationFrames) / Double(sampleRate), execute: completion)
+    emit(["event": "playing", "jobId": id, "componentId": selected, "status": "playing", "instrument": true, "outputGain": outputGain, "frames": durationFrames, "sampleRate": sampleRate, "channels": 2, "noteCount": notes.count, "offline": false])
+}
 func renderAudioUnit(_ path: String, offline: Bool) throws {
     guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Audio Unit processing requires explicit offline=true") }
-    guard activePreview == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before offline rendering") }
+    guard activePreview == nil && activeInstrumentPlayback == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before offline rendering") }
     guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before offline processing") }
     let wave = try readAUWave(path), engine = AVAudioEngine(), player = AVAudioPlayerNode()
     engine.attach(player); engine.attach(unit); engine.connect(player, to: unit, format: wave.format); engine.connect(unit, to: engine.mainMixerNode, format: wave.format)
@@ -188,16 +234,7 @@ func renderAudioUnit(_ path: String, offline: Bool) throws {
     emit(["event": "rendered", "componentId": selected as Any, "frames": wave.frames, "sampleRate": wave.sampleRate, "channels": wave.channels, "sourceSha256": shaHex(wave.pcm), "pcmSha256": shaHex(renderedPCM), "outputPath": outputPath, "offline": true])
 }
 struct MidiWireEvent { let frame: Int, order: Int, bytes: [UInt8] }
-var midiRenderActive = false
-func renderAudioUnitMidiInstance(_ outputPath: String, sampleRate: Int, channels: Int, durationFrames: Int, notes: [[String: Any]], offline: Bool, unit: AVAudioUnit) throws {
-    defer { midiRenderActive = false }
-    guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Instrument rendering requires explicit offline=true") }
-    guard activePreview == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before instrument rendering") }
-    guard let selected else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit instrument before MIDI rendering") }
-    let component = try exactComponent(selected)
-    guard component.audioComponentDescription.componentType == 1635085685 else { throw AudioUnitError(code: "AUDIO_UNIT_INSTRUMENT_REQUIRED", message: "MIDI rendering requires an aumu instrument instance") }
-    guard outputPath.hasPrefix("/") && !outputPath.contains("\0") else { throw AudioUnitError(code: "INVALID_PATH", message: "Use an absolute local WAV output path") }
-    guard (1...96000).contains(sampleRate), [1, 2].contains(channels), durationFrames > 0, durationFrames <= sampleRate * 600, notes.count > 0 && notes.count <= 1024 else { throw AudioUnitError(code: "INVALID_MIDI_RENDER", message: "Use 1..96000 Hz, mono/stereo, 1..600 seconds and 1..1024 notes") }
+func validatedMidiWireEvents(_ notes: [[String: Any]], durationFrames: Int) throws -> [MidiWireEvent] {
     var events: [MidiWireEvent] = []
     for note in notes {
         guard Set(note.keys) == ["pitch", "velocity", "channel", "startFrame", "durationFrames"] else { throw AudioUnitError(code: "INVALID_MIDI_NOTE", message: "Note requires pitch, velocity, channel, startFrame and durationFrames") }
@@ -211,6 +248,19 @@ func renderAudioUnitMidiInstance(_ outputPath: String, sampleRate: Int, channels
         events.append(MidiWireEvent(frame: start + length, order: 0, bytes: [UInt8(0x80 | channel), UInt8(pitch), 0]))
     }
     events.sort { $0.frame == $1.frame ? $0.order < $1.order : $0.frame < $1.frame }
+    return events
+}
+var midiRenderActive = false
+func renderAudioUnitMidiInstance(_ outputPath: String, sampleRate: Int, channels: Int, durationFrames: Int, notes: [[String: Any]], offline: Bool, unit: AVAudioUnit) throws {
+    defer { midiRenderActive = false }
+    guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Instrument rendering requires explicit offline=true") }
+    guard activePreview == nil && activeInstrumentPlayback == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before instrument rendering") }
+    guard let selected else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit instrument before MIDI rendering") }
+    let component = try exactComponent(selected)
+    guard component.audioComponentDescription.componentType == 1635085685 else { throw AudioUnitError(code: "AUDIO_UNIT_INSTRUMENT_REQUIRED", message: "MIDI rendering requires an aumu instrument instance") }
+    guard outputPath.hasPrefix("/") && !outputPath.contains("\0") else { throw AudioUnitError(code: "INVALID_PATH", message: "Use an absolute local WAV output path") }
+    guard (1...96000).contains(sampleRate), [1, 2].contains(channels), durationFrames > 0, durationFrames <= sampleRate * 600, notes.count > 0 && notes.count <= 1024 else { throw AudioUnitError(code: "INVALID_MIDI_RENDER", message: "Use 1..96000 Hz, mono/stereo, 1..600 seconds and 1..1024 notes") }
+    let events = try validatedMidiWireEvents(notes, durationFrames: durationFrames)
     guard let schedule = unit.auAudioUnit.scheduleMIDIEventBlock else { throw AudioUnitError(code: "MIDI_SCHEDULING_UNSUPPORTED", message: "This Audio Unit does not expose scheduled MIDI events") }
     guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(sampleRate), channels: AVAudioChannelCount(channels), interleaved: false) else { throw AudioUnitError(code: "AUDIO_BUFFER_FAILED", message: "Cannot create instrument output format") }
     unit.reset()
@@ -238,7 +288,7 @@ func renderAudioUnitMidiInstance(_ outputPath: String, sampleRate: Int, channels
 }
 func renderAudioUnitMidi(_ outputPath: String, sampleRate: Int, channels: Int, durationFrames: Int, notes: [[String: Any]], offline: Bool) throws {
     guard offline else { throw AudioUnitError(code: "OFFLINE_REQUIRED", message: "Instrument rendering requires explicit offline=true") }
-    guard activePreview == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before instrument rendering") }
+    guard activePreview == nil && activeInstrumentPlayback == nil else { throw AudioUnitError(code: "PREVIEW_ACTIVE", message: "Stop the Audio Unit preview before instrument rendering") }
     guard instantiatedUnit != nil else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit instrument before MIDI rendering") }
     guard !midiRenderActive else { throw AudioUnitError(code: "MIDI_RENDER_ACTIVE", message: "Wait for the current instrument render before starting another") }
     guard let selected else { throw AudioUnitError(code: "NO_INSTANCE", message: "Select an instrument before MIDI rendering") }
@@ -285,9 +335,16 @@ func handle(_ object: [String: Any]) throws {
     } else if command == "play" {
         guard Set(object.keys) == ["command", "path", "allowDefaultOutput"], let path = object["path"] as? String, let value = object["allowDefaultOutput"] as? NSNumber, CFGetTypeID(value) == CFBooleanGetTypeID() else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Play requires path and allowDefaultOutput") }
         try playAudioUnit(path, allowDefaultOutput: value.boolValue)
+    } else if command == "playMidi" {
+        guard Set(object.keys) == ["command", "sampleRate", "durationFrames", "notes", "allowDefaultOutput", "outputGain"], let notes = object["notes"] as? [[String: Any]], let allow = object["allowDefaultOutput"] as? NSNumber, CFGetTypeID(allow) == CFBooleanGetTypeID(), let gain = object["outputGain"] as? NSNumber, CFGetTypeID(gain) != CFBooleanGetTypeID(), gain.doubleValue.isFinite else { throw AudioUnitError(code: "INVALID_REQUEST", message: "PlayMidi requires format, notes, outputGain and explicit output permission") }
+        func integer(_ field: String) throws -> Int {
+            guard let value = object[field] as? NSNumber, CFGetTypeID(value) != CFBooleanGetTypeID(), value.doubleValue.isFinite, value.doubleValue.rounded() == value.doubleValue else { throw AudioUnitError(code: "INVALID_REQUEST", message: "PlayMidi format fields must be finite integers") }
+            return value.intValue
+        }
+        try playAudioUnitInstrument(sampleRate: try integer("sampleRate"), durationFrames: try integer("durationFrames"), notes: notes, allowDefaultOutput: allow.boolValue, outputGain: gain.floatValue)
     } else if command == "stop" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Unknown stop fields") }
-        if activePreview == nil { emit(["event": "stopped", "status": "unchanged"]) } else { stopAudioUnitPreview() }
+        if activePreview == nil && activeInstrumentPlayback == nil { emit(["event": "stopped", "status": "unchanged"]) } else { stopAudioUnitPreview(); if let id = activeInstrumentPlayback?.id { finishAudioUnitInstrument(id, status: "stopped") } }
     } else if command == "parameters" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Parameters requires only command") }
         guard let unit = instantiatedUnit else { throw AudioUnitError(code: "NO_INSTANCE", message: "Instantiate an exact Audio Unit before inspecting parameters") }
@@ -309,17 +366,18 @@ func handle(_ object: [String: Any]) throws {
     } else if command == "release" {
         guard Set(object.keys) == ["command"] else { throw AudioUnitError(code: "INVALID_REQUEST", message: "Unknown release fields") }
         guard !midiRenderActive else { throw AudioUnitError(code: "MIDI_RENDER_ACTIVE", message: "Wait for instrument rendering before releasing the component") }
-        stopAudioUnitPreview(); instantiatedUnit = nil; parameterDefaults = [:]; emit(["event": "released", "instantiated": false])
+        stopAudioUnitPreview(); if let id = activeInstrumentPlayback?.id { finishAudioUnitInstrument(id, status: "stopped") }; instantiatedUnit = nil; parameterDefaults = [:]; emit(["event": "released", "instantiated": false])
     } else if command == "status" {
-        emit(["event": "status", "count": components.count, "selected": selected as Any, "instantiated": instantiatedUnit != nil, "playing": activePreview != nil, "previewJobId": activePreview?.id as Any, "renderingMidi": midiRenderActive])
-    } else if command == "quit" { stopAudioUnitPreview(); instantiatedUnit = nil; exit(0) }
+        let previewJob: Any = activePreview?.id ?? activeInstrumentPlayback?.id ?? NSNull()
+        emit(["event": "status", "count": components.count, "selected": selected as Any, "instantiated": instantiatedUnit != nil, "playing": activePreview != nil || activeInstrumentPlayback != nil, "previewJobId": previewJob, "instrumentPlaying": activeInstrumentPlayback != nil, "renderingMidi": midiRenderActive])
+    } else if command == "quit" { stopAudioUnitPreview(); if let id = activeInstrumentPlayback?.id { finishAudioUnitInstrument(id, status: "stopped") }; instantiatedUnit = nil; exit(0) }
     else { throw AudioUnitError(code: "UNKNOWN_COMMAND", message: "Unsupported Audio Unit command") }
 }
 emit(["event": "ready", "protocol": 1, "backend": "AVAudioUnitComponentManager", "instantiated": false])
 var input = Data()
 FileHandle.standardInput.readabilityHandler = { fileHandle in
     let bytes = fileHandle.availableData
-    if bytes.isEmpty { stopAudioUnitPreview(); exit(0) }
+    if bytes.isEmpty { stopAudioUnitPreview(); if let id = activeInstrumentPlayback?.id { finishAudioUnitInstrument(id, status: "stopped") }; exit(0) }
     input.append(bytes)
     while let newline = input.firstIndex(of: 10) {
         let line = input.subdata(in: 0..<newline); input.removeSubrange(0...newline)

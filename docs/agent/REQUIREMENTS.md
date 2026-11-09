@@ -85,3 +85,4 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | — | 원본에서 명령·API·native·UI·테스트를 집계하는 재생성 가능한 기능 인벤터리; 2,500개 원본 명세 부재를 명시 | verified (수치는 합산하지 않음; 2,500개 완료 주장 없음) | `npm run agent:features`, `tests/feature-inventory.test.mjs`, 양국어 FEATURE_INVENTORY, T-059 |
 | — | 선택 MIDI의 Audio Unit 악기 GUI 렌더·가져오기 | verified (모달 버튼 행 overflow 수정, 시스템 악기 결정적 WAV·원래 위치·Undo) | `scripts/gui-audio-unit-instrument-smoke.mjs` 3단계, T-060 검증 기록 |
 | — | Audio Unit 컨트롤·범위·파라미터 메타데이터·동작 상태의 한국어/영어 전환과 유지 | verified (구성요소 이름·keyPath·서버 오류 원본 유지, revision 불변) | `scripts/gui-audio-units-i18n-smoke.mjs` 3단계, T-061 검증 기록 |
+| — | 명시적 출력의 native Audio Unit 악기 실시간 MIDI Play/Stop/완료, 중복 거부·held-note 정리·release | verified (outputGain=0 실제 엔진 경로; server/GUI·동기화·지연 품질 제외) | `Audio Unit instrument real-time MIDI playback owns silent completion Stop and held-note cleanup`, native 110/110, T-062 |
