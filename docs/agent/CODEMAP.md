@@ -153,7 +153,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
-| app.mjs | 2291 | 7381 |  |
+| app.mjs | 2292 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
@@ -202,12 +202,12 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-controller-shapes-smoke.mjs | 62 | 856 |  |
 | gui-controller-snap-smoke.mjs | 46 | 742 |  |
 | gui-controller-time-smoke.mjs | 64 | 1166 |  |
-| gui-document-smoke.mjs | 193 | 1414 |  |
-| gui-drafts-smoke.mjs | 136 | 1393 |  |
-| gui-editing-smoke.mjs | 74 | 1399 |  |
+| gui-document-smoke.mjs | 195 | 1414 |  |
+| gui-drafts-smoke.mjs | 139 | 1393 |  |
+| gui-editing-smoke.mjs | 77 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 301 | 388 |  |
+| gui-first-delivery-smoke.mjs | 310 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |
@@ -251,10 +251,10 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-session-smoke.mjs | 53 | 1391 |  |
 | gui-smoke.mjs | 40 | 312 |  |
 | gui-snap-grid-smoke.mjs | 42 | 825 |  |
-| gui-split-controller-policy-smoke.mjs | 37 | 2066 |  |
-| gui-split-note-policy-smoke.mjs | 37 | 1781 |  |
-| gui-split-settings-race-smoke.mjs | 37 | 4667 |  |
-| gui-split-settings-smoke.mjs | 37 | 3430 |  |
+| gui-split-controller-policy-smoke.mjs | 38 | 2146 |  |
+| gui-split-note-policy-smoke.mjs | 38 | 1861 |  |
+| gui-split-settings-race-smoke.mjs | 38 | 4907 |  |
+| gui-split-settings-smoke.mjs | 38 | 3630 |  |
 | gui-time-display-smoke.mjs | 44 | 698 |  |
 | gui-timing-smoke.mjs | 51 | 1036 |  |
 | gui-workspace-smoke.mjs | 211 | 1415 |  |

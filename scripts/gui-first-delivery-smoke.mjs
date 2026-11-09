@@ -58,6 +58,15 @@ try{
  for(const [tick,pitch] of melody){const pt=await gridPoint(tick,pitch);await act(()=>page.mouse.click(pt.x,pt.y));}
  p=await proj();let notes=p.clips.find(c=>c.id===midiClip.id).notes;
  assert.deepEqual(notes.map(n=>[n.startTick,n.pitch]).sort((a,b)=>a[0]-b[0]),melody);check('midi.GUI-piano-roll-note-input');
+ const expectPosition=async text=>page.waitForFunction(expected=>document.querySelector('#position-time').textContent===expected,text);
+ await clickRuler('#timeline-ruler',7700);await expectPosition('00:04.000');
+ await clickRuler('#piano-ruler',7700);await expectPosition('00:04.000');
+ await page.keyboard.down('Alt');
+ try{
+  await clickRuler('#timeline-ruler',7700);await expectPosition('00:04.010');
+  await clickRuler('#piano-ruler',7700);await expectPosition('00:04.010');
+ }finally{await page.keyboard.up('Alt');}
+ check('playback.GUI-ruler-click-snap-and-alt-override');
  // drag the last note up a whole tone and one beat later
  const lastNote=notes.find(n=>n.startTick===2880);let from=await gridPoint(2880+120,72);let to={x:from.x+await zoom(),y:from.y-2*19};
  await act(async()=>{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:10});await page.mouse.up();});

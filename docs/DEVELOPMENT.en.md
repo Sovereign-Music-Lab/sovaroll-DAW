@@ -56,7 +56,7 @@ See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQU
 
 ## Open work
 
-The remaining queue includes T-013 manual hardware validation and T-017–T-035 for the failed smokes found by T-009. T-010 awaits a human decision about snapping ruler clicks. Completed continuation evidence, including 150-second CLI render and GUI playback, is recorded in [VALIDATION.md](VALIDATION.md); publication does not promote unverified status.
+The current 35-task continuation queue is complete: all 64 GUI smokes passed after the follow-up fixes. This does not replace human hardware results; use [the manual checklist](agent/MANUAL_CHECKS.md) for those. Longer-term product goals remain separate from this queue. Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

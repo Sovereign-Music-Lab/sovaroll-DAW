@@ -49,7 +49,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | ID | 요건 | 수용 기준 | 상태 | 근거 |
 |---|---|---|---|---|
 | FD-22 | MIDI+오디오 재생 | Play → 재생 중·위치 진행, Stop → 정지 | verified (150초 GUI probe 포함, 상태·진행만, 청음은 manual) | E2E: `playback.GUI-MIDI-and-audio-play-advance-stop`, `.test-output/long-project-gui.json`, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
-| FD-23 | 탐색 | 눈금자 클릭으로 커서 이동 | verified | E2E: `playback.GUI-seek-by-ruler` |
+| FD-23 | 탐색 | 눈금자 클릭으로 커서 이동 | verified (Snap + Alt 자유 위치 포함) | E2E: `playback.GUI-seek-by-ruler`, `playback.GUI-ruler-click-snap-and-alt-override` |
 | FD-24 | 믹서 | 트랙 mute/solo/gain/pan, master gain | verified | E2E: `mixer.GUI-mute-solo-gain-pan-master` |
 | FD-25 | Cycle(구간 반복) 재생 | Locator 구간 반복 | verified (전송 위치만, 청음은 manual) | E2E: `playback.GUI-cycle-loops-locator-range` |
 

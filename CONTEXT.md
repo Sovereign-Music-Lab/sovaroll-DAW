@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. Done: T-001–T-009, T-011–T-013, T-015, T-017–T-035; T-010 remains a product decision.
+Updated: 2026-11-09. All current tasks T-001–T-035 are done; real-device observations remain for the human checklist.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -27,23 +27,11 @@ Updated: 2026-11-09. Done: T-001–T-009, T-011–T-013, T-015, T-017–T-035; T
 - Added three public-guard regression tests in one file.
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
-- First-delivery Chrome E2E: 36 steps passed on 2026-11-09, including T-001 fade-in, T-002 clip mute/polarity, T-003 normalize, T-004 cycle transport, T-006 MIDI tools, T-007 keyboard Undo/Redo and T-011 collapsible recording panel coverage. Fake microphone; no physical listening claim.
-- T-001–T-009, T-011–T-013, T-015 and T-017–T-035 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- First-delivery Chrome E2E: 37 steps passed on 2026-11-09, including recording panel, audio controls, cycle, MIDI tools, keyboard history and ruler Snap/Alt coverage. Fake microphone; no physical listening claim.
+- All current tasks T-001–T-035 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
 - T-013 added six-step bilingual manual hardware checklist with empty result columns; no physical-device result claimed.
-- T-035 workspace smoke passes 21 steps after submitting both normal and delayed render dialogs. All 19 sweep follow-ups are now done individually.
-- T-034 split-settings smoke passes 6 steps after opening the arrangement-edit menu throughout; product code unchanged.
-- T-033 split-settings race smoke passes 8 steps after opening the arrangement-edit menu throughout; product code unchanged.
-- T-031–T-032 split controller/note smokes pass 4/3 steps after opening the arrangement-edit menu; product code unchanged.
-- T-030 projects smoke passes 20 steps after submitting the actual export dialog; product code unchanged.
-- T-029 note-shapes smoke passes 20 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
-- T-028 note-paint smoke passes 23 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
-- T-027 note-object smoke passes 24 steps after enabling tempo-track mode in its fixture; assertions and product code unchanged.
-- T-026 MIDI-playback smoke passes 11 PCM/Web Audio steps after submitting the actual export dialog; no product code changed.
-- T-025 MIDI-modifiers smoke passes 12 steps after recognizing the current freeze completion message; product code and assertions unchanged.
-- T-024 MIDI-events smoke passes 16 steps after opening the export dialog for each SMF 0/1 download; no product code changed.
-- T-021–T-022 document/drafts smokes each pass 17 steps after driving the real Import options/file chooser instead of bypassing its required draft.
-- T-018–T-020 controller paint/shapes/snap smokes pass 16/23/13 steps after enabling tempo-track mode in their fixtures, matching the server's fixed-tempo default without changing assertions.
-- T-017 controller-bend smoke passes 13 steps after changing only its active-drag screenshot to viewport mode, avoiding ResizeObserver cancellation; product behavior/assertions unchanged.
+- T-017–T-035: all 19 failed-smoke follow-ups completed individually; details and exact step counts are in docs/VALIDATION.md.
 - T-012 CLI rendered a 150-second project with non-zero PCM at 140 seconds and preserved state on the 600-second limit rejection. Standalone GUI playback advanced and stopped without silent failure; evidence is .test-output/long-project-gui.json.
 - T-011 keeps all recording control IDs inside one closed-by-default panel that opens while recording is active. Recording workflow/protection passed 4/6 steps; before/after screenshots are in .test-output/.
 - T-009 `agent:smoke-sweep`: all 64 unique GUI smokes completed, 45 passed and 19 failed; JSON evidence is in .test-output/smoke-sweep.json and each failure has one follow-up, T-017–T-035. The sweep's exit 1 is not a passing-suite result.
@@ -51,7 +39,7 @@ Updated: 2026-11-09. Done: T-001–T-009, T-011–T-013, T-015, T-017–T-035; T
 - T-005 added a separate 4-step new-project/first-save/restart E2E; it passed along with the default 32-step E2E. Its project writes are confined to a temporary folder and the original project bytes remain unchanged.
 - T-002 initially exposed a silent default fake-microphone fixture; a deterministic tone WAV now supplies fake capture. Recorded-region RMS fell from 0.0975930279 to 0 after mute, and the polarity sample changed from -0.1178283691 to +0.1178283691.
 - The maintainer explicitly authorized this cloud Kimi coding session on 2026-11-09. This session-specific exception does not replace the local-Gemma-only default for later sessions; no remote push was authorized.
-- Fresh-tree startup passed. T-015 deterministically reproduced the intermittent mixer-pan timeout as an SSE/POST test synchronization race; the helper now waits for real busy release and all 35 steps pass with unchanged assertions/timeouts.
+- Fresh-tree startup passed. T-015 deterministically reproduced the intermittent mixer-pan timeout as an SSE/POST test synchronization race; the helper now waits for real busy release and the current 37-step flow passes with unchanged assertions/timeouts.
 - E2E wrapper now creates its output directory for a fresh checkout; native test command builds its bridge first.
 - Gemma coding and hardware audio latency/quality have not been verified.
 - Detailed release record: docs/VALIDATION.md; tasks: docs/agent/tasks.json.
@@ -61,11 +49,9 @@ Updated: 2026-11-09. Done: T-001–T-009, T-011–T-013, T-015, T-017–T-035; T
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-009, T-011–T-013, T-015 and T-017–T-035 are done with evidence in docs/VALIDATION.md; FD-01 GUI creation, FD-13 keyboard history and FD-14 transpose/velocity are verified, FD-20 retains fade-out E2E work, and FD-25 cycle transport is verified without a listening claim.
-- T-023 passed all 14 editing steps after opening the actual arrangement-edit details, confirming track duplication and using the current reorder selector. No product code changed.
-- Run `npm run agent:task -- next` for queue order.
-- Follow AGENTS.md: start → checkpoint → find/show → minimal edit → verify/E2E → evidence → context update → done → local commit.
-- T-010 remains blocked on whether ruler clicks should obey snap. Do not invent the product decision.
+- All current tasks T-001–T-035 are done with evidence in docs/VALIDATION.md; `agent:task next` should report no open task. Add a new scoped task for future features or newly discovered defects.
+- T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
+- Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.
 
 ## Navigation

@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T00:11:50.124Z",
+  "updatedAt": "2026-11-09T00:19:30.115Z",
   "tasks": [
     {
       "id": "T-001",
@@ -305,8 +305,7 @@
       "priority": 5,
       "size": "XS",
       "requirements": [],
-      "status": "blocked",
-      "blockedReason": "Needs a human product decision. Currently clicking the timeline/piano ruler sets the cursor to the exact pointer position (e.g. 7700 ticks instead of 7680), so pasting/importing 'at cursor' lands slightly off-grid. Ask the user whether ruler clicks should follow the Snap setting.",
+      "status": "done",
       "goal": "Get a decision; if yes, snap seekRuler() result with the existing noteSnap()/compileEditorSnap and add a test.",
       "context": [
         "public/app.mjs seekRuler(event, scope) (search: async function seekRuler)."
@@ -319,7 +318,13 @@
       ],
       "verify": [
         "npm run agent:e2e"
-      ]
+      ],
+      "notes": [
+        "Human decision recorded 2026-11-09: the maintainer chose Snap 적용. Timeline/piano ruler clicks follow the current primary/piano Snap grid; Alt/Option preserves the exact pointer position."
+      ],
+      "startedAt": "2026-11-09T00:13:21.309Z",
+      "evidence": "Maintainer explicitly chose Snap 적용; decision recorded in notes before code. Timeline/piano ruler clicks now use current primary/piano grid, Alt/Option preserves exact pointer position. npm run agent:e2e: E2E PASS, 37 steps including playback.GUI-ruler-click-snap-and-alt-override for both rulers and Alt. npm run agent:verify: VERIFY PASS. Final smoke sweep separately passed 64/64.",
+      "doneAt": "2026-11-09T00:19:30.115Z"
     },
     {
       "id": "T-011",

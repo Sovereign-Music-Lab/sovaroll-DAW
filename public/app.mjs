@@ -1631,7 +1631,8 @@ $('timeline-lanes').addEventListener('click', (event) => {
 });
 async function seekRuler(event,scope){
   if(!project||event.button!==0)return;const view=geometry()[scope],element=$(scope==='timeline'?'timeline-ruler':'piano-ruler');
-  const target=view.xToSeconds(Math.max(0,event.clientX-element.getBoundingClientRect().left)),doc=documentState?.id;
+  const x=Math.max(0,event.clientX-element.getBoundingClientRect().left),doc=documentState?.id;
+  const target=event.altKey?view.xToSeconds(x):tickToSeconds((scope==='piano'?noteSnap():compileEditorSnap(project,{scope:'primary'})).snap(view.xToTick(x)).tick);
   const token=++seekGeneration;transportSeeking=true;const stopped=stopTransport(false,'locate');transportSeconds=target;updatePosition();updateButtons();
   await stopped;if(token!==seekGeneration)return;transportSeeking=false;if(doc===documentState?.id){transportSeconds=target;updatePosition();}updateButtons();
 }
