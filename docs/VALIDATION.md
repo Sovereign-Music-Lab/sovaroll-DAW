@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-034 (2026-11-09)
+## Continuation — T-001–T-009, T-011–T-012, T-015, T-017–T-035 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -53,6 +53,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-032 reproduced the same closed-menu timeout in `gui-split-note-policy-smoke.mjs` and opens the direct summary before both actions. All 3 targeted steps and final `npm run agent:verify` passed without product changes.
 - T-033 reproduced the same initial timeout in `gui-split-settings-race-smoke.mjs` and opens the menu before every clip-tools action, including preference save/reopen and conflict coverage. All 8 targeted steps and final `npm run agent:verify` passed.
 - T-034 reproduced the same closed-menu timeout in `gui-split-settings-smoke.mjs` and opens the direct summary before every action. All 6 targeted steps and final `npm run agent:verify` passed without product changes.
+- T-035 reproduced workspace render timeouts after 6 and 20 checks. Both the normal render and delayed-render gate now submit `#mix-export-submit`, preserving media and stale-render assertions. All 21 targeted steps and final `npm run agent:verify` passed without product changes.
 
 ## Problems encountered and resolved
 
@@ -135,3 +136,5 @@ T-032에서는 split note 정책 스모크의 같은 timeout을 재현하고 두
 T-033에서는 split 설정 race 스모크의 초기 timeout을 재현하고 설정 저장·재열기·충돌을 포함한 모든 clip-tools 작업 전에 메뉴를 열었습니다. 대상 E2E 8단계와 최종 verify가 통과했습니다.
 
 T-034에서는 split 설정 스모크의 같은 닫힌 메뉴 timeout을 재현하고 모든 작업 전에 직접 summary를 열었습니다. 대상 E2E 6단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.
+
+T-035에서는 workspace의 일반 렌더와 지연 렌더 gate timeout을 재현했습니다. 두 경로 모두 `#mix-export-submit`을 제출하고 미디어·stale render 검증을 유지했습니다. 대상 E2E 21단계와 최종 verify가 통과했으며 제품 코드는 변경하지 않았습니다.

@@ -80,7 +80,7 @@ try {
   ok(await action(() => page.locator('#undo').click(), '/api/command')); await waitState(); assert.equal((await get()).project.name, 'B Project');
   check('gui.workspace.document-history-and-edit-file-remain-independent');
   const audioResponse = await fetch(session.url + `/api/assets/${bAsset.id}/file`); assert.equal(audioResponse.status, 200); assert.deepEqual(Buffer.from(await audioResponse.arrayBuffer()), bBytes);
-  await page.locator('#render-button').click(); await page.waitForSelector('.render-result a', { timeout: 30000 }); const renderResponse = await fetch(new URL(await page.locator('.render-result a').getAttribute('href'), session.url)); assert.equal(renderResponse.status, 200); assert.ok((await renderResponse.arrayBuffer()).byteLength > 44);
+  await page.locator('#render-button').click(); await page.locator('#mix-export-submit').click(); await page.waitForSelector('.render-result a', { timeout: 30000 }); const renderResponse = await fetch(new URL(await page.locator('.render-result a').getAttribute('href'), session.url)); assert.equal(renderResponse.status, 200); assert.ok((await renderResponse.arrayBuffer()).byteLength > 44);
   check('gui.workspace.active-document-media-and-render-use-target-folder');
 
   await edit('project.rename', { name: 'B Explicit Before Switch' }); await documentPlan(aId, 'activate'); ok(await apply('save'));
@@ -188,7 +188,7 @@ try {
   });
   const lateRenderResponse = page.waitForResponse(response => /\/api\/jobs\/[^/]+$/.test(new URL(response.url()).pathname));
   try {
-    await page.locator('#render-button').click(); await renderSeen;
+    await page.locator('#render-button').click(); await page.locator('#mix-export-submit').click(); await renderSeen;
     const activeId = (await get()).workspace.activeId, closePlan = await cli('project-close-plan', activeId); await cli('project-close', closePlan.id, '--current', 'preserve'); await waitState();
     assert.equal((await get()).project, null); releaseRender(); await lateRenderResponse;
     await page.waitForFunction(() => document.querySelector('#job-bar').hidden && !document.querySelector('.render-result a'));
