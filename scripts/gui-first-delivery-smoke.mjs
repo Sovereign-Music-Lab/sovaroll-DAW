@@ -115,6 +115,17 @@ try{
  p=await act(()=>page.locator('#undo').click());
  for(const note of p.clips.find(c=>c.id===splitClips[0].id).notes)assert.equal(note.velocity,toolOriginal.find(original=>original.id===note.id).velocity);
  check('midi.GUI-tools-velocity');
+ await page.locator('#note-grid').focus();await page.keyboard.press('ControlOrMeta+a');
+ p=await act(()=>cmd('midi.notes.update',{clipId:splitClips[0].id,noteId:toolOriginal[0].id,startTick:25}));
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,25);
+ await page.locator('#midi-tools-button').click();await page.locator('#midi-operation').selectOption('quantize');
+ await page.locator('#midi-scope').selectOption('selection');await page.locator('#quantize-grid').selectOption('0.25');await page.locator('#quantize-target').selectOption('start');
+ p=await act(()=>page.locator('#midi-tools-form [type=submit]').click());
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,0);
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.length,toolOriginal.length);
+ p=await act(()=>page.locator('#undo').click());
+ assert.equal(p.clips.find(c=>c.id===splitClips[0].id).notes.find(note=>note.id===toolOriginal[0].id).startTick,25);
+ check('midi.GUI-tools-quantize');
  summary.midiNotes=p.clips.filter(c=>c.type==='midi').reduce((s,c)=>s+c.notes.length,0);
 
  // 3. Audio: WAV import at cursor, fake microphone recording, edit

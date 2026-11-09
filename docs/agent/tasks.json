@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T01:54:05.704Z",
+  "updatedAt": "2026-11-09T01:58:39.032Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1094,7 +1094,7 @@
       "doneAt": "2026-11-09T01:54:05.703Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "midi",
       "id": "T-037",
@@ -1116,7 +1116,10 @@
       "verify": [
         "npm run agent:e2e",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-09T01:54:33.545Z",
+      "evidence": "midi.GUI-tools-quantize passed: off-grid startTick 25 quantized to 0 with selection 1/16 grid, note count unchanged, Undo restored 25. npm run agent:e2e: E2E PASS, 39 steps. npm run agent:verify: VERIFY PASS. FD-14 and validation updated.",
+      "doneAt": "2026-11-09T01:58:39.031Z"
     },
     {
       "status": "todo",
