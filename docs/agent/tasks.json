@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T11:53:56.570Z",
+  "updatedAt": "2026-11-09T11:57:10.275Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2158,7 +2158,7 @@
       "doneAt": "2026-11-09T10:59:54.253Z"
     },
     {
-      "status": "doing",
+      "status": "done",
       "priority": 2,
       "area": "i18n",
       "id": "T-067",
@@ -2195,7 +2195,9 @@
         "npm run agent:e2e",
         "npm run agent:verify"
       ],
-      "startedAt": "2026-11-09T11:53:56.569Z"
+      "startedAt": "2026-11-09T11:53:56.569Z",
+      "evidence": "i18n-coverage 2175 segments 0 missing; Playwright probe: no Korean in English mode in workspace and 38 dialogs except bilingual language label, Korean restore and reload persistence observed; gui-session-i18n-smoke 4 PASS; default E2E PASS; agent:verify VERIFY PASS (174 files) after docs edits",
+      "doneAt": "2026-11-09T11:57:10.275Z"
     }
   ]
 }
