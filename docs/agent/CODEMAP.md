@@ -243,6 +243,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-note-velocity-cursor-smoke.mjs | 42 | 470 |  |
 | gui-paste-time-smoke.mjs | 42 | 621 |  |
 | gui-projects-smoke.mjs | 195 | 1414 |  |
+| gui-recording-assistance-smoke.mjs | 66 | 347 |  |
 | gui-recording-protection-smoke.mjs | 41 | 2159 |  |
 | gui-recording-workflow-smoke.mjs | 41 | 1087 |  |
 | gui-recovery-smoke.mjs | 96 | 1400 |  |

@@ -42,7 +42,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-18 | 클립 분할 | 커서 위치, 길이 합 보존 | verified | E2E: `audio.GUI-clip-split-at-cursor` |
 | FD-19 | 클립 길이(trim) | Inspector 길이 프레임 | verified | E2E: `audio.GUI-clip-trim-length` |
 | FD-20 | 페이드·클립 뮤트·극성·노멀라이즈 | Inspector 입력 → 렌더 결과에 반영 | verified (페이드 인/아웃·클립 뮤트·극성·노멀라이즈) | E2E: `audio.GUI-fade-in-changes-render`, `audio.GUI-fade-out-changes-render`, `audio.GUI-clip-mute-silences-render`, `audio.GUI-clip-polarity-inverts-render`, `audio.GUI-normalize-sets-clip-gain` |
-| FD-21 | 녹음 보조(입력 선택·게인·모니터·카운트인·메트로놈·기존 트랙 들으며 녹음) | GUI 동작 + 녹음 결과 | implemented (E2E 없음), 실제 장치 manual | public/recording-ui.mjs, metronome.mjs, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
+| FD-21 | 녹음 보조(입력 선택·게인·모니터·카운트인·메트로놈·기존 트랙 들으며 녹음) | GUI 동작 + 녹음 결과 | verified (가짜 장치·Web Audio 관찰) / 실제 장치 manual | `scripts/gui-recording-assistance-smoke.mjs`, [실제 장치 체크리스트](MANUAL_CHECKS.md) |
 
 ### D. 재생·믹싱
 
@@ -66,5 +66,5 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 ### 첫 납품 판정
 
 - 핵심 흐름(FD-01~03, 05~13, 15~19, 22~25, 26~30)은 **자동 검증 통과** 상태입니다. FD-20은 페이드 인·클립 뮤트·극성·노멀라이즈도 검증했습니다 (E2E 39단계, 2026-11-09).
-- 남은 것: FD-21의 E2E 보강(작업 큐 T-039), 실제 장치 청음·지연 확인(manual, 사람이 해야 함).
+- 남은 것: 실제 장치 청음·지연 확인(manual, 사람이 해야 함). 현재 E2E 보강 과제는 완료했습니다.
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.

@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T02:04:22.510Z",
+  "updatedAt": "2026-11-09T02:08:30.679Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1150,7 +1150,7 @@
       "doneAt": "2026-11-09T02:04:22.509Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "audio",
       "id": "T-039",
@@ -1174,7 +1174,10 @@
         "npm run agent:e2e -- scripts/gui-recording-protection-smoke.mjs",
         "npm run agent:e2e -- scripts/gui-recording-workflow-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-09T02:04:41.913Z",
+      "evidence": "New gui-recording-assistance-smoke E2E PASS, 4 steps: input selection, nonzero baseline, count-in 4 oscillators, backing 4.2s, monitor path, stereo WAV, metronome scheduling; -6dB gain ratio 0.5011878275. Existing recording workflow/protection PASS 4/6. agent:verify VERIFY PASS. Fake-device/Web Audio only; hardware verification not claimed. Requirements/validation/map updated.",
+      "doneAt": "2026-11-09T02:08:30.678Z"
     }
   ]
 }
