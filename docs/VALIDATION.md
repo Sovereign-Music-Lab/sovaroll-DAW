@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-053 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-054 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -75,6 +75,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-051 adds native-only bounded AUParameterTree inspection and exact-keyPath setting. Initial values are captured at instantiation; current/default/min/max metadata, no-instance/unknown/malformed/out-of-range errors and lifecycle are checked. On an available system effect, a changed parameter produced different PCM and two subsequent renders were identical. Targeted native tests passed 5, the native suite passed 107 and full verification passed 172 files. No server/GUI parameter route, custom plugin GUI, realtime automation, listening or broad compatibility claim.
 - T-052 connects parameter listing/setting to active-document/revision-guarded server routes and a generic numeric GUI. Server tests cover stale/malformed/unknown/out-of-range requests and actual readback without a project edit. GUI checks visible range rejection, valid readback, unchanged revision and a changed PCM hash on the next render; all prior scope/track/import/Undo checks still pass. Targeted GUI passed 10 steps, default E2E passed 40, native tests passed 107 and full verification passed 172 files. No custom plugin GUI, realtime automation, listening or compatibility claim.
 - T-053 enables validated `clipIds` for export as well as preview and exposes all/selected-clip mode in the Audio Unit dialog. Two new server tests verify selected PCM differs from all-clip PCM and empty/unknown/stale requests preserve the project. The GUI verifies empty selection, selected-only source identity, composition with selected track/locator scopes and processed import/Undo. Targeted GUI passed 12 steps, default E2E passed 40 and full verification passed 173 files. No listening, realtime hosting or compatibility claim.
+- T-054 fixes GUI/server lifecycle divergence by locking component discovery, selection and repeated instantiation while an instance is active. Explicit release clears parameter choices, re-enables selection/listing and successfully reinstantiates the same exact component. The browser test initially observed loading-state and locator-API mistakes in its new assertions; corrected synchronization and option-count observation passed without weakening behavior checks. Targeted GUI passed 13 steps, default E2E passed 40 and full verification passed 173 files. No realtime-hosting or listening claim.
 
 ## Problems encountered and resolved
 
@@ -201,3 +202,5 @@ T-051에서는 native 전용으로 최대 256개 AUParameterTree 조회와 정�
 T-052에서는 활성 문서·revision 검증이 있는 서버 파라미터 경로와 범용 숫자 GUI를 연결했습니다. 서버 검사는 stale·형식·unknown·범위 오류와 프로젝트 변경 없는 실제 readback을 확인합니다. GUI는 범위 오류 표시, 유효 값 readback, revision 불변과 다음 렌더의 PCM 해시 변화를 검증하고 기존 범위·트랙·가져오기·Undo도 유지했습니다. 대상 GUI 10단계, 기본 E2E 40단계, native 107개, 전체 제품 172개 파일이 통과했습니다. 사용자 정의 플러그인 GUI·실시간 오토메이션·청음·호환성은 주장하지 않습니다.
 
 T-053에서는 검증된 `clipIds`를 preview뿐 아니라 export에도 허용하고 Audio Unit 대화상자에 모든 클립/선택 클립 모드를 추가했습니다. 새 서버 검사 2개는 선택 PCM과 전체 PCM의 차이와 빈·unknown·stale 요청의 프로젝트 보존을 확인합니다. GUI는 빈 선택, 선택 source identity, 선택 트랙·Locator와의 조합, 처리본 가져오기·Undo를 검증합니다. 대상 GUI 12단계, 기본 E2E 40단계, 전체 제품 173개 파일이 통과했습니다. 청음·실시간 호스팅·호환성은 주장하지 않습니다.
+
+T-054에서는 활성 인스턴스 중 구성요소 검색·선택·재인스턴스화를 잠가 GUI/server 수명주기 불일치를 수정했습니다. 명시적 release는 파라미터 선택을 정리하고 검색·선택을 다시 허용하며 같은 정확한 구성요소를 다시 인스턴스화할 수 있습니다. 새 검사의 loading 동기화와 option 개수 관측 오류를 수정했으며 동작 assertion은 약하게 바꾸지 않았습니다. 대상 GUI 13단계, 기본 E2E 40단계, 전체 제품 173개 파일이 통과했습니다. 실시간 호스팅·청음은 주장하지 않습니다.

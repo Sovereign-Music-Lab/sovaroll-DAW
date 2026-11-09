@@ -15,8 +15,8 @@ export function setupAudioUnits({request,getContext,renderCurrentMix,onImported,
  const update=()=>{
   syncParameters();
   button.disabled=!supported||!getContext().project||getContext().busy||!getContext().connected;
-  $('audio-units-component').disabled=loading||!components.length;$('audio-units-list').disabled=loading||!supported;$('audio-units-scope').disabled=loading;$('audio-units-tracks').disabled=loading;$('audio-units-clips').disabled=loading;
-  $('audio-units-instantiate').disabled=loading||!selectedId;$('audio-units-render').disabled=loading||!state.instantiated;$('audio-units-release').disabled=loading||!state.instantiated;
+  $('audio-units-component').disabled=loading||!components.length||state.instantiated;$('audio-units-list').disabled=loading||!supported||state.instantiated;$('audio-units-scope').disabled=loading;$('audio-units-tracks').disabled=loading;$('audio-units-clips').disabled=loading;
+  $('audio-units-instantiate').disabled=loading||!selectedId||state.instantiated;$('audio-units-render').disabled=loading||!state.instantiated;$('audio-units-release').disabled=loading||!state.instantiated;
   const download=$('audio-units-download'),output=state.lastRender?.outputUrl;download.hidden=!output;if(output){download.href=output;download.download=`audio-unit-r${state.lastRender?.revision??getContext().project.revision}.wav`;}
   const importButton=$('audio-units-import');importButton.hidden=!output;importButton.disabled=loading||!output||getContext().busy||!getContext().connected;
   $('audio-units-status').textContent=loading?'처리 중…':`${state.status}${state.instantiated?' · 인스턴스 있음':''}${state.error?' · '+state.error:''}`;

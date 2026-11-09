@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:57:52.882Z",
+  "updatedAt": "2026-11-09T06:04:07.609Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1670,6 +1670,42 @@
       "startedAt": "2026-11-09T05:49:11.016Z",
       "evidence": "Targeted GUI E2E PASS: 12 steps including empty clip rejection, selected-only source hash, selected track/locator composition and processed import/Undo. New tests/render-export-clip-selection.test.mjs: 2/2 PASS for export PCM selection and empty/unknown/stale guards. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Native suite remains 107 PASS from T-052; no native code changed. No listening, realtime hosting or compatibility claim.",
       "doneAt": "2026-11-09T05:57:52.882Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "plugins",
+      "id": "T-054",
+      "title": "Keep Audio Unit instance and GUI selection lifecycle consistent",
+      "size": "S",
+      "dependsOn": [
+        "T-053"
+      ],
+      "goal": "Prevent the offline Audio Unit dialog from changing component identity or pretending an active instance is gone before explicit release.",
+      "context": [
+        "The native/server API rejects selection or another instantiation while an instance is active.",
+        "The GUI component selector currently remains enabled and its change handler sets instantiated=false locally, which can diverge from the server.",
+        "Explicit release retains the selected component for a subsequent instantiation."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "While an instance is active, component selection, discovery reload and another instantiation are disabled; processing, parameters and release remain available.",
+        "Changing selection without an active instance still works; explicit release clears parameter UI, re-enables selection/listing and permits reinstantiation of the same exact component.",
+        "Browser tests verify GUI/server state agreement and existing processing/import behavior; full product/browser verification passes.",
+        "Documentation records the lifecycle boundary without a realtime-hosting claim."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:58:20.358Z",
+      "evidence": "Targeted GUI E2E PASS: 13 steps including active-instance component/list/instantiate locking, explicit release, cleared parameters, server state agreement and same-component reinstantiation; all prior parameter/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No realtime hosting or listening claim.",
+      "doneAt": "2026-11-09T06:04:07.608Z"
     }
   ]
 }

@@ -145,3 +145,6 @@
 {"at":"2026-11-09T05:49:10.933Z","id":"T-053","action":"add"}
 {"at":"2026-11-09T05:49:11.016Z","id":"T-053","action":"start"}
 {"at":"2026-11-09T05:57:52.882Z","id":"T-053","action":"done","evidence":"Targeted GUI E2E PASS: 12 steps including empty clip rejection, selected-only source hash, selected track/locator composition and processed import/Undo. New tests/render-export-clip-selection.test.mjs: 2/2 PASS for export PCM selection and empty/unknown/stale guards. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Native suite remains 107 PASS from T-052; no native code changed. No listening, realtime hosting or compatibility claim.","verify":"PASS"}
+{"at":"2026-11-09T05:58:20.265Z","id":"T-054","action":"add"}
+{"at":"2026-11-09T05:58:20.358Z","id":"T-054","action":"start"}
+{"at":"2026-11-09T06:04:07.609Z","id":"T-054","action":"done","evidence":"Targeted GUI E2E PASS: 13 steps including active-instance component/list/instantiate locking, explicit release, cleared parameters, server state agreement and same-component reinstantiation; all prior parameter/scope/selection/import checks retained. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No realtime hosting or listening claim.","verify":"PASS"}
