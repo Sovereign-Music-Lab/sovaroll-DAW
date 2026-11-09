@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T07:09:16.753Z",
+  "updatedAt": "2026-11-09T07:54:25.089Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1814,6 +1814,42 @@
       "startedAt": "2026-11-09T06:58:28.198Z",
       "evidence": "New controlled-helper GUI E2E PASS: 3 steps for scoped server-job Play, wrong-job/stale/path/permission guards, Stop and project-edit stop/release without device output or default playback changes. Existing offline Audio Unit GUI PASS: 14 steps; default E2E PASS: 40. npm run test:native: 108/108. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. No listening, latency or MIDI synchronization claim.",
       "doneAt": "2026-11-09T07:09:16.753Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-058",
+      "title": "Native offline MIDI rendering through an Audio Unit instrument",
+      "size": "L",
+      "dependsOn": [
+        "T-057"
+      ],
+      "goal": "Render bounded validated MIDI notes through an explicitly instantiated Audio Unit instrument using AVAudioEngine offline scheduling and deterministic PCM output.",
+      "context": [
+        "The helper currently renders PCM through effects but has no instrument note input path.",
+        "Use AUAudioUnit scheduleMIDIEventBlock with frame-accurate note-on/off events and bounded offline chunks.",
+        "Native helper only; no GUI instrument track assignment, realtime MIDI or compatibility claim."
+      ],
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs"
+      ],
+      "acceptance": [
+        "An explicitly instantiated instrument accepts bounded validated note pitch/velocity/channel/frame/duration input; malformed notes and excessive ranges fail without output.",
+        "Offline render schedules note-on/off at exact frames, writes a bounded PCM16 WAV and produces non-zero samples for an available system instrument.",
+        "Repeated equivalent renders are deterministic; Stop/release lifecycle and existing effect paths remain intact.",
+        "Native/full verification passes and documentation limits evidence to the observed system instrument without listening or general compatibility claims."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T07:48:57.434Z",
+      "blockedReason": "Native aumu MIDI rendering produced non-silent WAV, but same-instance repeated renders were not byte-identical (first SHA-256 75ddc4b0a4bacaf79982c3c5c1e946e670395d8783c704a3e9058035b535bd08, second fc1918c9cc095b0f1e2a6cd43b65ad6833b3380ad35e405901f4b2d7b92a94e2). Corrected aumu FourCC, then pre-render reset and post-render reset did not resolve the same deterministic-output failure. After three attempts at that point, restored only T-058 native files from checkpoint 20261109T071001-6npg; restored native suite passed 108/108 and agent:verify PASS. Needs a scoped fresh-instance/per-render lifecycle design; do not claim deterministic instrument hosting.",
+      "evidence": "Resolved earlier blocker with fresh instrument instance per render. Targeted native tests 7/7 PASS: bounded validation, exact scheduled note on/off, non-silent stereo 48kHz WAV and two byte-identical renders, freshInstance=true and release/status lifecycle. npm run test:native: 109/109 PASS. npm run agent:verify:full and final agent:verify: VERIFY PASS, 173 product files. Native-only; no GUI assignment, realtime MIDI, listening or general compatibility claim.",
+      "doneAt": "2026-11-09T07:54:25.088Z"
     }
   ]
 }

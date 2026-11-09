@@ -4,7 +4,7 @@ import {spawn} from 'node:child_process';
 import {promises as fs} from 'node:fs';
 import os from 'node:os';
 import {createHash} from 'node:crypto';
-import {encodeWav} from '../../src/media/wav.mjs';
+import {encodeWav,decodeWav} from '../../src/media/wav.mjs';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import path from 'node:path';
@@ -124,4 +124,19 @@ test('Audio Unit real-time preview requires permission and owns silent Play Stop
  h.send({command:'stop'});const stopped=await h.next(event=>event.event==='stopped'&&event.jobId===active.jobId);assert.equal(stopped.status,'stopped');h.send({command:'status'});status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.instantiated,true);
  h.send({command:'render',path:shortFile,offline:true});const recovered=await h.next(event=>['rendered','error'].includes(event.event));assert.equal(recovered.event,'rendered',JSON.stringify(recovered));
  h.send({command:'play',path:longFile,allowDefaultOutput:true});const releasing=await h.next(event=>event.event==='playing');h.send({command:'release'});const released=await h.next(event=>event.event==='released');assert.equal(released.instantiated,false);h.send({command:'status'});status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.instantiated,false);
+});
+
+test('Audio Unit instrument renders bounded scheduled MIDI notes to deterministic non-silent WAV',async t=>{
+ const h=await helper(t);await h.next(event=>event.event==='ready');h.send({command:'list',limit:256});const list=await h.next(event=>event.event==='list'),instrumentType=[...'aumu'].reduce((value,char)=>(value*256+char.charCodeAt(0))>>>0,0),instrument=list.components.find(component=>component.type===instrumentType&&component.name.includes('AUDLSynth'))??list.components.find(component=>component.type===instrumentType);
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-au-instrument-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));const output=path.join(directory,'instrument.wav'),notes=[{pitch:60,velocity:100,channel:0,startFrame:0,durationFrames:12000},{pitch:64,velocity:90,channel:0,startFrame:2400,durationFrames:12000}];
+ const request={command:'renderMidi',outputPath:output,sampleRate:48000,channels:2,durationFrames:48000,notes,offline:true};
+ h.send(request);assert.equal((await h.next(event=>event.event==='error')).code,'NO_INSTANCE');
+ if(!instrument){console.log(JSON.stringify({status:'environment-limited',reason:'No instrument Audio Unit discovered'}));return;}
+ h.send({command:'instantiate',id:instrument.id,offline:true});const instantiated=await h.next(event=>['instantiated','error'].includes(event.event));assert.equal(instantiated.event,'instantiated',JSON.stringify(instantiated));
+ h.send({...request,notes:[]});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_MIDI_RENDER');
+ h.send({...request,notes:[{...notes[0],pitch:128}]});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_MIDI_NOTE');
+ h.send({...request,notes:[{...notes[0],extra:1}]});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_MIDI_NOTE');
+ const outputs=[];for(let i=0;i<2;i++){const file=path.join(directory,`instrument-${i}.wav`);h.send({...request,outputPath:file});const rendered=await h.next(event=>['renderedMidi','error'].includes(event.event));assert.equal(rendered.event,'renderedMidi',JSON.stringify(rendered));assert.equal(rendered.frames,48000);assert.equal(rendered.sampleRate,48000);assert.equal(rendered.channels,2);assert.equal(rendered.noteCount,2);assert.equal(rendered.freshInstance,true);const bytes=await fs.readFile(file),decoded=decodeWav(bytes);assert.equal(decoded.frames,48000);assert.equal(decoded.channels.length,2);assert.ok(decoded.channels[0].some(value=>Math.abs(value)>.001));outputs.push(createHash('sha256').update(bytes).digest('hex'));}
+ assert.equal(outputs[0],outputs[1],'Equivalent scheduled MIDI renders must be byte-identical');
+ h.send({command:'status'});const status=await h.next(event=>event.event==='status');assert.equal(status.instantiated,true);assert.equal(status.playing,false);assert.equal(status.renderingMidi,false);h.send({command:'release'});await h.next(event=>event.event==='released');
 });
