@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T04:31:00.477Z",
+  "updatedAt": "2026-11-09T04:38:03.821Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1337,7 +1337,7 @@
       "doneAt": "2026-11-09T04:31:00.476Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-045",
@@ -1361,6 +1361,40 @@
       ],
       "verify": [
         "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T04:31:38.169Z",
+      "evidence": "Offline PCM16 WAV processed through explicitly instantiated system effect with AVAudioEngine. Two repeated renders had identical output hashes; source/frame/rate/channel checked; no-instance/missing-file errors preserved lifecycle. Targeted native tests 4 PASS; native suite 105 PASS; full verification 172 files PASS. T-046 added for server/GUI offline probe. No listening/compatibility/low-latency claim.",
+      "doneAt": "2026-11-09T04:38:03.821Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-046",
+      "title": "GUI Audio Unit offline probe: select a component and render the current mix",
+      "size": "L",
+      "dependsOn": [
+        "T-045"
+      ],
+      "goal": "Expose the validated Audio Unit helper through an explicit server/GUI offline probe. Let the user discover/select a component, instantiate it and render the current mix without changing default playback.",
+      "files": [
+        "src/audio-units.mjs",
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "native/tests/audio-units-server.test.mjs",
+        "scripts/gui-audio-units-smoke.mjs"
+      ],
+      "acceptance": [
+        "Server routes enforce active-document/revision checks, exact component IDs, completed WAV jobs and helper ownership; no browser-provided executable path or automatic plugin loading.",
+        "GUI lists components only on demand, shows structured Korean errors, instantiates/renders only on explicit action, and leaves project revision and default playback unchanged.",
+        "Tests cover server/helper lifecycle and GUI offline render with no hardware or compatibility claim; both documentation languages record scope.",
+        "Targeted tests, agent:e2e, native tests and agent:verify:full pass."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
         "npm run test:native",
         "npm run agent:verify:full"
       ]

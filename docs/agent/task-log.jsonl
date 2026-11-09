@@ -119,3 +119,6 @@
 {"at":"2026-11-09T03:24:00.599Z","id":"T-044","action":"start"}
 {"at":"2026-11-09T03:30:49.992Z","id":"T-045","action":"add"}
 {"at":"2026-11-09T04:31:00.477Z","id":"T-044","action":"done","evidence":"Explicit offline-only Audio Unit instantiation requires exact ID and intent; errors preserve state and release cleans lifecycle. Observed system effect instantiated and format/cleanup passed. Targeted native tests 3 PASS; native suite 104 PASS; full verification 172 files PASS. T-045 added for bounded offline PCM processing. No GUI/playback or compatibility claim.","verify":"PASS"}
+{"at":"2026-11-09T04:31:38.169Z","id":"T-045","action":"start"}
+{"at":"2026-11-09T04:36:26.566Z","id":"T-046","action":"add"}
+{"at":"2026-11-09T04:38:03.821Z","id":"T-045","action":"done","evidence":"Offline PCM16 WAV processed through explicitly instantiated system effect with AVAudioEngine. Two repeated renders had identical output hashes; source/frame/rate/channel checked; no-instance/missing-file errors preserved lifecycle. Targeted native tests 4 PASS; native suite 105 PASS; full verification 172 files PASS. T-046 added for server/GUI offline probe. No listening/compatibility/low-latency claim.","verify":"PASS"}
