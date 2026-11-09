@@ -47,14 +47,16 @@ export function createAudioUnits({helperPath=path.join(ROOT,'.native-build','new
   list:(limit=64)=>send('list',{limit},event=>event.event==='list'),
   select:id=>send('select',{id},event=>event.event==='selected'),
   instantiate:id=>send('instantiate',{id,offline:true},event=>event.event==='instantiated'),
-  async render({bytes,renderJobId,revision,documentId}){
+  async render({bytes,renderJobId,revision,documentId,sourceStartSample=null}){
    await cleanup();directory=await fs.mkdtemp(path.join(os.tmpdir(),'newdaw-audio-unit-render-'));const file=path.join(directory,'input.wav');await fs.writeFile(file,Buffer.from(bytes));
    try{
     const event=await send('render',{path:file,offline:true},event=>event.event==='rendered');
     if(!event.outputPath)throw problem('AUDIO_UNIT_OUTPUT_MISSING','Audio Unit helper returned no WAV output');
     const outputBytes=await fs.readFile(event.outputPath);
-    processedOutput={bytes:outputBytes,renderJobId,revision,documentId,metadata:{...event}};
-    return {...event,outputUrl:'/api/audio-units/output'};
+    const result={...event,outputUrl:'/api/audio-units/output',...(Number.isSafeInteger(sourceStartSample)&&sourceStartSample>=0?{sourceStartSample}:{})};
+    processedOutput={bytes:outputBytes,renderJobId,revision,documentId,metadata:{...result}};
+    state={...state,lastRender:result,status:'rendered',error:null};publish();
+    return result;
    }finally{await cleanup();}
   },
   output(){return processedOutput;},

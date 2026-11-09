@@ -438,7 +438,8 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>!['expectedRevision','jobId'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_AUDIO_UNIT_RENDER','Provide render jobId and expectedRevision',422);
         assertRequestDocument();nativeRevision(input.expectedRevision);const job=jobs.get(input.jobId);
         if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV render for the Audio Unit probe',409);
-        return json(res,200,await audioUnits.render({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity()}));
+        const sourceStartSample=job.chaseProfile&&Number.isSafeInteger(job.startTick)&&job.startTick>=0?job.stats?.startFrame:null;
+        return json(res,200,await audioUnits.render({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity(),sourceStartSample}));
       }
       if(req.method==='POST'&&route==='/api/audio-units/release'){
         const input=await jsonBody(req);if(!input||Object.keys(input).some(k=>k!=='expectedRevision'))throw problem('INVALID_AUDIO_UNIT_REQUEST','Provide only expectedRevision',422);

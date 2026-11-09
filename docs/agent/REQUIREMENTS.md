@@ -74,3 +74,4 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | 관련 ID | 추가 범위 | 상태 | 근거 |
 |---|---|---|---|
 | FD-13, FD-15 | 서버가 소유한 Audio Unit 처리 WAV를 커서 위치의 새 오디오 트랙·클립으로 가져오고 한 번의 Undo로 원래 트랙·클립·에셋 상태를 복원 | verified (macOS 오프라인 probe; 플러그인 호환성·청음 제외) | `scripts/gui-audio-units-smoke.mjs`: `audioUnits.GUI-import-processed-clip-and-Undo`, T-048 검증 기록 |
+| FD-13, FD-15, FD-25 | Locator 구간을 꼬리 없이 오프라인 처리하고 커서와 무관하게 서버가 기록한 구간 시작에 처리 클립을 추가; Locator 부재 시 프로젝트 변경 없이 오류 | verified (0.25–1.25초, 48kHz stereo 48,000프레임) | `audioUnits.GUI-locator-mode-requires-locators-without-project-edit`, `audioUnits.GUI-locator-range-render-import-at-start-and-Undo`, T-049 검증 기록 |

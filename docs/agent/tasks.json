@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:17:36.478Z",
+  "updatedAt": "2026-11-09T05:27:39.792Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1466,6 +1466,49 @@
       "startedAt": "2026-11-09T05:04:11.873Z",
       "evidence": "Targeted GUI E2E PASS: 4 steps including audioUnits.GUI-import-processed-clip-and-Undo; ruler cursor 4s, exactly one processed audio clip at 4*sampleRate with decoded frame count and WAV SHA-256, preserved Audio Unit output metadata, and one Undo restored prior clips/tracks/assets. Default E2E PASS: 40 steps. npm run test:native: 106/106 passed. npm run agent:verify:full and final npm run agent:verify: VERIFY PASS, guard/syntax and 172 product test files. Audio Unit self-import alone preserves offline instance/output; no listening or compatibility claim.",
       "doneAt": "2026-11-09T05:17:36.477Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-049",
+      "title": "Audio Unit offline processing for the locator range",
+      "size": "M",
+      "dependsOn": [
+        "T-048"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-25"
+      ],
+      "goal": "Allow an explicit locator-range Audio Unit offline bounce and import the processed WAV at the locator start with Undo, while retaining whole-mix processing as the default.",
+      "context": [
+        "public/app.mjs renderSnapshot supports purpose=export with exportRange=locators and tailSeconds=0.",
+        "public/audio-units.mjs currently renders the whole mix and imports at the transport cursor.",
+        "Use existing locators, renderer, processed output and WAV import; do not add a plugin path or realtime-hosting claim."
+      ],
+      "files": [
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "native/tests/audio-units-server.test.mjs"
+      ],
+      "acceptance": [
+        "The Audio Unit dialog defaults to the whole mix and offers an explicit locator-range mode; missing locators produce a clear error without changing the project.",
+        "Locator mode uses the existing export renderer with tailSeconds=0, preserves project revision/default playback, and imports the processed clip at the locator start rather than an unrelated cursor.",
+        "Browser tests verify range output frame bounds, imported asset identity/position and one-Undo restoration; whole-mix behavior and existing suites still pass.",
+        "Update bilingual development notes and validation without claiming listening, realtime hosting or broad plugin compatibility."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:18:48.069Z",
+      "evidence": "Targeted GUI E2E PASS: 6 steps. Missing locators rejected without project edit; whole-mix cursor import retained; 0.25–1.25s locator render produced 48,000 stereo frames at 48kHz, sourceStartSample=12000, imported at 12000 despite cursor at 4s with matching WAV SHA-256, and one Undo restored clips/tracks/assets. Owner snapshot retains outputUrl/range metadata. Default E2E PASS: 40 steps. npm run test:native: 106/106. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. No realtime-hosting, listening or compatibility claim.",
+      "doneAt": "2026-11-09T05:27:39.791Z"
     }
   ]
 }

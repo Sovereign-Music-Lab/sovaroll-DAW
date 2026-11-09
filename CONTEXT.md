@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-048 are done; processed Audio Unit output now imports as an editable clip with Undo. Real-device observations remain human work.
+Updated: 2026-11-09. T-001–T-049 are done; Audio Unit offline processing supports whole-mix/locator-range bounce and editable clip import with Undo. Real-device observations remain human work.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,8 +28,8 @@ Updated: 2026-11-09. T-001–T-048 are done; processed Audio Unit output now imp
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
-- T-001–T-048 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 106 after T-048; no complete bilingual UI, low-latency or full plugin-hosting claim.
-- T-048 imports processed WAV at the GUI ruler cursor as one editable audio clip; one Undo restores clips/tracks/assets. Self-import alone preserves the offline Audio Unit instance/output. Targeted GUI passed 4 steps and default E2E passed 40.
+- T-001–T-049 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 106 after T-049; no complete bilingual UI, low-latency or full plugin-hosting claim.
+- T-049 adds whole-mix/locator-range offline processing; a 48,000-frame range imports at server-recorded sample 12,000 despite a 4-second cursor, and one Undo restores clips/tracks/assets. Targeted GUI passed 6 steps and default E2E passed 40.
 - T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
 - T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
 - Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
@@ -52,7 +52,7 @@ Updated: 2026-11-09. T-001–T-048 are done; processed Audio Unit output now imp
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-048 are done with evidence in docs/VALIDATION.md. Add one scoped follow-up for remaining product goals before continuing; real-time plugin hosting is not complete.
+- T-001–T-049 are done with evidence in docs/VALIDATION.md. Add one scoped follow-up for remaining product goals before continuing; real-time plugin hosting is not complete.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

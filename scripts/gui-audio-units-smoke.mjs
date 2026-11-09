@@ -24,6 +24,9 @@ try{
  await page.locator('#audio-units-instantiate').click();await page.waitForFunction(()=>!document.querySelector('#audio-units-render').disabled);
  check('audioUnits.GUI-discovery-selection-and-explicit-instantiation');
  const revision=await page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,'')));
+ await page.locator('#audio-units-scope').selectOption('locators');await page.locator('#audio-units-render').click();await page.waitForFunction(()=>document.querySelector('#notice-text').textContent.includes('Locator 범위를 먼저'));
+ assert.equal(await page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))),revision);assert.equal(await page.locator('#audio-units-download').isHidden(),true);check('audioUnits.GUI-locator-mode-requires-locators-without-project-edit');
+ await page.locator('#audio-units-scope').selectOption('all');
  await page.locator('#audio-units-render').click();await page.waitForFunction(()=>document.querySelector('#audio-units-result').textContent.includes('완료'),null,{timeout:30000});
  const result=await page.locator('#audio-units-result').textContent();assert.match(result,/frames/);assert.match(result,/출력 [a-f0-9]{64}/);
  assert.equal(await page.evaluate(()=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))),revision);
@@ -40,5 +43,15 @@ try{
  const importRevision=imported.project.revision;
  await page.locator('#audio-units-close').click();await page.locator('#undo').click();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>rev,importRevision);
  const undone=await(await fetch(session.url+'/api/state')).json();assert.deepEqual(undone.project.clips,beforeImport.project.clips);assert.deepEqual(undone.project.tracks,beforeImport.project.tracks);assert.deepEqual(undone.project.assets,beforeImport.project.assets);check('audioUnits.GUI-import-processed-clip-and-Undo');
+ await exec(process.execPath,['src/cli.mjs','command','project.locators',JSON.stringify({range:{startTick:480,endTick:2400}}),'--url',session.url],{cwd:root});
+ const located=await(await fetch(session.url+'/api/state')).json();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))===rev,located.project.revision);await page.waitForFunction(()=>!document.querySelector('#audio-units-open').disabled);
+ await page.locator('#audio-units-open').click();await page.locator('#audio-units-instantiate').click();await page.waitForFunction(()=>!document.querySelector('#audio-units-render').disabled);await page.locator('#audio-units-scope').selectOption('locators');
+ await page.locator('#audio-units-render').click();await page.waitForFunction(()=>document.querySelector('#audio-units-result').textContent.includes('Locator 구간'),null,{timeout:30000});
+ const rangeState=await(await fetch(session.url+'/api/audio-units')).json(),rangeResponse=await fetch(session.url+rangeState.lastRender.outputUrl),rangeBytes=Buffer.from(await rangeResponse.arrayBuffer()),rangeWav=decodeWav(rangeBytes),rangeSha256=createHash('sha256').update(rangeBytes).digest('hex');
+ assert.equal(rangeState.lastRender.sourceStartSample,12000);assert.equal(rangeState.lastRender.frames,48000);assert.equal(rangeWav.frames,48000);assert.equal(rangeWav.sampleRate,48000);assert.equal(rangeWav.channels.length,2);
+ const beforeRangeImport=await(await fetch(session.url+'/api/state')).json(),beforeRangeIds=new Set(beforeRangeImport.project.clips.map(clip=>clip.id));await page.locator('#audio-units-import').click();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>rev,beforeRangeImport.project.revision);
+ const rangeImported=await(await fetch(session.url+'/api/state')).json(),rangeAdded=rangeImported.project.clips.filter(clip=>!beforeRangeIds.has(clip.id));assert.equal(rangeAdded.length,1);assert.equal(rangeAdded[0].type,'audio');assert.equal(rangeAdded[0].startSample,12000);assert.equal(rangeAdded[0].lengthFrames,48000);assert.equal(rangeImported.project.assets.find(asset=>asset.id===rangeAdded[0].assetId)?.sha256,rangeSha256);assert.equal(rangeImported.audioUnits.lastRender.sourceStartSample,12000);
+ const rangeImportRevision=rangeImported.project.revision;await page.locator('#audio-units-close').click();await page.locator('#undo').click();await page.waitForFunction(rev=>Number(document.querySelector('#revision-label').textContent.replace(/\D/g,''))>rev,rangeImportRevision);
+ const rangeUndone=await(await fetch(session.url+'/api/state')).json();assert.deepEqual(rangeUndone.project.clips,beforeRangeImport.project.clips);assert.deepEqual(rangeUndone.project.tracks,beforeRangeImport.project.tracks);assert.deepEqual(rangeUndone.project.assets,beforeRangeImport.project.assets);assert.deepEqual(pageErrors,[]);check('audioUnits.GUI-locator-range-render-import-at-start-and-Undo');
  console.log(JSON.stringify({status:'passed',tests:tests.length}));
 }finally{await browser.close();await session.close();await fs.rm(dir,{recursive:true,force:true});}
