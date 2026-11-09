@@ -882,7 +882,6 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         for(const key of Object.keys(options))if(!['autoEffectTail','fileFormat','exportPresetId','dither','ditherSeed','stemSplitChannels','outputSampleRate','stemMixdown','cycleMarkerIds','stemBatch','bypassTrackEffects','clipIds','trackIds','channelMode','sampleFormat','expectedRevision','durationSeconds','tailSeconds','startTick','chaseOptions','expectedChaseRevision','expectedChaseFingerprint','expectedTimingRevision','expectedTimingFingerprint','preview'].includes(key))throw problem('INVALID_OPTION',`Unknown render option: ${key}`,422);
         try{options=resolveExportPresetOptions(engine.project,options);}catch(error){throw problem(error.code,error.message,422);}
         try{selectRenderTracks(engine.project,options.trackIds);}catch(error){throw problem(error.code,error.message,422);}
-        if(options.clipIds!==undefined&&options.preview!==true)throw problem('INVALID_RENDER_CLIPS','Clip selection currently requires preview:true',422);
         try{selectRenderClips(engine.project,options.clipIds);}catch(error){throw problem(error.code,error.message,422);}
         if(options.bypassTrackEffects!==undefined&&options.preview!==true)throw problem('INVALID_EFFECT_BYPASS','Effect bypass currently requires preview:true',422);
         try{bypassRenderEffects(engine.project,options.bypassTrackEffects);}catch(error){throw problem(error.code,error.message,422);}

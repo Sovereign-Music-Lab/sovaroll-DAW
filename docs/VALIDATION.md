@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-052 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-053 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -74,6 +74,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-050 adds all-track/selected-track mode using the renderer's existing validated `trackIds`. Empty selection rejects without a project edit. Two sounding MIDI tracks establish that selected-track source PCM SHA-256 differs from the all-track source, and selected-track rendering also passes the locator-range/import/Undo path. Targeted GUI passed 8 steps, default E2E passed 40, native tests passed 106 and full verification passed 172 files. No arbitrary track IDs or executable paths were added; no listening or compatibility claim.
 - T-051 adds native-only bounded AUParameterTree inspection and exact-keyPath setting. Initial values are captured at instantiation; current/default/min/max metadata, no-instance/unknown/malformed/out-of-range errors and lifecycle are checked. On an available system effect, a changed parameter produced different PCM and two subsequent renders were identical. Targeted native tests passed 5, the native suite passed 107 and full verification passed 172 files. No server/GUI parameter route, custom plugin GUI, realtime automation, listening or broad compatibility claim.
 - T-052 connects parameter listing/setting to active-document/revision-guarded server routes and a generic numeric GUI. Server tests cover stale/malformed/unknown/out-of-range requests and actual readback without a project edit. GUI checks visible range rejection, valid readback, unchanged revision and a changed PCM hash on the next render; all prior scope/track/import/Undo checks still pass. Targeted GUI passed 10 steps, default E2E passed 40, native tests passed 107 and full verification passed 172 files. No custom plugin GUI, realtime automation, listening or compatibility claim.
+- T-053 enables validated `clipIds` for export as well as preview and exposes all/selected-clip mode in the Audio Unit dialog. Two new server tests verify selected PCM differs from all-clip PCM and empty/unknown/stale requests preserve the project. The GUI verifies empty selection, selected-only source identity, composition with selected track/locator scopes and processed import/Undo. Targeted GUI passed 12 steps, default E2E passed 40 and full verification passed 173 files. No listening, realtime hosting or compatibility claim.
 
 ## Problems encountered and resolved
 
@@ -198,3 +199,5 @@ T-050에서는 기존 렌더러의 검증된 `trackIds`를 사용한 모든 트�
 T-051에서는 native 전용으로 최대 256개 AUParameterTree 조회와 정확한 keyPath 설정을 추가했습니다. 인스턴스화 시 초기값을 저장하고 현재값·기본값·최소·최대 메타데이터, 인스턴스 부재·unknown·형식·범위 오류와 수명주기를 검사합니다. 사용 가능한 시스템 effect에서 변경 파라미터가 다른 PCM을 만들었고 이후 두 렌더의 해시가 일치했습니다. 대상 native 5개, 전체 native 107개, 제품 172개 파일이 통과했습니다. 서버/GUI 파라미터 경로, 사용자 정의 GUI, 실시간 오토메이션, 청음·광범위 호환성은 주장하지 않습니다.
 
 T-052에서는 활성 문서·revision 검증이 있는 서버 파라미터 경로와 범용 숫자 GUI를 연결했습니다. 서버 검사는 stale·형식·unknown·범위 오류와 프로젝트 변경 없는 실제 readback을 확인합니다. GUI는 범위 오류 표시, 유효 값 readback, revision 불변과 다음 렌더의 PCM 해시 변화를 검증하고 기존 범위·트랙·가져오기·Undo도 유지했습니다. 대상 GUI 10단계, 기본 E2E 40단계, native 107개, 전체 제품 172개 파일이 통과했습니다. 사용자 정의 플러그인 GUI·실시간 오토메이션·청음·호환성은 주장하지 않습니다.
+
+T-053에서는 검증된 `clipIds`를 preview뿐 아니라 export에도 허용하고 Audio Unit 대화상자에 모든 클립/선택 클립 모드를 추가했습니다. 새 서버 검사 2개는 선택 PCM과 전체 PCM의 차이와 빈·unknown·stale 요청의 프로젝트 보존을 확인합니다. GUI는 빈 선택, 선택 source identity, 선택 트랙·Locator와의 조합, 처리본 가져오기·Undo를 검증합니다. 대상 GUI 12단계, 기본 E2E 40단계, 전체 제품 173개 파일이 통과했습니다. 청음·실시간 호스팅·호환성은 주장하지 않습니다.

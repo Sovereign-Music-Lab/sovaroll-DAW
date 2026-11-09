@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T05:48:45.181Z",
+  "updatedAt": "2026-11-09T05:57:52.882Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1627,6 +1627,49 @@
       "startedAt": "2026-11-09T05:41:22.708Z",
       "evidence": "Targeted GUI E2E PASS: 10 steps including parameter range rejection, valid readback, unchanged project revision and changed PCM on the next offline render; all scope/track/import/Undo checks retained. Native server test covers stale/malformed/unknown/out-of-range guards and actual parameter state. Default E2E PASS: 40. npm run test:native: 107/107. npm run agent:verify:full and final agent:verify: VERIFY PASS with 172 product files. Generic numeric offline control only; no custom GUI, realtime automation, listening or compatibility claim.",
       "doneAt": "2026-11-09T05:48:45.180Z"
+    },
+    {
+      "status": "done",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-053",
+      "title": "Audio Unit offline processing for selected clips",
+      "size": "M",
+      "dependsOn": [
+        "T-052"
+      ],
+      "requirements": [
+        "FD-13",
+        "FD-15",
+        "FD-18"
+      ],
+      "goal": "Allow the Audio Unit offline dialog to restrict rendering to explicitly selected clips, combined with existing track and locator scopes, without changing default playback.",
+      "context": [
+        "The renderer already accepts clipIds but src/server.mjs currently restricts clip selection to preview:true.",
+        "public/app.mjs owns selectedClipIds; current Audio Unit track selection is independent.",
+        "Retain all-clip default and validate empty selection before creating a render job."
+      ],
+      "files": [
+        "src/server.mjs",
+        "public/audio-units.mjs",
+        "public/app.mjs",
+        "scripts/gui-audio-units-smoke.mjs",
+        "tests"
+      ],
+      "acceptance": [
+        "Selected-clip mode sends only current clip IDs through the shared validated renderer; empty selection and unknown/stale IDs fail without project changes.",
+        "Clip selection composes with selected tracks and whole/locator time ranges; default all-clip behavior remains unchanged.",
+        "Browser tests with at least two sounding clips verify selected-only source hash differs from all-clip source, processed import identity/position and one Undo; existing export/render tests pass.",
+        "Update bilingual evidence without listening, realtime hosting or plugin compatibility claims."
+      ],
+      "verify": [
+        "npm run agent:e2e -- scripts/gui-audio-units-smoke.mjs",
+        "npm run agent:e2e",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T05:49:11.016Z",
+      "evidence": "Targeted GUI E2E PASS: 12 steps including empty clip rejection, selected-only source hash, selected track/locator composition and processed import/Undo. New tests/render-export-clip-selection.test.mjs: 2/2 PASS for export PCM selection and empty/unknown/stale guards. Default E2E PASS: 40. npm run agent:verify:full and final agent:verify: VERIFY PASS with 173 product files. Native suite remains 107 PASS from T-052; no native code changed. No listening, realtime hosting or compatibility claim.",
+      "doneAt": "2026-11-09T05:57:52.882Z"
     }
   ]
 }
