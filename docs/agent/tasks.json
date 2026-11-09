@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T09:53:52.472Z",
+  "updatedAt": "2026-11-09T10:40:55.191Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2042,6 +2042,45 @@
       "startedAt": "2026-11-09T09:40:48.239Z",
       "evidence": "Actual system-instrument GUI E2E PASS 3 steps with outputGain=0: real-time Play, invalid-gain/stale/wrong-job preservation, Stop and project-edit cleanup with default transport/revision unchanged. Offline GUI 14, offline instrument 3, i18n 3 and default E2E 40 PASS. npm run test:native 110/110. Full and final verification PASS 174 product files; auxiliary FD-22 relation removed to keep acceptance IDs unique. No synchronization or low-latency claim.",
       "doneAt": "2026-11-09T09:53:52.472Z"
+    },
+    {
+      "status": "done",
+      "priority": 1,
+      "area": "native-audio",
+      "id": "T-064",
+      "title": "Shared host-time scheduled starts for native MIDI and audio",
+      "size": "L",
+      "dependsOn": [
+        "T-063"
+      ],
+      "goal": "Allow native MIDI transport and native audio preview to accept an explicit shared mach-uptime start target while preserving existing default starts.",
+      "context": [
+        "CoreMIDI ActiveTransport currently assigns now+30ms internally; AVAudioPlayerNode can schedule buffers at hostTime.",
+        "Each helper must expose its current uptime so a server can compute one future target without assuming Node clock semantics.",
+        "This task provides primitives, not a synchronized server transport or low-latency claim."
+      ],
+      "files": [
+        "native/macos/midi-bridge.swift",
+        "native/macos/client.mjs",
+        "src/native-transport.mjs",
+        "native/macos/audio-bridge.swift",
+        "native/tests/transport.test.mjs",
+        "native/tests/audio-bridge.test.mjs"
+      ],
+      "acceptance": [
+        "Both helpers expose bounded current uptime and reject invalid/past/far-future targets with structured errors; omitted targets preserve current behavior.",
+        "MIDI scheduled events use the explicit target in actual CoreMIDI timestamps; audio buffer playback reports and honors the same target semantics.",
+        "Tests cover future scheduled starts and invalid targets while existing suites remain unchanged; no common-server-sync or latency-quality claim yet.",
+        "Bilingual validation records host-time evidence and the remaining synchronization coordinator work."
+      ],
+      "verify": [
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T10:34:32.183Z",
+      "blockedReason": "CoreMIDI explicit target worked (observed offsets 305500ns and 100320916ns), but AVAudioEngine scheduled audio remained status=playing after target and did not complete across scheduleBuffer(at:) and play(at:) attempts. After three audio failures restored all T-064 files from checkpoint 20261109T095527-xs4j; restored native 110/110 and full product 174 files PASS. Need an audio start/completion scheduling design with observed lifecycle before server synchronization.",
+      "evidence": "Resolved scheduled-audio blocker using cancellable DispatchTime start of a prepared buffer. Silent PCM actualStart>=target, completion and pre-start Stop cancellation passed; invalid/offline targets rejected. CoreMIDI explicit target actual offsets 201041ns and 100291791ns. npm run test:native 112/112. npm run agent:verify:full and final agent:verify PASS, 174 product files. Primitives only; no synchronized coordinator or low-latency claim. Final installed listening/latency is deferred to human session.",
+      "doneAt": "2026-11-09T10:40:55.191Z"
     }
   ]
 }

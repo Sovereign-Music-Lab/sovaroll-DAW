@@ -45,7 +45,7 @@ export async function openCoreMidi({testReceiver=false,timeoutMs=5000}={}){
  }
  return {events,pid:child.pid,build:meta,clock:{numer:readyInfo.timebaseNumer,denom:readyInfo.timebaseDenom},request,
   ports:()=>request('ports'),send:(destinationId,messages)=>request('send',{destinationId,messages}),release:destinationId=>request('release',{destinationId}),
-  transportStatus:()=>request('transport.status'),start:jobId=>request('transport.start',{jobId}),stop:(jobId,options={})=>request('transport.stop',{...options,jobId}),reset:input=>request('reset',input),
+  transportStatus:()=>request('transport.status'),start:(jobId,options={})=>request('transport.start',{jobId,...options}),stop:(jobId,options={})=>request('transport.stop',{...options,jobId}),reset:input=>request('reset',input),
   async close(){if(closing)return exited;if(failure){closing=true;child.kill('SIGTERM');return exited;}const pendingClose=request('close');closing=true;const response=await pendingClose;child.stdin.end();const result=await exited;if(result.code!==0)throw error('NATIVE_EXIT','CoreMIDI did not close cleanly');return {...response,...result};}
  };
 }

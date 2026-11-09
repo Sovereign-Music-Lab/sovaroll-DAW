@@ -55,3 +55,14 @@ test('native audio offline render preserves stereo PCM bytes',async t=>{
  const rate=44100,left=Float32Array.from({length:441},(_,i)=>.3*Math.sin(i*.07)),right=Float32Array.from({length:441},(_,i)=>-.15*Math.cos(i*.11));
  await renderAndRead(t,encodeWav({sampleRate:rate,channels:[left,right]}));
 });
+
+test('native audio device preview honors explicit future host-time start with silent PCM',async t=>{
+ const h=await helper(t),rate=48000,channel=Float32Array.from({length:4800},()=>0),file=path.join(h.directory,'silent.wav');await fs.writeFile(file,encodeWav({sampleRate:rate,channels:[channel]}));await h.next(event=>event.event==='ready');
+ h.send({command:'clock.now'});const clock=await h.next(event=>event.event==='clock'),now=BigInt(clock.uptimeNs),target=now+200000000n;
+ h.send({command:'play',path:file,allowDefaultOutput:true,startAtUptimeNs:0});assert.equal((await h.next(event=>event.event==='error')).code,'INVALID_START_TIME');
+ h.send({command:'play',path:file,offline:true,startAtUptimeNs:Number(target)});assert.equal((await h.next(event=>event.event==='error')).code,'START_AT_OFFLINE');
+ h.send({command:'play',path:file,allowDefaultOutput:true,startAtUptimeNs:Number(target)});const playing=await h.next(event=>['playing','error'].includes(event.event));assert.equal(playing.event,'playing',JSON.stringify(playing));assert.equal(playing.startedUptimeNs,target.toString());
+ const started=await h.next(event=>event.event==='started'&&event.jobId===playing.jobId);assert.ok(BigInt(started.actualStartUptimeNs)>=target);
+ const completed=await h.next(event=>event.event==='completed'&&event.jobId===playing.jobId);assert.equal(completed.status,'completed');h.send({command:'status'});const status=await h.next(event=>event.event==='status');assert.equal(status.playing,false);assert.equal(status.status,'completed');
+ h.send({command:'clock.now'});const secondClock=await h.next(event=>event.event==='clock'),secondTarget=BigInt(secondClock.uptimeNs)+200000000n;h.send({command:'play',path:file,allowDefaultOutput:true,startAtUptimeNs:Number(secondTarget)});const scheduled=await h.next(event=>event.event==='playing');h.send({command:'stop'});const stopped=await h.next(event=>event.event==='stopped'&&event.jobId===scheduled.jobId);assert.equal(stopped.status,'stopped');await new Promise(resolve=>setTimeout(resolve,350));h.send({command:'status'});const cancelled=await h.next(event=>event.event==='status');assert.equal(cancelled.playing,false);assert.equal(cancelled.status,'stopped');
+});

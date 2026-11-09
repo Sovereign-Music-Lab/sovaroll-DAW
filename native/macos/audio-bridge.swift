@@ -72,18 +72,22 @@ func pcmBytes(_ buffer: AVAudioPCMBuffer, channels: Int) -> Data {
     return data
 }
 struct ActiveAudio {
-    let id: String, engine: AVAudioEngine, player: AVAudioPlayerNode, wave: WaveInput
+    let id: String, engine: AVAudioEngine, player: AVAudioPlayerNode, wave: WaveInput, startAtUptimeNs: UInt64?
+    init(id: String, engine: AVAudioEngine, player: AVAudioPlayerNode, wave: WaveInput, startAtUptimeNs: UInt64? = nil) { self.id = id; self.engine = engine; self.player = player; self.wave = wave; self.startAtUptimeNs = startAtUptimeNs }
 }
 var active: ActiveAudio? = nil
+var scheduledAudioStart: DispatchWorkItem? = nil
 var lastStatus = "idle"
 var lastJob: String? = nil
 func stopAudio() {
     guard let current = active else { return }
+    scheduledAudioStart?.cancel(); scheduledAudioStart = nil
     current.player.stop(); current.engine.stop(); active = nil; lastStatus = "stopped"; lastJob = current.id
     emit(["event": "stopped", "jobId": current.id, "status": lastStatus])
 }
 func completeAudio(_ id: String, _ metadata: [String: Any] = [:]) {
     guard active?.id == id else { return }
+    scheduledAudioStart?.cancel(); scheduledAudioStart = nil
     active?.player.stop(); active?.engine.stop(); active = nil; lastStatus = "completed"; lastJob = id
     emit(metadata.merging(["event": "completed", "jobId": id, "status": lastStatus]) { _, new in new })
 }
@@ -100,22 +104,32 @@ func renderOffline(_ current: ActiveAudio) throws {
     let digest = SHA256.hash(data: rendered).map { String(format: "%02x", $0) }.joined()
     completeAudio(current.id, ["frames": current.wave.frames, "sampleRate": current.wave.sampleRate, "channels": current.wave.channels, "pcmSha256": digest, "offline": true])
 }
-func playAudio(_ path: String, offline: Bool, allowDefaultOutput: Bool) throws {
+func playAudio(_ path: String, offline: Bool, allowDefaultOutput: Bool, startAtUptimeNs: UInt64? = nil) throws {
     guard active == nil else { try fail("ALREADY_PLAYING", "Stop the current native audio preview first") }
     if !offline && !allowDefaultOutput { throw AudioError(code: "OUTPUT_REQUIRED", message: "Native device playback requires explicit allowDefaultOutput=true") }
+    if offline && startAtUptimeNs != nil { throw AudioError(code: "START_AT_OFFLINE", message: "Scheduled host-time start is only available for device playback") }
+    if let target = startAtUptimeNs { let now = DispatchTime.now().uptimeNanoseconds; guard target >= now && target <= now + 60_000_000_000 else { throw AudioError(code: "INVALID_START_TIME", message: "startAtUptimeNs must be between now and 60 seconds in the future") } }
     let wave = try readWave(path)
     let engine = AVAudioEngine(), player = AVAudioPlayerNode(); engine.attach(player); engine.connect(player, to: engine.mainMixerNode, format: wave.format)
     let id = UUID().uuidString
-    active = ActiveAudio(id: id, engine: engine, player: player, wave: wave); lastStatus = "playing"; lastJob = id
-    emit(["event": "playing", "jobId": id, "status": lastStatus, "offline": offline])
+    active = ActiveAudio(id: id, engine: engine, player: player, wave: wave, startAtUptimeNs: startAtUptimeNs); lastStatus = "playing"; lastJob = id
+    emit(["event": "playing", "jobId": id, "status": lastStatus, "offline": offline, "startedUptimeNs": startAtUptimeNs == nil ? NSNull() : String(startAtUptimeNs!)])
     if offline {
         do { try renderOffline(ActiveAudio(id: id, engine: engine, player: player, wave: wave)) }
         catch { if active?.id == id { active = nil; lastStatus = "failed"; lastJob = id }; throw error }
     } else {
         do {
             let buffer = try samples(wave)
+            try engine.start()
             player.scheduleBuffer(buffer, at: nil, options: [], completionHandler: { DispatchQueue.main.async { completeAudio(id) } })
-            try engine.start(); player.play()
+            if let target = startAtUptimeNs {
+                let start = DispatchWorkItem {
+                    guard active?.id == id else { return }
+                    scheduledAudioStart = nil; player.play(); lastStatus = "playing"
+                    emit(["event": "started", "jobId": id, "status": "playing", "actualStartUptimeNs": String(DispatchTime.now().uptimeNanoseconds)])
+                }
+                scheduledAudioStart = start; DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: target), execute: start)
+            } else { player.play() }
         } catch { active = nil; lastStatus = "failed"; lastJob = id; throw error }
     }
 }
@@ -126,11 +140,16 @@ func boolValue(_ value: Any?, _ name: String) throws -> Bool {
 func handle(_ object: [String: Any]) throws {
     guard let command = object["command"] as? String else { try fail("INVALID_REQUEST", "Missing command") }
     if command == "play" {
-        guard Set(object.keys).isSubset(of: ["command", "path", "offline", "allowDefaultOutput"]) else { try fail("INVALID_REQUEST", "Unknown play fields") }
+        guard Set(object.keys).isSubset(of: ["command", "path", "offline", "allowDefaultOutput", "startAtUptimeNs"]) else { try fail("INVALID_REQUEST", "Unknown play fields") }
         guard let path = object["path"] as? String else { try fail("INVALID_PATH", "Missing WAV path") }
         let offline = try object["offline"] == nil ? false : boolValue(object["offline"], "offline")
         let allowDefaultOutput = try object["allowDefaultOutput"] == nil ? false : boolValue(object["allowDefaultOutput"], "allowDefaultOutput")
-        try playAudio(path, offline: offline, allowDefaultOutput: allowDefaultOutput)
+        var startAtUptimeNs: UInt64? = nil
+        if object["startAtUptimeNs"] != nil { guard let value = object["startAtUptimeNs"] as? NSNumber, CFGetTypeID(value) != CFBooleanGetTypeID(), value.doubleValue.isFinite, value.doubleValue.rounded() == value.doubleValue, value.doubleValue >= 0 else { throw AudioError(code: "INVALID_START_TIME", message: "startAtUptimeNs must be a nonnegative integer") }; startAtUptimeNs = value.uint64Value }
+        try playAudio(path, offline: offline, allowDefaultOutput: allowDefaultOutput, startAtUptimeNs: startAtUptimeNs)
+    } else if command == "clock.now" {
+        guard Set(object.keys) == ["command"] else { throw AudioError(code: "INVALID_REQUEST", message: "Unknown clock fields") }
+        emit(["event": "clock", "uptimeNs": String(DispatchTime.now().uptimeNanoseconds)])
     } else if command == "stop" {
         guard Set(object.keys) == ["command"] else { try fail("INVALID_REQUEST", "Unknown stop fields") }
         if active == nil { emit(["event": "stopped", "status": "unchanged"]) } else { stopAudio() }

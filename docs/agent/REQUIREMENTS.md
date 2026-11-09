@@ -87,3 +87,4 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | — | Audio Unit 컨트롤·범위·파라미터 메타데이터·동작 상태의 한국어/영어 전환과 유지 | verified (구성요소 이름·keyPath·서버 오류 원본 유지, revision 불변) | `scripts/gui-audio-units-i18n-smoke.mjs` 3단계, T-061 검증 기록 |
 | — | 명시적 출력의 native Audio Unit 악기 실시간 MIDI Play/Stop/완료, 중복 거부·held-note 정리·release | verified (outputGain=0 실제 엔진 경로; server/GUI·동기화·지연 품질 제외) | `Audio Unit instrument real-time MIDI playback owns silent completion Stop and held-note cleanup`, native 110/110, T-062 |
 | — | 서버/GUI 선택 MIDI의 실시간 악기 재생·출력 게인·wrong/stale 거부·프로젝트 편집 정리 | verified (실제 악기 outputGain=0; native MIDI 동기화·지연 측정 제외) | `scripts/gui-audio-unit-instrument-playback-smoke.mjs` 3단계, T-063 검증 기록 |
+| — | native MIDI·오디오 공통 host-time 예약 시작 primitive; 오디오 예약 취소·실제 시작·완료 | verified (서버 coordinator·샘플 정확도·저지연 주장 제외) | native MIDI/audio scheduled-start 검사, native 112/112, T-064 |

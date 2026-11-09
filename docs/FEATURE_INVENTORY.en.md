@@ -14,10 +14,10 @@ The following counts are different structural dimensions. **Do not add them toge
 |---|---:|---|
 | Engine commands | 144 | Unique command entries parsed from `src/core/schema.mjs` |
 | Literal API route strings | 92 | Unique `/api/` strings in `src/server.mjs`; not a complete HTTP route taxonomy |
-| Native helper commands | 17 | Commands across the MIDI, audio and Audio Unit Swift helpers |
+| Native helper commands | 19 | Commands across the MIDI, audio and Audio Unit Swift helpers |
 | Literal UI IDs | 865 | Per-file IDs in the HTML/public modules; includes duplicates across files and IDs that are not features |
 | Declared product tests | 1,518 | Test declarations in 174 product test files; loops and runtime conditions can change execution count |
-| Declared native tests | 110 | Current native test declarations |
+| Declared native tests | 112 | Current native test declarations |
 | GUI check IDs | 764 | Literal check IDs in GUI scripts; some scripts have conditional or environment-limited paths |
 | Product acceptance IDs | 30 | Stable FD-01–FD-30 identifiers, retained by the public guard |
 
@@ -30,7 +30,7 @@ The following counts are different structural dimensions. **Do not add them toge
 | Audio recording/editing | WAV/AIFF import, recording and non-destructive edits tested | Fake-device browser tests are not physical microphone quality/latency checks |
 | Mixing/export | Internal mixer, mix/stem/MIDI/bundle paths tested | Advanced mastering and full routing parity are not claimed |
 | Native MIDI | macOS routing, timing, Chase and reset lifecycle tested with virtual endpoints | No cross-platform backend claim |
-| Native audio | Optional job-based AVAudioEngine preview | No low-latency engine or synchronized native-MIDI/audio transport claim |
+| Native audio | Optional job-based AVAudioEngine preview plus cancellable host-time scheduled starts | No low-latency engine or synchronized native-MIDI/audio transport claim |
 | Audio Unit effects | Explicit discovery/instantiation, numeric parameters, selected scope, offline WAV/import and preview controls | Tested with available system components; no general third-party compatibility claim |
 | Audio Unit instruments | Selected MIDI clips render through a fresh native instrument instance into editable audio clips with Undo; native real-time MIDI playback has lifecycle coverage with zero output gain | No realtime instrument MIDI hosting or broad third-party compatibility claim |
 | Languages/accessibility | Primary workspace Korean/English switching | Advanced dialogs and complete accessibility are unfinished |

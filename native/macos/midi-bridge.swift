@@ -192,7 +192,7 @@ final class PreparedTransport {
 final class ActiveTransport {
     let plan: PreparedTransport, started: UInt64
     var cursor = 0, maxLateness: UInt64 = 0
-    init(_ plan: PreparedTransport) { self.plan = plan; started = DispatchTime.now().uptimeNanoseconds + 30_000_000 }
+    init(_ plan: PreparedTransport, startAtUptimeNs: UInt64? = nil) { self.plan = plan; started = startAtUptimeNs ?? DispatchTime.now().uptimeNanoseconds + 30_000_000 }
 }
 var preparedTransport: PreparedTransport?, activeTransport: ActiveTransport?
 var seenTransportIDs: Set<String> = []
@@ -311,7 +311,13 @@ func transportAction(_ action: String, _ request: [String: Any]) throws -> [Stri
             guard try destination(dest) == endpoint else { try fail("DESTINATION_REPLACED", "Prepared endpoint was replaced") }
             guard usedChannels[dest]?.isEmpty ?? true else { try fail("NATIVE_OWNED_NOTES", "Release manually sent MIDI before transport starts") }
         }
-        activeTransport = ActiveTransport(draft); preparedTransport = nil
+        let now = DispatchTime.now().uptimeNanoseconds
+        if request["startAtUptimeNs"] != nil {
+            let target = UInt64(try exactInt(request["startAtUptimeNs"], 0, Int64.max, "startAtUptimeNs"))
+            guard target >= now && target <= now + 60_000_000_000 else { try fail("INVALID_START_TIME", "startAtUptimeNs must be between now and 60 seconds in the future") }
+            activeTransport = ActiveTransport(draft, startAtUptimeNs: target)
+        } else { activeTransport = ActiveTransport(draft) }
+        preparedTransport = nil
         let timer = DispatchSource.makeTimerSource(flags: .strict, queue: .main); transportTimer = timer
         timer.setEventHandler { pumpTransport() }; armTransport(); timer.resume()
         let result = transportStatus(); emit(["event": "transport", "transport": result]); return result
@@ -374,11 +380,12 @@ func shutdown() {
 }
 func handle(_ request: [String: Any]) throws -> [String: Any] {
     guard let action = request["action"] as? String else { try fail("INVALID_REQUEST", "Missing action") }
-    let allowed: [String: Set<String>] = ["transport.prepare": ["jobId", "durationNs", "eventCount", "destinations", "resetPreferences"], "transport.append": ["jobId", "events"], "transport.start": ["jobId"], "transport.stop": ["jobId", "reason", "resetPreferences"], "transport.discard": ["jobId"], "transport.status": [], "reset": ["reason", "preferences", "destinations", "expectedJobId", "expectedPreparedJobId"], "ports": [], "send": ["destinationId", "messages"], "release": ["destinationId"], "close": [], "test.createReceiver": ["name"], "test.removeReceiver": ["name"]]
+    let allowed: [String: Set<String>] = ["transport.prepare": ["jobId", "durationNs", "eventCount", "destinations", "resetPreferences"], "transport.append": ["jobId", "events"], "transport.start": ["jobId", "startAtUptimeNs"], "transport.stop": ["jobId", "reason", "resetPreferences"], "transport.discard": ["jobId"], "transport.status": [], "reset": ["reason", "preferences", "destinations", "expectedJobId", "expectedPreparedJobId"], "ports": [], "send": ["destinationId", "messages"], "release": ["destinationId"], "close": [], "clock.now": [], "test.createReceiver": ["name"], "test.removeReceiver": ["name"]]
     guard let keys = allowed[action], Set(request.keys).subtracting(keys.union(["requestId", "action"])).isEmpty else { try fail("INVALID_REQUEST", "Unknown action or keys") }
     if action.hasPrefix("transport.") { return try transportAction(action, request) }
     switch action {
     case "reset": return try resetAction(request)
+    case "clock.now": return ["uptimeNs": String(DispatchTime.now().uptimeNanoseconds)]
     case "ports":
         let sources = (0..<MIDIGetNumberOfSources()).compactMap { endpointInfo(MIDIGetSource($0), "input") }
         let destinations = (0..<MIDIGetNumberOfDestinations()).compactMap { endpointInfo(MIDIGetDestination($0), "output") }
