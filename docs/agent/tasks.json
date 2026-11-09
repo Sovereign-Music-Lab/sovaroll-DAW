@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T01:58:39.032Z",
+  "updatedAt": "2026-11-09T02:04:22.510Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1122,7 +1122,7 @@
       "doneAt": "2026-11-09T01:58:39.031Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "project",
       "id": "T-038",
@@ -1144,7 +1144,10 @@
       "verify": [
         "npm run agent:e2e",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-09T01:58:55.610Z",
+      "evidence": "New gui-auto-backup-recovery-smoke E2E PASS, 4 steps: GUI original track, backup creation/listing, independent CLI recover-backup, GUI open recovered project with original track/clip. Original project bytes unchanged and files isolated. Default agent:e2e PASS 39 steps; agent:verify VERIFY PASS. agent:map updated; FD-04 evidence recorded.",
+      "doneAt": "2026-11-09T02:04:22.509Z"
     },
     {
       "status": "todo",

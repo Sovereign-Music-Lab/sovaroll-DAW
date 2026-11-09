@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-037 are done; T-038–T-039 continue acceptance coverage. Real-device observations remain human work.
+Updated: 2026-11-09. T-001–T-038 are done; T-039 continues recording-assistance coverage. Real-device observations remain human work.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,7 +28,8 @@ Updated: 2026-11-09. T-001–T-037 are done; T-038–T-039 continue acceptance c
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 39 steps passed on 2026-11-09, including recording panel, fade-in/out, audio controls, cycle, quantize/transpose/velocity, keyboard history and ruler Snap/Alt coverage. Fake microphone; no physical listening claim.
-- T-001–T-037 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- T-001–T-038 `agent:verify`: VERIFY PASS. T-012 also ran its related long-project integration file (2 tests); earlier GUI-only changes had no related unit test file.
+- T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
 - Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
 - T-013 added six-step bilingual manual hardware checklist with empty result columns; no physical-device result claimed.
 - T-017–T-035: all 19 failed-smoke follow-ups completed individually; details and exact step counts are in docs/VALIDATION.md.
@@ -49,7 +50,7 @@ Updated: 2026-11-09. T-001–T-037 are done; T-038–T-039 continue acceptance c
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-037 are done with evidence in docs/VALIDATION.md. Continue with T-038 recovery and T-039 recording-assistance E2E, then add scoped follow-ups for newly discovered work.
+- T-001–T-038 are done with evidence in docs/VALIDATION.md. Continue with T-039 recording-assistance E2E, then add scoped follow-ups for newly discovered work.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

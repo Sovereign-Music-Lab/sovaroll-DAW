@@ -193,6 +193,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 |---|---:|---:|---|
 | build-native-midi.mjs | 16 | 248 |  |
 | check.mjs | 9 | 208 |  |
+| gui-auto-backup-recovery-smoke.mjs | 64 | 213 |  |
 | gui-chase-settings-smoke.mjs | 46 | 1165 |  |
 | gui-controller-bend-smoke.mjs | 59 | 1166 |  |
 | gui-controller-fidelity-smoke.mjs | 85 | 1603 |  |
@@ -207,7 +208,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-editing-smoke.mjs | 77 | 1399 |  |
 | gui-editor-geometry-smoke.mjs | 78 | 624 |  |
 | gui-event-time-smoke.mjs | 42 | 1006 |  |
-| gui-first-delivery-smoke.mjs | 310 | 388 |  |
+| gui-first-delivery-smoke.mjs | 334 | 388 |  |
 | gui-formatted-time-smoke.mjs | 42 | 867 |  |
 | gui-inspector-time-smoke.mjs | 45 | 1306 |  |
 | gui-locations-smoke.mjs | 108 | 1393 |  |

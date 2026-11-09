@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-037 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-038 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -59,6 +59,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-010 records the maintainer's explicit Snap decision before code. Ruler clicks now snap through the current primary/piano grid, while Alt/Option preserves exact position. The default E2E passed 37 steps, including `playback.GUI-ruler-click-snap-and-alt-override` on both rulers and the Alt path; final `npm run agent:verify` passed.
 - T-036 adds `audio.GUI-fade-out-changes-render`: Inspector 0.5-second fade-out is checked in asset frames, CLI-rendered ending RMS decreases against the matching baseline and attenuates more than the fade's beginning, and Undo removes it. The default E2E passed 38 steps and final `npm run agent:verify` passed. FD-20 is now verified for fade-in/out, mute, polarity and normalize within the tested scope.
 - T-037 adds `midi.GUI-tools-quantize`: a known off-grid note at tick 25 is quantized to 0 using the selection's 1/16 grid, note count is unchanged, and Undo restores tick 25. The default E2E passed 39 steps and final `npm run agent:verify` passed. FD-14 now has first-delivery coverage for quantize, transpose and velocity.
+- T-038 adds `scripts/gui-auto-backup-recovery-smoke.mjs`: 4 steps pass for GUI track creation, GUI backup/listing, independent CLI `recover-backup` and opening the recovered project through the GUI with the original track/clip. Original project bytes stay unchanged and all files use a temporary folder. The default 39-step E2E and final `npm run agent:verify` passed. FD-04 evidence now covers this supported recovery path.
 
 ## Problems encountered and resolved
 
@@ -153,3 +154,5 @@ T-010에서는 관리자의 Snap 결정을 코드보다 먼저 기록했습니�
 T-036에서는 `audio.GUI-fade-out-changes-render`를 추가해 Inspector 0.5초 페이드 아웃의 자산 프레임 변환, CLI 렌더의 종료 RMS 감소와 시작보다 큰 감쇠, Undo 제거를 확인했습니다. 기본 E2E 38단계와 최종 verify가 통과했습니다. FD-20은 검사한 범위에서 페이드 인/아웃·뮤트·극성·노멀라이즈가 모두 verified입니다.
 
 T-037에서는 `midi.GUI-tools-quantize`를 추가해 tick 25의 off-grid 노트를 선택 범위 1/16 그리드로 0에 퀀타이즈하고, 노트 수 유지와 Undo로 tick 25 복원을 확인했습니다. 기본 E2E 39단계와 최종 verify가 통과했습니다. FD-14는 퀀타이즈·전조·벨로시티를 모두 첫 납품에서 검증했습니다.
+
+T-038에서는 자동백업 복구 스모크 4단계가 통과했습니다. GUI 트랙 생성·백업·목록 확인, 독립된 CLI `recover-backup`, 복구 프로젝트를 GUI로 열어 원래 트랙·클립을 확인했습니다. 원본 프로젝트 바이트는 변하지 않고 모든 파일은 임시 폴 낸에 있습니다. 기본 E2E 39단계와 최종 verify가 통과했으며 FD-04의 지원 경로를 기록했습니다.

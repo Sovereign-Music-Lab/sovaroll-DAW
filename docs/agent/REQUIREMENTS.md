@@ -15,7 +15,7 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 | FD-01 | 새 프로젝트 생성 | CLI `init PATH` 또는 GUI 프로젝트 창 → 새 프로젝트로 빈 프로젝트가 열린다 | verified (CLI init + GUI 열림 + GUI 새 Untitled 생성) | E2E: `project.new-empty-project-opens-in-GUI`, `scripts/gui-new-project-delivery-smoke.mjs`: `project.GUI-create-new-Untitled`, tests/project-drafts·workspace 테스트 |
 | FD-02 | 명시 저장 | Cmd/Ctrl+S 또는 CLI `save`로 저장 기준이 갱신된다 | verified | E2E: `project.explicit-save-restart-reopen-same-content` |
 | FD-03 | 재시작 후 재열기 | 서버 종료 → 재시작 후 트랙·클립·에셋이 동일하고 편집·Undo가 된다 | verified | E2E: `project.explicit-save-restart-reopen-same-content`, `midi.edit-and-undo-after-restart` |
-| FD-04 | 자동 백업·복구 | 비정상 종료 뒤 복구 목록에서 이어서 작업 | implemented (단위·통합 테스트 있음, 첫 납품 E2E 미포함) | tests/auto-backup, process-recovery |
+| FD-04 | 자동 백업·복구 | 비정상 종료 뒤 복구 목록에서 이어서 작업 | verified (GUI 백업 + CLI 독립 복구 + GUI 열기) | `scripts/gui-auto-backup-recovery-smoke.mjs`, tests/auto-backup, process-recovery |
 | FD-05 | 미디어 보존 | 편집 후에도 원본 WAV 바이트가 바뀌지 않는다 | verified | E2E: `audio.source-WAV-preserved-after-edits` |
 
 ### B. MIDI 편집
@@ -66,5 +66,5 @@ E2E = `scripts/gui-first-delivery-smoke.mjs` (실행: `npm run agent:e2e`). 표�
 ### 첫 납품 판정
 
 - 핵심 흐름(FD-01~03, 05~13, 15~19, 22~25, 26~30)은 **자동 검증 통과** 상태입니다. FD-20은 페이드 인·클립 뮤트·극성·노멀라이즈도 검증했습니다 (E2E 39단계, 2026-11-09).
-- 남은 것: FD-04·21의 E2E 보강(작업 큐 T-038~T-039), 실제 장치 청음·지연 확인(manual, 사람이 해야 함).
+- 남은 것: FD-21의 E2E 보강(작업 큐 T-039), 실제 장치 청음·지연 확인(manual, 사람이 해야 함).
 - "첫 납품 완료"라고 공식 표기하는 결정은 **사람이** 합니다. 에이전트는 근거를 쌓고 이 표를 갱신합니다.
