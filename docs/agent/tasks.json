@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T00:01:15.793Z",
+  "updatedAt": "2026-11-09T00:04:12.462Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1000,7 +1000,7 @@
       "doneAt": "2026-11-09T00:01:15.792Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 4,
       "area": "test-reliability",
       "id": "T-034",
@@ -1023,7 +1023,10 @@
       "verify": [
         "npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs",
         "npm run agent:verify"
-      ]
+      ],
+      "startedAt": "2026-11-09T00:02:10.288Z",
+      "evidence": "Reproduced closed-menu timeout. Opened arrangement-edit-menu before all clip-tools actions, preserving split and preference assertions. npm run agent:e2e -- scripts/gui-split-settings-smoke.mjs: E2E PASS, 6 steps. npm run agent:verify: VERIFY PASS. No product code changed; docs/VALIDATION.md updated.",
+      "doneAt": "2026-11-09T00:04:12.461Z"
     },
     {
       "status": "todo",
