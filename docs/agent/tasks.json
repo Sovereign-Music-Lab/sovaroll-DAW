@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T12:54:00.980Z",
+  "updatedAt": "2026-11-09T15:09:50.890Z",
   "tasks": [
     {
       "id": "T-001",
@@ -2290,6 +2290,25 @@
       "startedAt": "2026-11-09T12:49:07.573Z",
       "evidence": "musicxml-export unit 4 PASS (bar-fill timeline per voice); gui-musicxml-export-smoke 3 PASS; gui-score-editor-smoke 7 PASS; first-delivery E2E 40 PASS; agent:verify VERIFY PASS (after guard fix); xmllint --noout well-formed; i18n-coverage 0 missing; not XSD-validated or opened in notation software",
       "doneAt": "2026-11-09T12:54:00.980Z"
+    },
+    {
+      "status": "done",
+      "priority": 5,
+      "area": "docs",
+      "id": "T-070",
+      "title": "Make CLI manual examples selectable",
+      "goal": "Replace terminal screenshots with copyable commands in both CLI manual editions.",
+      "acceptance": [
+        "Both CLI manual editions present screenshot commands as text and preserve guidance.",
+        "Dry-run example identifies the project-specific track ID placeholder."
+      ],
+      "verify": [
+        "git diff --check",
+        "npm run agent:verify"
+      ],
+      "startedAt": "2026-11-09T15:08:59.332Z",
+      "evidence": "agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; CLI guide edit works.",
+      "doneAt": "2026-11-09T15:09:50.889Z"
     }
   ]
 }

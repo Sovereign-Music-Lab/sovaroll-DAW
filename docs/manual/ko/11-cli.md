@@ -15,15 +15,11 @@ CLI가 *꼭* 필요하지는 않습니다. 궁금하다면 이 장이 첫 명령
 
 ## 11.2 내장 안내(서버 없이 동작)
 
-![npm run cli -- guide](../images/cli/01-guide.jpg)
-
 ```sh
 npm run cli -- guide          # 매일의 루틴과 주제
 npm run cli -- guide edit     # 주제 하나: start, projects, edit, time, import, export, save, media, native, all
 npm run cli -- --help         # 모든 명령
 ```
-
-![안내 주제](../images/cli/09-guide-edit.jpg)
 
 ## 11.3 매일의 루틴
 
@@ -37,8 +33,6 @@ npm run cli -- --help         # 모든 명령
 | 내보내기 | `npm run cli -- render mix.wav` · `npm run cli -- export-midi song.mid` |
 | 백업 | `npm run cli -- export-bundle backup.zip` |
 
-![npm run cli -- document](../images/cli/02-document.jpg)
-
 ## 11.4 편집 명령을 안전하게
 
 모든 편집은 JSON 인자를 받는 이름 있는 **명령**입니다. 인자 규칙과 함께 목록을 봅니다.
@@ -47,13 +41,12 @@ npm run cli -- --help         # 모든 명령
 npm run cli -- commands
 ```
 
-먼저 `--dry-run`으로 시험하세요. SovaRoll이 완전히 검사하고 무엇이 *바뀔지* 알려 주지만 아무것도 바꾸지 않습니다.
-
-![dry-run](../images/cli/04-dry-run.jpg)
+먼저 `--dry-run`으로 시험하세요. SovaRoll이 완전히 검사하고 무엇이 *바뀔지* 알려 주지만 아무것도 바꾸지 않습니다. 아래 `TRACK_ID`와 `CLIP_ID`는 실제 프로젝트의 ID로 바꿔야 합니다.
 
 ```sh
 npm run cli -- command track.add '{"type":"midi","name":"Strings"}' --dry-run
 npm run cli -- command track.add '{"type":"midi","name":"Strings"}'
+npm run cli -- command track.update '{"trackId":"TRACK_ID","gainDb":-6}' --dry-run
 npm run cli -- command track.update '{"trackId":"TRACK_ID","gainDb":-6}'
 npm run cli -- command midi.notes.transpose '{"clipId":"CLIP_ID","semitones":2}'
 ```
@@ -68,8 +61,6 @@ npm run cli -- command midi.notes.transpose '{"clipId":"CLIP_ID","semitones":2}'
 
 ## 11.5 가져오기와 이력
 
-![CLI로 가져오기](../images/cli/10-import.jpg)
-
 ```sh
 npm run cli -- import voice.wav --at-sample 48000      # 1초 위치(48 kHz 프로젝트)
 npm run cli -- import song.mid --midi-tempo preserve
@@ -77,13 +68,7 @@ npm run cli -- import-many a.wav b.wav --placement serial
 npm run cli -- history
 ```
 
-![터미널의 편집 이력](../images/cli/07-history.jpg)
-
 ## 11.6 내보내기
-
-![렌더](../images/cli/05-render.jpg)
-
-![MIDI 내보내기](../images/cli/06-export-midi.jpg)
 
 ```sh
 npm run cli -- render mix.wav                       # 전체 곡 + 꼬리
@@ -110,17 +95,14 @@ npm run cli -- assets                 # 미디어 파일 검증
 
 ## 11.8 마커·시간 등
 
-![터미널의 마커](../images/cli/03-markers.jpg)
-
 ```sh
+npm run cli -- markers
 npm run cli -- markers '{"sortBy":"name"}'
 npm run cli -- time-convert '{"tick":3840}'
 npm run cli -- tap-tempo '{"tapTimesMs":[0,625,1250,1875]}' --dry-run
 ```
 
 모든 옵션의 전체 참고는 [CLI 가이드](../../CLI-GUIDE.ko.md)와 [CLI 레퍼런스](../../CLI.md), 그리고 언제나 `npm run cli -- --help`에 있습니다.
-
-![모든 명령](../images/cli/08-help.jpg)
 
 ---
 [← 10. 내보내기](10-export.md) · 다음: [12. 참고 자료 →](12-reference.md)

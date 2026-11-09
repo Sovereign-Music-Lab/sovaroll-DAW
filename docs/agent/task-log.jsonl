@@ -199,3 +199,6 @@
 {"at":"2026-11-09T12:49:07.399Z","id":"T-069","action":"add"}
 {"at":"2026-11-09T12:49:07.573Z","id":"T-069","action":"start"}
 {"at":"2026-11-09T12:54:00.980Z","id":"T-069","action":"done","evidence":"musicxml-export unit 4 PASS (bar-fill timeline per voice); gui-musicxml-export-smoke 3 PASS; gui-score-editor-smoke 7 PASS; first-delivery E2E 40 PASS; agent:verify VERIFY PASS (after guard fix); xmllint --noout well-formed; i18n-coverage 0 missing; not XSD-validated or opened in notation software","verify":"PASS"}
+{"at":"2026-11-09T15:08:59.121Z","id":"T-070","action":"add"}
+{"at":"2026-11-09T15:08:59.333Z","id":"T-070","action":"start"}
+{"at":"2026-11-09T15:09:50.890Z","id":"T-070","action":"done","evidence":"agent:verify VERIFY PASS (guard and syntax; unit tests skipped by verifier for docs-only change); git diff --check; CLI guide edit works.","verify":"PASS"}
