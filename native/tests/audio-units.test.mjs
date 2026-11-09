@@ -31,3 +31,21 @@ test('Audio Unit selection validates identity and never instantiates plugin code
   h.send({command:'status'});const status=await h.next(event=>event.event==='status');assert.equal(status.selected,id);assert.equal(status.instantiated,false);
  }else assert.equal(list.availableCount,0,'An empty host still exposes safe discovery without executing plugin code');
 });
+
+test('Audio Unit offline instantiation requires explicit intent and releases the exact component',async t=>{
+ const fourCC=value=>[...value].reduce((result,char)=>(result*256+char.charCodeAt(0))>>>0,0);
+ const h=await helper(t);await h.next(event=>event.event==='ready');h.send({command:'list'});
+ const list=await h.next(event=>event.event==='list'),effect=list.components.find(component=>component.type===fourCC('aufx'));
+ h.send({command:'instantiate',id:'not-present',offline:true});const missing=await h.next(event=>event.event==='error');assert.equal(missing.code,'AUDIO_UNIT_NOT_FOUND');
+ const id=effect?.id??'not-present';h.send({command:'instantiate',id,offline:false});const offline=await h.next(event=>event.event==='error');assert.equal(offline.code,'OFFLINE_REQUIRED');
+ if(effect){
+  h.send({command:'instantiate',id:effect.id,offline:true});const result=await h.next(event=>['instantiated','error'].includes(event.event));
+  if(result.event==='error'){
+   assert.equal(result.code,'INSTANTIATION_FAILED');assert.ok(result.message);console.log(JSON.stringify({status:'environment-limited',code:result.code,message:result.message}));
+  }else{
+   assert.equal(result.component.id,effect.id);assert.equal(result.offline,true);assert.ok(result.inputChannels>0);assert.ok(result.outputChannels>0);
+   h.send({command:'status'});const active=await h.next(event=>event.event==='status');assert.equal(active.instantiated,true);
+   h.send({command:'release'});await h.next(event=>event.event==='released');h.send({command:'status'});const released=await h.next(event=>event.event==='status');assert.equal(released.instantiated,false);
+  }
+ }else console.log(JSON.stringify({status:'environment-limited',reason:'No effect Audio Unit discovered'}));
+});

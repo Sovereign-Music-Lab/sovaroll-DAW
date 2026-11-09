@@ -52,13 +52,13 @@ These notes describe this repository's behavior and testable decisions. They mak
 | Mixing/export | Track/master controls, EQ/effects, mix/stems, MIDI and project bundles | External plugin/instrument hosting and advanced mastering are unfinished |
 | Native MIDI | Optional macOS bridge, routing, cancellation, reset/chase policies | MIDI output only; no synchronized native audio or cross-platform native backend claim |
 | Native audio foundation | Optional native preview routes a completed WAV through the AVAudioEngine helper; offline rendering preserves mono/stereo PCM and GUI Stop controls the current job | Explicit opt-in only; built-in preview remains default; no native-MIDI synchronization, listening or low-latency quality claim |
-| Audio Unit discovery | Bounded local component metadata and exact-ID selection with structured errors | Selection does not instantiate plugin code; no hosting, compatibility or sound-quality claim; T-044 covers explicit offline instantiation |
+| Audio Unit discovery | Bounded metadata, exact-ID selection and explicit offline instantiation with format/lifecycle checks | No automatic loading; T-045 covers bounded offline PCM processing; GUI hosting and sound-quality claims remain future |
 
 See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQUIREMENTS.md).
 
 ## Open work
 
-The continuation queue now includes safe Audio Unit discovery. T-044 covers explicit offline instantiation next; GUI hosting is still future work. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
+The continuation queue includes explicit offline Audio Unit instantiation. T-045 covers bounded offline PCM processing next; GUI hosting remains future work. All 64 existing GUI smokes passed before this native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

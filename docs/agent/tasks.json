@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T03:23:25.921Z",
+  "updatedAt": "2026-11-09T04:31:00.477Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1305,7 +1305,7 @@
       "doneAt": "2026-11-09T03:23:25.920Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-044",
@@ -1326,6 +1326,38 @@
         "Tests use an available system component when present or record a clear environment-limited result without claiming plugin compatibility or sound quality.",
         "Lifecycle cleanup and errors are structured; no current playback or GUI behavior changes.",
         "Document actual offline scope and add the next GUI hosting task; native and full suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T03:24:00.598Z",
+      "evidence": "Explicit offline-only Audio Unit instantiation requires exact ID and intent; errors preserve state and release cleans lifecycle. Observed system effect instantiated and format/cleanup passed. Targeted native tests 3 PASS; native suite 104 PASS; full verification 172 files PASS. T-045 added for bounded offline PCM processing. No GUI/playback or compatibility claim.",
+      "doneAt": "2026-11-09T04:31:00.476Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-045",
+      "title": "Audio Unit offline processing: render PCM through an explicitly instantiated effect",
+      "size": "L",
+      "dependsOn": [
+        "T-044"
+      ],
+      "goal": "Extend the separate Audio Unit helper to render a bounded PCM16 input through an explicitly instantiated effect using AVAudioEngine offline mode, with lifecycle cleanup and deterministic native evidence.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "Offline processing requires a previously instantiated exact component, validated PCM16 WAV input and explicit bounds; unknown state or invalid input preserves the current probe.",
+        "Native tests compare deterministic source/output PCM and verify cleanup, without claiming plugin compatibility, listening or low-latency quality.",
+        "Current GUI and native MIDI behavior remain unchanged; document the offline-only scope and next integration task.",
+        "Native and full product suites pass."
       ],
       "verify": [
         "node --test native/tests/audio-units.test.mjs",
