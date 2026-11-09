@@ -51,13 +51,13 @@ These notes describe this repository's behavior and testable decisions. They mak
 | Recording | Browser audio/Web MIDI in a collapsible panel that opens while recording is active, take preservation, count-in and monitoring | Fake-device tests do not establish hardware quality, latency or permission behavior |
 | Mixing/export | Track/master controls, EQ/effects, mix/stems, MIDI and project bundles | External plugin/instrument hosting and advanced mastering are unfinished |
 | Native MIDI | Optional macOS bridge, routing, cancellation, reset/chase policies | MIDI output only; no synchronized native audio or cross-platform native backend claim |
-| Native audio foundation | Separate AVAudioEngine helper validates PCM16 WAV and preserves mono/stereo PCM in deterministic offline rendering | Not connected to GUI playback or native MIDI; explicit permission is required for future default-device output; no listening or low-latency quality claim |
+| Native audio foundation | Optional native preview routes a completed WAV through the AVAudioEngine helper; offline rendering preserves mono/stereo PCM and GUI Stop controls the current job | Explicit opt-in only; built-in preview remains default; no native-MIDI synchronization, listening or low-latency quality claim |
 
 See the [manual](MANUAL.en.md) and [individual acceptance boundaries](agent/REQUIREMENTS.md).
 
 ## Open work
 
-The current continuation queue includes the completed native audio foundation. T-042 is the next GUI integration task. All 64 existing GUI smokes passed before this new native foundation. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
+The current continuation queue includes the completed optional native audio preview. T-043 adds a safe Audio Unit discovery boundary next; plugin instantiation/hosting is not yet implemented. All 64 existing GUI smokes passed before this new native work. Human hardware results still use [the manual checklist](agent/MANUAL_CHECKS.md). Evidence is recorded in [VALIDATION.md](VALIDATION.md).
 
 Longer-term goals include low-latency native audio, broader plugins/instruments, score editing, deeper mixing, complete bilingual UI, accessibility, more platform/device validation, and the optional autonomous composition loop.
 

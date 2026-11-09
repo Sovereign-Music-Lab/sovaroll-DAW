@@ -110,3 +110,6 @@
 {"at":"2026-11-09T02:22:49.516Z","id":"T-041","action":"start"}
 {"at":"2026-11-09T02:29:35.645Z","id":"T-042","action":"add"}
 {"at":"2026-11-09T02:30:59.008Z","id":"T-041","action":"done","evidence":"Separate AVAudioEngine helper validates local PCM16 WAV and supports play/status/stop with explicit output permission. Offline mono/stereo renders preserve source PCM SHA-256. Targeted native tests 2 PASS; npm run test:native 99 PASS; agent:verify:full 172 files PASS. GUI/native-MIDI integration intentionally not implemented; T-042 added. Bilingual development notes updated; no listening or low-latency claim.","verify":"PASS"}
+{"at":"2026-11-09T02:31:26.200Z","id":"T-042","action":"start"}
+{"at":"2026-11-09T03:13:23.410Z","id":"T-043","action":"add"}
+{"at":"2026-11-09T03:16:28.038Z","id":"T-042","action":"done","evidence":"Optional native audio mode integrated with completed server WAV jobs; built-in preview unchanged. API tests PASS 2 for offline completion, stale/unknown jobs, Stop conflict and edit cleanup. GUI native-audio smoke PASS 2 for offline preview and active Stop. Default E2E PASS 40; native suite PASS 101; agent:verify:full PASS 172. T-043 added for safe Audio Unit discovery. No hardware-listening or MIDI-sync claim.","verify":"PASS"}

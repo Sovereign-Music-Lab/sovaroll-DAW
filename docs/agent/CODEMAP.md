@@ -124,6 +124,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | folder-browser.mjs | 33 | 212 | browseProjectFolders |
 | media-resolution.mjs | 140 | 302 | createMediaResolver |
 | media-search.mjs | 242 | 312 | MEDIA_SEARCH_LIMITS, createMediaSearch, readMediaCandidate |
+| native-audio.mjs | 79 | 316 | createNativeAudio |
 | native-midi-settings.mjs | 128 | 503 | defaultNativeMidiSettings, defaultNativeMidiProject, getNativeMidiSettings, updateNativeMidiSettings |
 | native-transport.mjs | 103 | 353 | createNativeTransport |
 | note-audition-jobs.mjs | 27 | 264 | createNoteAuditionJobs |
@@ -137,7 +138,7 @@ Server, CLI, persistence, workspace/documents, workers (top-level files only).
 | render-worker.mjs | 59 | 337 | renderSnapshotData |
 | reset-settings.mjs | 120 | 523 | defaultResetOptions, resolveResetOptions, defaultResetSettings, getResetSettings, updateResetSettings |
 | revert-media.mjs | 387 | 390 | registerCreatedMedia, captureMediaOwnership, planRevertMedia, applyRevertMediaPlan, listRevertMediaTrash, restoreRevertMediaTrash |
-| server.mjs | 941 | 3580 | CAPABILITIES, startServer |
+| server.mjs | 958 | 3580 | CAPABILITIES, startServer |
 | session-store.mjs | 212 | 207 | MAX_JOURNAL_BYTES, DEFAULT_SESSION_SETTINGS, canonicalProjectHash, validateSessionSettings, assertSidecarLocation, readSidecar, writeSidecar, quarantineSidecar, loadSessionState, commitSessionState, updateSessionSettings |
 | split-settings.mjs | 132 | 523 | defaultSplitSettings, getSplitSettings, updateSplitSettings, withSplitDefaults |
 | stem-directory.mjs | 26 | 277 | renderStemDirectory |
@@ -153,7 +154,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 
 | file | lines | max line | exports |
 |---|---:|---:|---|
-| app.mjs | 2294 | 7381 |  |
+| app.mjs | 2299 | 7381 |  |
 | audio-scrub.mjs | 22 | 565 | scrubMotion, createBufferScrubber |
 | chase-settings.mjs | 15 | 911 | chaseLabels, readChaseProfile, setupChaseSettings |
 | controller-lanes.mjs | 267 | 6763 | setupControllerLanes |
@@ -168,6 +169,7 @@ Browser GUI (no framework). app.mjs owns state/rendering; other files are featur
 | midi-merge.mjs | 19 | 2002 | setupMidiMerge |
 | midi-modifiers.mjs | 45 | 939 | setupMidiModifiers |
 | musical-time-display.mjs | 70 | 440 | setupMusicalTimeDisplay |
+| native-audio.mjs | 27 | 506 | setupNativeAudio |
 | native-midi.mjs | 69 | 1091 | setupNativeMidi |
 | note-audition-browser.mjs | 36 | 193 | createBrowserNoteAudition |
 | note-audition-targets.mjs | 11 | 145 | noteAuditionTargets |
@@ -220,6 +222,7 @@ Build/check tools and gui-*-smoke.mjs browser tests (top-level files only).
 | gui-midi-modifiers-smoke.mjs | 54 | 1165 |  |
 | gui-midi-playback-smoke.mjs | 86 | 831 |  |
 | gui-musical-time-smoke.mjs | 45 | 877 |  |
+| gui-native-audio-smoke.mjs | 37 | 595 |  |
 | gui-native-midi-smoke.mjs | 48 | 848 |  |
 | gui-new-project-delivery-smoke.mjs | 78 | 211 |  |
 | gui-note-arrow-smoke.mjs | 37 | 1211 |  |

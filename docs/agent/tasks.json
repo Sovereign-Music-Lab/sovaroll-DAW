@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T02:30:59.008Z",
+  "updatedAt": "2026-11-09T03:16:28.038Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1240,7 +1240,7 @@
       "doneAt": "2026-11-09T02:30:59.007Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "native-audio",
       "id": "T-042",
@@ -1265,6 +1265,38 @@
       ],
       "verify": [
         "npm run agent:e2e",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T02:31:26.200Z",
+      "evidence": "Optional native audio mode integrated with completed server WAV jobs; built-in preview unchanged. API tests PASS 2 for offline completion, stale/unknown jobs, Stop conflict and edit cleanup. GUI native-audio smoke PASS 2 for offline preview and active Stop. Default E2E PASS 40; native suite PASS 101; agent:verify:full PASS 172. T-043 added for safe Audio Unit discovery. No hardware-listening or MIDI-sync claim.",
+      "doneAt": "2026-11-09T03:16:28.038Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-043",
+      "title": "External audio unit foundation: safe local discovery and explicit selection boundary",
+      "size": "M",
+      "dependsOn": [
+        "T-042"
+      ],
+      "goal": "Add a separate macOS Audio Unit discovery helper that lists local component metadata and rejects invalid selection without instantiating or executing plugin audio. Preserve current playback and provide a tested boundary for future hosting.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "scripts/build-native-audio-units.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "The helper uses AVAudioUnitComponentManager to return bounded structured component metadata without auto-instantiating a component or changing current playback.",
+        "Invalid/unknown selections and malformed requests fail with structured errors; tests cover protocol and discovery without depending on a particular installed plugin.",
+        "Documentation explicitly says plugin hosting/instantiation is not yet implemented and identifies the next task; existing native and product suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
         "npm run test:native",
         "npm run agent:verify:full"
       ]

@@ -1,6 +1,6 @@
 # CONTEXT — Sovereign DAW / SovaRoll
 
-Updated: 2026-11-09. T-001–T-041 are done; T-042 is the next native-audio GUI integration task. Real-device observations remain human work.
+Updated: 2026-11-09. T-001–T-042 are done; T-043 adds a safe Audio Unit discovery boundary next. Real-device observations remain human work.
 
 ## Identity
 - Repository: Sovereign-Music-Lab/sovaroll-DAW, intended public branch main; current local branch sovaroll-continuation, not pushed.
@@ -28,8 +28,8 @@ Updated: 2026-11-09. T-001–T-041 are done; T-042 is the next native-audio GUI 
 - Full guard/syntax/product verification: PASS, 171 files, 2026-11-08.
 - Native tests: 97 passed after building the macOS bridge.
 - First-delivery Chrome E2E: 40 steps passed on 2026-11-09, including recording, audio controls, cycle, MIDI tools, keyboard history, ruler Snap/Alt and persisted Korean/English switching. Fake microphone; no physical listening claim.
-- T-001–T-041 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 99 after the T-041 AVAudioEngine foundation; no complete bilingual UI or low-latency claim.
-- T-041 offline mono/stereo rendering preserves source PCM SHA-256. The helper is not connected to GUI/native MIDI; T-042 is the integration follow-up.
+- T-001–T-042 `agent:verify`: VERIFY PASS. Full verification passed 172 test files and native tests passed 101 after T-042; no complete bilingual UI, low-latency or native-MIDI synchronization claim.
+- T-042 optional native audio preview preserves built-in defaults and supports offline completion, current-job Stop, stale-job rejection and edit cleanup. T-043 is the safe Audio Unit discovery follow-up.
 - T-039 recording-assistance smoke passes 4 steps covering input, -6 dB PCM gain, count-in, backing, monitoring, stereo and metronome; fake-device evidence only.
 - T-038 added a 4-step automatic-backup recovery smoke: GUI backup, independent CLI recovery and GUI open preserve the original track and source project bytes.
 - Final `agent:smoke-sweep`: 64/64 unique GUI smokes passed with one first-delivery run. Results and screenshots are in .test-output/.
@@ -52,7 +52,7 @@ Updated: 2026-11-09. T-001–T-041 are done; T-042 is the next native-audio GUI 
 - This is a documented handoff, not evidence of a Gemma run. The maintainer explicitly requested publication of this prompt; future pushes still require authorization.
 
 ## Next task and unresolved decisions
-- T-001–T-041 are done with evidence in docs/VALIDATION.md. Continue with T-042 native-audio GUI integration, then add scoped follow-ups for remaining product goals.
+- T-001–T-042 are done with evidence in docs/VALIDATION.md. Continue with T-043 safe Audio Unit discovery, then add scoped follow-ups for remaining product goals.
 - T-010's recorded decision is implemented: ruler clicks use current primary/piano Snap; Alt/Option preserves exact position. The 37-step E2E covers both.
 - Human listening, microphone latency and hardware quality remain unverified; use docs/agent/MANUAL_CHECKS.md without marking results automatically.
 - No low-latency native audio, external plugin hosting, full bilingual UI or complete autonomous workflow claim.

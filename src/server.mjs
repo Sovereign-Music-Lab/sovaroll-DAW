@@ -21,6 +21,7 @@ import {getTimingSettings,updateTimingSettings} from './timing-settings.mjs';
 import {convertMidiTicks,midiTickFraction} from './media/midi-display-time.mjs';
 import {getResetSettings,updateResetSettings} from './reset-settings.mjs';
 import {createNativeTransport} from './native-transport.mjs';
+import {createNativeAudio} from './native-audio.mjs';
 import {getNativeMidiSettings,updateNativeMidiSettings,defaultNativeMidiProject} from './native-midi-settings.mjs';
 import {getChaseSettings,updateChaseSettings,withChaseDefaults} from './chase-settings.mjs';
 import {resolveChaseOptions} from './media/midi-chase.mjs';
@@ -54,7 +55,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const CAPABILITIES = Object.freeze({
   version:'0.128.0',audioOverlapFront:true,markerListView:true,trackFolders:true,midiPartStartResize:true,midiStepCursorNavigation:true,midiStepCursorClick:true,tapTempo:true,tempoTrackMode:true,tempoCursorChange:true,audioTempoFromEvent:true,audioTrackTimeBase:true,midiTrackTimeBase:true,midiLinearAffineCurves:true,defaultTrackTimeBase:true,midiNoteInputEdit:true,audioTimeStretchProcessing:true,audioTimeStretchBatch:true,audioProcessingRestore:true,audioZeroCrossingQuery:true,audioZeroCrossingTrim:true,explicitSplitClipIds:true,audioResizeMovesContents:true,audioSnapPointPaste:true,audioEventSnapPoint:true,clipFillLoop:true,audioClipGlue:true,audioClipGlueFollowing:true,midiClipGlue:true,midiClipGlueFollowing:true,clipSelectionPreview:true,previewEffectBypass:true,audioScrubPreview:true,noteAuditionTrackEffects:true,midiImportSinglePart:true,midiImportLeftLocator:true,midiImportAutoDissolve:true,midiImportInspectorOptions:true,fixedProjectSignature:true,midiImportTimingOptions:true,midiExportOptions:true,midiExportLocators:true,midiExportPpq:true,midiTrackExportSelection:true,projectPanLawModes:['legacy','equalPower','0dB','-3dB','-4.5dB','-6dB'],projectPanLaw:true,midiVelocityLimits:true,midiTransposeScale:true,midiTransposeRange:true,midiDissolveParts:true,midiRepeatLoop:true,midiThinControllers:true,midiRestrictPolyphony:true,midiDeleteControllers:true,sourceArchiveAccess:true,sourceArchivePreservation:true,aifcImport:true,aiffImport:true,audioExportFileFormats:['wav','aiff'],wavDitherModes:['none','tpdf'],projectExportPresets:true,stemSplitExport:true,wavOutputSampleRates:[22050,32000,44100,48000,88200,96000],stemCycleExport:true,stemExport:true,maxStemTracks:128,maxStemZipBytes:134217728,renderTrackSelection:true,midiNoteReverse:true,midiPedalsToLength:true,midiDeleteOverlaps:true,midiStepSettings:true,midiStepGrid:true,midiStepInput:true,midiLegatoOptions:true,midiNoteLength:true,midiNoteSplit:true,midiNoteGlue:true,soloDefeat:true,globalMuteSolo:true,removeEmptyTracks:true,trackRenameClips:true,browserMicrophoneRecording:true,browserMidiInput:true,browserMidiRecording:true,midiTakeCommit:true,midiTakeAutoQuantize:true,midiInputFilter:true,projectMidiInputFilter:true,midiTakeModes:['new','merge','replace'],maxBrowserRecordingSeconds:600,recordingTargetTracks:true,audioClipFades:true,locatorCycle:true,audioNormalize:true,audioStatistics:true,audioDcCorrection:true,audioSilence:true,audioSlip:true,audioCrossfade:true,audioFadeShapes:true,audioVolumeEnvelope:true,audioBulkFades:true,audioTrim:true,projectMarkers:true,clipCopyTo:true,clipNudge:true,splitClipsAtCursor:true,splitClipsRange:true,cutClipsAtCursor:true,midiProjectMarkers:true,audioRangeFades:true,savedSnapGrids:true,pianoElapsedSnap:true,controllerElapsedSnap:true,controllerPaintCommand:true,controllerPaintGui:true,controllerShapeCommand:true,controllerShapeGui:true,noteShapeCommand:true,noteShapeGui:true,notePaintCommand:true,notePaintGui:true,snapQueries:true,formattedTimeCommands:true,linearTimelineGeometry:true, adaptiveTimeRulers:true,projectTimeDisplay:true,timeDisplayReadout:true,controllerDisplayTimeEditing:true,timingGuardedCommands:true,inspectorDisplayTimeEditing:true,displayTimeBatches:true,displayTimeCommands:true,eventDisplayTimeEditing:true,musicalTimeReadout:true,musicalNoteTimeEditing:true,midiTimingPreferences:true,midiDisplayedNoteTime:true,midiReset:true,midiResetPreferences:true,sharedCommands:true,midiEditing:true,clipEditing:true,midiTransforms:true,maxCopiedNotesPerCommand:200000,wavImport:true,midiImport:true,midiExport:true,
   trackPreFilterBypass:true,trackPreEffectPresets:true,trackPreFilters:true,trackPreGainPolarity:true,projectEffectPresets:true,trackEqNoteFrequency:true,trackEffectTransfer:true,trackEqGraph:true,trackEqFilterTypes:true,trackEqAutomaticTail:true,trackFourBandEq:true,automaticEffectTail:true,trackDelayTempoSync:true,trackDelayFilters:true,trackFeedbackDelay:true,clipPasteTrackMapping:true,clipSnapshotPaste:true,clipGroupTrackMove:true,clipGroupMove:true,clipGroupMute:true,clipGroupRepeat:true,locatorRangeEditing:true,locatorsFromClips:true,offlineRender:true,preview:'rendered-snapshot',atomicBatch:true,undo:'persistent',historyBrowser:true,autoBackup:true,autosave:true,
-  audioRecording:false,liveMidiInput:false,externalMidiOutput:process.platform==='darwin',nativeMidiTransport:process.platform==='darwin',nativeMidiRequiresBuild:true,nativeMidiAudioSync:false,plugins:false,
+  audioRecording:false,liveMidiInput:false,externalMidiOutput:process.platform==='darwin',nativeMidiTransport:process.platform==='darwin',nativeMidiRequiresBuild:true,nativeMidiAudioSync:false,nativeAudioPreview:process.platform==='darwin',plugins:false,
   tempoRamps:false,automation:false,score:false,nativeRealtime:false,
   mediaInventory:true,verifiedAssetDownload:true,projectBundle:true,projectCollection:true,backupRecovery:true,
   assetRestore:true,exactHashAssetRestore:true,quantizeOrigins:true,mediaResolution:true,documentSave:true,saveNewVersion:true,revert:true,projectOpen:true,recentProjects:true,documentIdentityGuard:true,multipleProjects:true,inactiveProjects:true,untitledProjects:true,firstSave:true,draftRecovery:true,projectLocationPreferences:true,folderBrowser:true,midiEvents:true,midiControllerLanes:true,midiControllerPreferences:true,midiModifiers:true,midiModifierFreeze:true,midiModifiersMode:'offline-output',midiMergeLoop:true,midiMergeChaseTypes:true,midiChasePreferences:true,midiLocatePreview:true,midiInstantaneousNotes:true,midiSostenuto:true,midiPartMute:true,midiNoteTails:true,midiControllerExistingValues:true,midiControllerCursorReadout:true,midiControllerCursorScope:'selected-clip-events',midiPolyKeySelection:true,midiControllerSegmentBend:true,midiControllerCurves:['step','ramp','bezier'],midiControllerCurveTickResolution:1,midiNoteControllerMove:true,midiSplitControllers:true,pitchBendGrid:true,midiStatePlayback:true,midiPlaybackControllers:[7,10,11,64,66,120,121,123],midiPitchBend:true,midiPitchBendRange:'RPN-0',midiFormats:[0,1],maxCommandBytes:64*1024*1024,
@@ -84,7 +85,7 @@ async function jsonBody(req,limit=2*1024*1024) {
 function ensureRevision(value) { if(!Number.isSafeInteger(value)||value<0) throw problem('EXPECTED_REVISION_REQUIRED','Provide integer expectedRevision from /api/state'); }
 function containsAssetCommand(command) { return ['asset.add','asset.relink','asset.removeMissing'].includes(command?.command)||(command?.command==='batch'&&Array.isArray(command.arguments?.commands)&&command.arguments.commands.some(containsAssetCommand)); }
 
-export async function startServer({projectPath=path.join(ROOT,'sessions','First-Light.newdaw.json'),port=4317,demo=true,quiet=false,persistProject=saveProject,backupClock=()=>Date.now(),backupPollMs=1000,recentPath,nativeBackendFactory}={}) {
+export async function startServer({projectPath=path.join(ROOT,'sessions','First-Light.newdaw.json'),port=4317,demo=true,quiet=false,persistProject=saveProject,backupClock=()=>Date.now(),backupPollMs=1000,recentPath,nativeBackendFactory,nativeAudioOffline=false,nativeAudioHelperPath}={}) {
   if(!Number.isInteger(backupPollMs)||backupPollMs<10)throw new Error('backupPollMs must be at least 10');
   projectPath=path.resolve(projectPath);
   let directory=path.dirname(projectPath);
@@ -101,7 +102,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
   const backupStatus=()=>({...autoBackup,dirty:engine?canonicalProjectHash(engine.project)!==backupBaselineHash:false});
   const assertRequestDocument=()=>{const request=requestScope.getStore();if(request&&request.documentId!==documentSession?.identity())throw problem('DOCUMENT_CONFLICT','The active document changed. Refresh before applying this request.',409);};
   const runExclusive=(fn)=>{const result=queue.then(()=>{assertRequestDocument();return fn();});queue=result.catch(()=>{});return result;};
-  const snapshot=()=>({nativeTransport:nativeTransport.snapshot(),project:engine?.project??null,history:engine?.history??{canUndo:false,canRedo:false},historyView:engine?.historyView??null,workspace:workspace?.snapshot()??null,session:{id:serverSessionId,settings,persistence,autoBackup:backupStatus(),document:documentSession?.snapshot(),requiresDocumentId:requireDocumentGuard},capabilities:CAPABILITIES,sequence,mediaRevision});
+  const snapshot=()=>({nativeTransport:nativeTransport.snapshot(),nativeAudio:nativeAudio.snapshot(),project:engine?.project??null,history:engine?.history??{canUndo:false,canRedo:false},historyView:engine?.historyView??null,workspace:workspace?.snapshot()??null,session:{id:serverSessionId,settings,persistence,autoBackup:backupStatus(),document:documentSession?.snapshot(),requiresDocumentId:requireDocumentGuard},capabilities:CAPABILITIES,sequence,mediaRevision});
   const emit=()=>{sequence++; const data=`id: ${sequence}\nevent: snapshot\ndata: ${JSON.stringify(snapshot())}\n\n`; for(const response of clients) response.write(data);};
   const nativeTransport=createNativeTransport({...(nativeBackendFactory?{openBackend:nativeBackendFactory}:{}),
     readResetPreferences:async()=>(await getResetSettings(resetSettingsPath)).settings.options,
@@ -111,6 +112,8 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       return !closed&&state.documentId===documentSession?.identity()&&state.projectId===engine?.project.id&&state.revision===engine?.project.revision&&state.profileFingerprint===profile.fingerprint&&state.chaseFingerprint===chase.fingerprint&&state.resetFingerprint===reset.fingerprint&&state.timingFingerprint===timing.fingerprint;
     }
   });
+  const nativeAudio=createNativeAudio({offline:nativeAudioOffline,...(nativeAudioHelperPath?{helperPath:nativeAudioHelperPath}:{}),onChange:state=>{if(closed)return;for(const response of clients)response.write(`event: native-audio\ndata: ${JSON.stringify(state)}\n\n`);}});
+  async function stopNativeResources(reason){await Promise.all([nativeTransport.stopAll(reason),nativeAudio.stopAll(reason)]);}
   const nativeSettings=async()=>{const profile=await getNativeMidiSettings(nativeSettingsPath);assertRequestDocument();if(!engine)throw problem('NO_ACTIVE_DOCUMENT','Activate a project first',409);return {...profile,projectId:engine.project.id,projectRevision:engine.project.revision,config:profile.settings.projects[engine.project.id]??defaultNativeMidiProject()};};
   const nativeRevision=value=>{ensureRevision(value);if(!engine||value!==engine.project.revision)throw problem('REVISION_CONFLICT','Project changed; refresh before native MIDI operation',409);};
   const commandInQueue=async(envelope,{internal=false}={})=>{
@@ -132,7 +135,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       catch(error) { throw problem('SAVE_FAILED',`Edit rolled back because project could not be saved: ${error.message}`,500); }
       // Queries and render workers can only observe durably committed state.
-      await nativeTransport.stopAll('project-edited');
+      await stopNativeResources('project-edited');
       engine=candidate;
       emit();
     }
@@ -184,7 +187,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       return publishFirstSave(context,input.outputPath,{dryRun:Boolean(input.dryRun)});
     },
     commitRevert:async candidate=>{
-      try{const stored=await commitSessionState(projectPath,{currentCheckpoint:engine.checkpoint(),nextCheckpoint:candidate.checkpoint(),settings,persistProject});candidate.restoreCheckpoint(stored.checkpoint);persistence={status:stored.status,warnings:stored.warnings};await nativeTransport.stopAll('project-reverted');engine=candidate;}
+      try{const stored=await commitSessionState(projectPath,{currentCheckpoint:engine.checkpoint(),nextCheckpoint:candidate.checkpoint(),settings,persistProject});candidate.restoreCheckpoint(stored.checkpoint);persistence={status:stored.status,warnings:stored.warnings};await stopNativeResources('project-reverted');engine=candidate;}
       catch(error){throw problem('SAVE_FAILED',`Revert was not committed: ${error.message}`,500);}
     },
     activateVersion:(prepared,adoptMetadata)=>adoptProject(prepared,adoptMetadata),
@@ -192,7 +195,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
   });
   async function adoptProject(prepared,adoptMetadata,{existing=false}={}){
     const warnings=[],oldRelease=releaseLock,adopted=new Engine(prepared.project);adopted.restoreCheckpoint(prepared.checkpoint);
-    await nativeTransport.stopAll('document-changed');
+    await stopNativeResources('document-changed');
     await resolver.close();
     for(const job of jobs.values())if(job.status==='running'){job.status='cancelled';await job.worker.terminate().catch(()=>{});}jobs.clear();
     // Capture everything before switching. There is no await in the adoption
@@ -221,7 +224,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       autoBackup:{lastId:prepared.backups.files[0]?.id??null,lastCreatedAt:prepared.backups.files[0]?.createdAt??null,lastError:null,running:false,nextDueAt:backupClock()+prepared.settings.autoBackup.intervalMinutes*60000}};
   }
   async function stopActiveResources(){
-    await nativeTransport.stopAll('document-changed');
+    await stopNativeResources('document-changed');
     await resolver?.close();
     for(const job of jobs.values())if(job.status==='running'){job.status='cancelled';await job.worker.terminate().catch(()=>{});}
     jobs.clear();
@@ -363,19 +366,19 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
         if(req.method==='POST'&&route==='/api/workspace/split-settings')return json(res,200,await updateSplitSettings(splitSettingsPath,await jsonBody(req)));
         if(req.method==='GET'&&route==='/api/workspace/timing-settings')return json(res,200,await getTimingSettings(timingSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/timing-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateTimingSettings(timingSettingsPath,input);if(value.applied)await nativeTransport.stopAll('timing-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateTimingSettings(timingSettingsPath,input);if(value.applied)await stopNativeResources('timing-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: timing-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
         if(req.method==='GET'&&route==='/api/workspace/reset-settings')return json(res,200,await getResetSettings(resetSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/reset-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateResetSettings(resetSettingsPath,input);if(value.applied)await nativeTransport.stopAll('reset-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateResetSettings(resetSettingsPath,input);if(value.applied)await stopNativeResources('reset-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: reset-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
         if(req.method==='GET'&&route==='/api/workspace/chase-settings')return json(res,200,await getChaseSettings(chaseSettingsPath));
         if(req.method==='POST'&&route==='/api/workspace/chase-settings'){
-          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateChaseSettings(chaseSettingsPath,input);if(value.applied)await nativeTransport.stopAll('chase-settings-changed');return value;});
+          const input=await jsonBody(req),result=await runExclusive(async()=>{const value=await updateChaseSettings(chaseSettingsPath,input);if(value.applied)await stopNativeResources('chase-settings-changed');return value;});
           if(result.applied)for(const response of clients)response.write(`event: chase-settings\ndata: ${JSON.stringify({revision:result.settings.revision,fingerprint:result.fingerprint})}\n\n`);
           return json(res,200,result);
         }
@@ -398,6 +401,20 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       if(req.method==='GET'&&route==='/api/native/ports')return json(res,200,await nativeTransport.ports());
       if(req.method==='GET'&&route==='/api/native/transport')return json(res,200,await nativeTransport.status());
+      if(req.method==='GET'&&route==='/api/native/audio')return json(res,200,nativeAudio.snapshot());
+      if(req.method==='POST'&&route==='/api/native/audio/play'){
+        const input=await jsonBody(req);
+        if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['jobId','expectedRevision'].includes(k))||typeof input.jobId!=='string')throw problem('INVALID_NATIVE_AUDIO_PLAY','Provide render jobId and expectedRevision',422);
+        assertRequestDocument();nativeRevision(input.expectedRevision);
+        if(['preparing','playing','stopping','resetting'].includes(nativeTransport.snapshot().status))throw problem('NATIVE_PREVIEW_CONFLICT','Native MIDI mode owns playback; stop it before native audio',409);
+        const job=jobs.get(input.jobId);
+        if(!job||job.status!=='completed'||job.outputKind!=='wav'||!job.bytes)throw problem('RENDER_NOT_READY','Select a completed WAV render for native audio',409);
+        return json(res,200,await nativeAudio.play({bytes:job.bytes,renderJobId:job.id,revision:job.revision,documentId:documentSession.identity()}));
+      }
+      if(req.method==='POST'&&route==='/api/native/audio/stop'){
+        const input=await jsonBody(req);if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>k!=='jobId')||typeof input.jobId!=='string')throw problem('INVALID_NATIVE_AUDIO_STOP','Provide only the current native audio jobId',422);
+        assertRequestDocument();return json(res,200,await nativeAudio.stop(input.jobId));
+      }
       if(req.method==='POST'&&route==='/api/native/stop'){
         const input=await jsonBody(req);
         if(!input||Array.isArray(input)||Object.keys(input).some(k=>!['jobId','reason'].includes(k))||typeof input.jobId!=='string'||input.reason!==undefined&&!['stop','locate'].includes(input.reason))throw problem('INVALID_NATIVE_STOP','Provide only the current jobId',422);
@@ -413,7 +430,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
           if(input.projectId!==engine.project.id)throw problem('PROJECT_CONFLICT','Native settings belong to another project',409);
           if(!Array.isArray(input.routes)||input.routes.some(r=>!r||engine.project.tracks.find(t=>t.id===r.trackId)?.type!=='midi'))throw problem('NATIVE_ROUTE','Routes must identify existing MIDI tracks',422);
           const {expectedProjectRevision,...patch}=input,value=await updateNativeMidiSettings(nativeSettingsPath,patch);
-          if(value.applied){await nativeTransport.stopAll('native-settings-changed');for(const response of clients)response.write(`event: native-settings\ndata: ${JSON.stringify({revision:value.settings.revision,fingerprint:value.fingerprint})}\n\n`);}
+          if(value.applied){await stopNativeResources('native-settings-changed');for(const response of clients)response.write(`event: native-settings\ndata: ${JSON.stringify({revision:value.settings.revision,fingerprint:value.fingerprint})}\n\n`);}
           return {...value,projectId:engine.project.id,projectRevision:engine.project.revision,config:value.settings.projects[engine.project.id]??defaultNativeMidiProject()};
         });return json(res,200,result);
       }
@@ -885,7 +902,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       }
       if(req.method==='GET') {
         if(['/media/tempo-from-audio.mjs','/media/tap-tempo.mjs','/media/step-timing.mjs','/media/step-settings.mjs','/media/track-effects.mjs','/media/track-eq.mjs','/media/track-delay.mjs','/media/midi-input-filter.mjs','/media/note-paint.mjs','/media/note-shapes.mjs','/media/controller-shape-gesture.mjs','/media/controller-shapes.mjs','/media/controller-paint.mjs','/media/controller-time-gesture.mjs','/media/snap-grid.mjs','/media/pointer-time-grid.mjs','/media/exact-tempo.mjs','/media/time-edit-resolver.mjs','/media/ruler-intervals.mjs','/media/editor-geometry.mjs','/media/timeline-projection.mjs','/media/time-display.mjs','/media/timecode.mjs','/media/elapsed-time.mjs','/media/display-time-edit.mjs','/media/musical-time.mjs','/media/midi-display-time.mjs','/media/midi-chase.mjs','/media/controller-bend.mjs','/media/midi-modifiers.mjs','/media/common.mjs','/media/time.mjs','/media/midi-curves.mjs','/media/midi-controllers-query.mjs','/media/controller-readout.mjs'].includes(route)){const content=await fs.readFile(path.join(ROOT,'src',route));res.writeHead(200,{'Content-Type':'text/javascript'});return res.end(content);}
-        const files={'/tap-tempo-ui.mjs':'tap-tempo-ui.mjs','/audio-scrub.mjs':'audio-scrub.mjs','/web-midi-input.mjs':'web-midi-input.mjs','/metronome.mjs':'metronome.mjs','/microphone-recorder.mjs':'microphone-recorder.mjs','/recording-ui.mjs':'recording-ui.mjs','/note-keyboard-selection.mjs':'note-keyboard-selection.mjs','/note-clipboard.mjs':'note-clipboard.mjs','/note-velocity-readout.mjs':'note-velocity-readout.mjs','/note-audition-targets.mjs':'note-audition-targets.mjs','/note-audition.mjs':'note-audition.mjs','/note-audition-browser.mjs':'note-audition-browser.mjs','/snap-grid-settings.mjs':'snap-grid-settings.mjs','/time-display-settings.mjs':'time-display-settings.mjs','/inspector-time.mjs':'inspector-time.mjs','/':'index.html','/index.html':'index.html','/app.mjs':'app.mjs','/editing.mjs':'editing.mjs','/midi-events.mjs':'midi-events.mjs','/controller-lanes.mjs':'controller-lanes.mjs','/musical-time-display.mjs':'musical-time-display.mjs','/timing-settings.mjs':'timing-settings.mjs','/reset-settings.mjs':'reset-settings.mjs','/chase-settings.mjs':'chase-settings.mjs','/native-midi.mjs':'native-midi.mjs','/controller-settings.mjs':'controller-settings.mjs','/midi-modifiers.mjs':'midi-modifiers.mjs','/midi-merge.mjs':'midi-merge.mjs','/session.mjs':'session.mjs','/resolution.mjs':'resolution.mjs','/document.mjs':'document.mjs','/projects.mjs':'projects.mjs','/i18n.mjs':'i18n.mjs','/styles.css':'styles.css'};
+        const files={'/tap-tempo-ui.mjs':'tap-tempo-ui.mjs','/audio-scrub.mjs':'audio-scrub.mjs','/web-midi-input.mjs':'web-midi-input.mjs','/metronome.mjs':'metronome.mjs','/microphone-recorder.mjs':'microphone-recorder.mjs','/recording-ui.mjs':'recording-ui.mjs','/note-keyboard-selection.mjs':'note-keyboard-selection.mjs','/note-clipboard.mjs':'note-clipboard.mjs','/note-velocity-readout.mjs':'note-velocity-readout.mjs','/note-audition-targets.mjs':'note-audition-targets.mjs','/note-audition.mjs':'note-audition.mjs','/note-audition-browser.mjs':'note-audition-browser.mjs','/snap-grid-settings.mjs':'snap-grid-settings.mjs','/time-display-settings.mjs':'time-display-settings.mjs','/inspector-time.mjs':'inspector-time.mjs','/':'index.html','/index.html':'index.html','/app.mjs':'app.mjs','/editing.mjs':'editing.mjs','/midi-events.mjs':'midi-events.mjs','/controller-lanes.mjs':'controller-lanes.mjs','/musical-time-display.mjs':'musical-time-display.mjs','/timing-settings.mjs':'timing-settings.mjs','/reset-settings.mjs':'reset-settings.mjs','/chase-settings.mjs':'chase-settings.mjs','/native-midi.mjs':'native-midi.mjs','/native-audio.mjs':'native-audio.mjs','/controller-settings.mjs':'controller-settings.mjs','/midi-modifiers.mjs':'midi-modifiers.mjs','/midi-merge.mjs':'midi-merge.mjs','/session.mjs':'session.mjs','/resolution.mjs':'resolution.mjs','/document.mjs':'document.mjs','/projects.mjs':'projects.mjs','/i18n.mjs':'i18n.mjs','/styles.css':'styles.css'};
         if(files[route]) {const content=await fs.readFile(path.join(ROOT,'public',files[route]));res.writeHead(200,{'Content-Type':route.endsWith('.mjs')?'text/javascript':route.endsWith('.css')?'text/css':'text/html; charset=utf-8'});return res.end(content);}
       }
       throw problem('NOT_FOUND','Unknown route',404);
@@ -912,7 +929,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
       reserveTarget,runExclusive,emit,isClosed:()=>closed,recentPath,draftRegistryPath});
     await workspace.locations();
     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
-  } catch(error) {await nativeTransport.close();await releaseLock();throw error;}
+  } catch(error) {await nativeTransport.close();await nativeAudio.close();await releaseLock();throw error;}
   const heartbeat=setInterval(()=>{for(const response of clients)response.write(': keepalive\n\n');},20000);heartbeat.unref();
   let checkingBackup=false;
   backupTimer=setInterval(()=>{
@@ -931,7 +948,7 @@ export async function startServer({projectPath=path.join(ROOT,'sessions','First-
     // mutation queue drains, those connections must not retain the project lock.
     const disconnected=new Promise(resolve=>server.close(resolve));
     for(const response of clients)response.end();
-    await auditionJobs.close();await nativeTransport.close();await resolver?.close();await queue;
+    await auditionJobs.close();await nativeTransport.close();await nativeAudio.close();await resolver?.close();await queue;
     await Promise.all([...jobs.values()].filter(j=>j.status==='running').map(j=>j.worker.terminate()));
     server.closeAllConnections();await disconnected;
     if(workspace)await Promise.all(workspace.contexts().map(c=>c.releaseLock()));else await releaseLock();
