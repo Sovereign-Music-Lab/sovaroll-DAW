@@ -1,6 +1,6 @@
 {
   "about": "Sovereign DAW / SovaRoll task queue. One bounded task at a time; record real evidence.",
-  "updatedAt": "2026-11-09T03:16:28.038Z",
+  "updatedAt": "2026-11-09T03:23:25.921Z",
   "tasks": [
     {
       "id": "T-001",
@@ -1273,7 +1273,7 @@
       "doneAt": "2026-11-09T03:16:28.038Z"
     },
     {
-      "status": "todo",
+      "status": "done",
       "priority": 2,
       "area": "plugins",
       "id": "T-043",
@@ -1294,6 +1294,38 @@
         "The helper uses AVAudioUnitComponentManager to return bounded structured component metadata without auto-instantiating a component or changing current playback.",
         "Invalid/unknown selections and malformed requests fail with structured errors; tests cover protocol and discovery without depending on a particular installed plugin.",
         "Documentation explicitly says plugin hosting/instantiation is not yet implemented and identifies the next task; existing native and product suites pass."
+      ],
+      "verify": [
+        "node --test native/tests/audio-units.test.mjs",
+        "npm run test:native",
+        "npm run agent:verify:full"
+      ],
+      "startedAt": "2026-11-09T03:16:59.609Z",
+      "evidence": "Audio Unit helper lists bounded component metadata and exact-ID selection with structured invalid/ambiguous errors; selection never instantiates code. Targeted native tests 2 PASS without installed-plugin dependency. npm run test:native PASS 103; agent:verify:full PASS 172. T-044 added for explicit offline instantiation. Bilingual docs updated; no hosting claim.",
+      "doneAt": "2026-11-09T03:23:25.920Z"
+    },
+    {
+      "status": "todo",
+      "priority": 2,
+      "area": "plugins",
+      "id": "T-044",
+      "title": "Audio Unit offline instantiation: explicit component and deterministic probe",
+      "size": "L",
+      "dependsOn": [
+        "T-043"
+      ],
+      "goal": "Extend the separate Audio Unit helper so an explicitly selected local component can be instantiated only by a dedicated command and probed offline, without changing current playback or auto-loading components.",
+      "files": [
+        "native/macos/audio-units.swift",
+        "native/tests/audio-units.test.mjs",
+        "docs/DEVELOPMENT.en.md",
+        "docs/DEVELOPMENT.ko.md"
+      ],
+      "acceptance": [
+        "Instantiation is separate from selection and requires a previously discovered exact component ID plus explicit offline intent; unknown or ambiguous IDs preserve state.",
+        "Tests use an available system component when present or record a clear environment-limited result without claiming plugin compatibility or sound quality.",
+        "Lifecycle cleanup and errors are structured; no current playback or GUI behavior changes.",
+        "Document actual offline scope and add the next GUI hosting task; native and full suites pass."
       ],
       "verify": [
         "node --test native/tests/audio-units.test.mjs",

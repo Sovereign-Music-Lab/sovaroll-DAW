@@ -18,7 +18,7 @@ This record separates software checks, current limitations, and unperformed work
 
 Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/repeat/split/undo, audio import/recording/move/split/trim/source preservation, playback/seek/mixer, WAV/MIDI/bundle export, GUI/CLI equality, save/restart/reopen, and identical render output after restart.
 
-## Continuation — T-001–T-013, T-015, T-017–T-042 (2026-11-09)
+## Continuation — T-001–T-013, T-015, T-017–T-043 (2026-11-09)
 
 - `npm run agent:e2e`: E2E PASS, 28 first-delivery steps in Chrome. The new `audio.GUI-fade-in-changes-render` step sets a 0.5-second Inspector fade-in, checks asset-frame conversion, compares mono-sum RMS windows in CLI renders before and after the edit, and verifies Undo removes the fade.
 - `npm run agent:verify`: VERIFY PASS for the public guard and all JavaScript syntax. The verification tool skipped unit tests because this change only touched the GUI smoke script and had no related unit test file.
@@ -64,6 +64,7 @@ Browser acceptance covers project creation, MIDI input/drag/Inspector/clipboard/
 - T-040 adds a persisted Korean/English selector for the primary transport, arrangement and recording workspace, preserving existing IDs and Korean defaults. The new E2E verifies English labels, reload persistence, unchanged project revision and return to Korean. The default E2E passed 40 steps. Both manuals state that advanced dialogs/details are not fully translated. Full verification passed 172 test files and native tests passed 97; no complete bilingual UI or hardware claim.
 - T-041 adds a separate AVAudioEngine helper and build path. Validated PCM16 mono/stereo WAV inputs render offline with source-identical PCM SHA-256; play/status/stop, invalid input and missing explicit output permission are covered. `node --test native/tests/audio-bridge.test.mjs` passed 2 tests, `npm run test:native` passed 99, and `npm run agent:verify:full` passed 172 files. GUI/native-MIDI integration is not implemented; T-042 tracks it. No listening or low-latency claim.
 - T-042 connects an explicit opt-in native audio mode to completed server WAV jobs, preserving the default built-in preview. API tests verify offline completion, stale/unknown job rejection, Stop ownership and project-edit cleanup; GUI tests verify offline preview and Stop with a controlled helper. Targeted native tests passed 2, targeted GUI passed 2, default E2E passed 40, native suite passed 101 and full verification passed 172 files. No physical-device listening or native-MIDI synchronization claim.
+- T-043 adds a separate AVAudioUnitComponentManager helper with bounded metadata, exact-ID selection, duplicate ambiguity and malformed-request errors. Two native tests verify discovery, selection and no instantiation without depending on a particular installed plugin. Native suite passed 103 and full verification passed 172 files. Hosting/instantiation remains T-044; no plugin code execution or quality claim.
 
 ## Problems encountered and resolved
 
@@ -168,3 +169,5 @@ T-040에서는 기본 transport·arrangement·녹음 화면에 한국어/영어 
 T-041에서는 별도 AVAudioEngine helper와 빌드 경로를 추가했습니다. 검증된 PCM16 mono/stereo WAV의 오프라인 렌더가 원본과 동일한 PCM SHA-256을 유지하고, play/status/stop·잘못된 입력·출력 권한 부재를 검사했습니다. 대상 native 테스트 2개, 전체 native 99개, 제품 172개 파일이 통과했습니다. GUI·native MIDI 연결은 T-042로 남기며 청음이나 저지연 품질을 주장하지 않습니다.
 
 T-042에서는 명시적 native audio 모드를 서버의 완료된 WAV job에 연결하고 기본 내장 프리뷰를 유지했습니다. API는 offline 완료·stale/unknown job 거부·Stop 소유권·편집 정리를 검증하고, GUI는 offline 재생과 Stop을 확인했습니다. 대상 native 2개·GUI 2개, 기본 E2E 40단계, 전체 native 101개, 제품 172개 파일이 통과했습니다. 실제 장치 청음이나 native MIDI 동기화는 주장하지 않습니다.
+
+T-043에서는 AVAudioUnitComponentManager helper를 추가해 제한된 메타데이터·정확한 ID 선택·중복 모호성·잘못된 요청 오류를 검증했습니다. 두 native 테스트가 검색·선택·미인스턴스화를 확인하고 특정 설치 플러그인에 의존하지 않습니다. native 103개와 제품 172개 파일이 통과했습니다. 호스팅·인스턴스화는 T-044이며 플러그인 코드 실행이나 품질을 주장하지 않습니다.

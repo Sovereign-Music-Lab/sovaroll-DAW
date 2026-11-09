@@ -24,7 +24,7 @@
     "agent:task": "node scripts/agent/task.mjs",
     "agent:map": "node scripts/agent/map.mjs",
     "test:native": "node --test native/tests/*.test.mjs",
-    "pretest:native": "node scripts/build-native-midi.mjs && node scripts/build-native-audio.mjs"
+    "pretest:native": "node scripts/build-native-midi.mjs && node scripts/build-native-audio.mjs && node scripts/build-native-audio-units.mjs"
   },
   "license": "Apache-2.0",
   "repository": {
