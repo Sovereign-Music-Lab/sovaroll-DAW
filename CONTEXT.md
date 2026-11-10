@@ -13,6 +13,7 @@ Updated: 2026-11-10. T-001–T-069 are done; the MIDI editor has a grand-staff s
 - Use local Gemma 4 for the next coding stage. No silent model substitution or automatic cloud escalation.
 - The High/Middle/Low method is reusable planning guidance; it does not override the current model lock or license.
 - Read one task and bounded source excerpts. Measure real context/memory usage; do not assume a safe token count from RAM alone.
+- 2026-11-10 measurement (Codex 0.167, Ollama `gemma4:12b-mlx`, lean profile): the first request here is about 5.4k tokens; the earlier 163k-token overflow came from globally enabled tool schemas, not repository files. See [docs/context/local-small-model-2026-11-10.md](docs/context/local-small-model-2026-11-10.md).
 
 ## Durable decisions
 - Credits: Hee-sung Kang, Do-won Lee, Sungmo Park; keep them under README titles.
